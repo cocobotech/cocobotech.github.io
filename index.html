@@ -1,3 +1,585 @@
-<p>Hello 大家好</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO TECH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<a href="https://cocobotech.github.io/CCB_JS/Projs/proj01/">JAVASCRIPT PROJ01</a>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Row */
+        .top-bar {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px 35px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-name {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 50%, #2196f3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(33, 150, 243, 0.3);
+        }
+
+        .user-status {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        /* Main Content - 3 Columns */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 25px;
+            flex: 1;
+            margin-bottom: 25px;
+        }
+
+        /* Left Column - Links */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .link-group {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .link-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(33, 150, 243, 0.4);
+        }
+
+        .link-group h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #64b5f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-group a {
+            display: block;
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .link-group a:hover {
+            background: rgba(100, 181, 246, 0.2);
+            padding-left: 20px;
+            color: #64b5f6;
+        }
+
+        /* Center Column - Updates */
+        .center-col {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .center-col h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #64b5f6;
+        }
+
+        .update-card {
+            background: rgba(40, 40, 70, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+            transition: transform 0.3s ease;
+        }
+
+        .update-card:hover {
+            transform: translateX(10px);
+            background: rgba(50, 50, 80, 0.7);
+        }
+
+        .update-date {
+            color: #64b5f6;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .update-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .update-desc {
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+
+        /* Right Column - Widgets */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .widget {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .widget h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #64b5f6;
+        }
+
+        .clock {
+            text-align: center;
+        }
+
+        .time {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+        }
+
+        .date {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-top: 8px;
+        }
+
+        .weather-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .temp {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .weather-icon {
+            font-size: 40px;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-price {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .stock-price.down {
+            color: #f44336;
+        }
+
+        .stock-price small {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-left: 5px;
+        }
+
+        /* Bottom Row */
+        .bottom-bar {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            50% {
+                opacity: 0.6;
+                box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="user-info">
+                <div class="user-name">Welcome Back, User</div>
+                <div class="user-status">
+                    <div class="status-item">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                    <div class="status-item">📍 San Francisco</div>
+                    <div class="status-item">⚡ Fast Connection</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main 3 Columns -->
+        <div class="main-content">
+            <!-- Left Column - Links -->
+            <div class="left-col">
+                <div class="link-group">
+                    <h3>💻 Tech</h3>
+                    <a href="#">GitHub Projects</a>
+                    <a href="#">Dev Resources</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">Code Snippets</a>
+                </div>
+
+                <div class="link-group">
+                    <h3>🎮 Gaming</h3>
+                    <a href="#">Steam Library</a>
+                    <a href="#">Discord Server</a>
+                    <a href="#">Game Reviews</a>
+                    <a href="#">Twitch Channel</a>
+                </div>
+
+                <div class="link-group">
+                    <h3>🎨 3D Design</h3>
+                    <a href="#">Blender Projects</a>
+                    <a href="#">Unity Assets</a>
+                    <a href="#">ArtStation</a>
+                    <a href="#">3D Tutorials</a>
+                </div>
+
+                <div class="link-group">
+                    <h3>🔧 Tools</h3>
+                    <a href="#">Cloud Storage</a>
+                    <a href="#">Password Manager</a>
+                    <a href="#">Task Board</a>
+                    <a href="#">Analytics</a>
+                </div>
+            </div>
+
+            <!-- Center Column - Updates -->
+            <div class="center-col">
+                <h2>Key Updates</h2>
+                
+                <div class="update-card">
+                    <div class="update-date">Today • 2:30 PM</div>
+                    <div class="update-title">Project Deployment Successful</div>
+                    <div class="update-desc">Successfully deployed v2.0 to production. All systems operational with 99.9% uptime.</div>
+                </div>
+
+                <div class="update-card">
+                    <div class="update-date">Today • 10:15 AM</div>
+                    <div class="update-title">New 3D Model Completed</div>
+                    <div class="update-desc">Finished the sci-fi environment scene. Rendered at 4K with ray tracing enabled.</div>
+                </div>
+
+                <div class="update-card">
+                    <div class="update-date">Yesterday • 6:45 PM</div>
+                    <div class="update-title">Gaming Tournament Victory</div>
+                    <div class="update-desc">Won first place in the weekend tournament. Prize money incoming!</div>
+                </div>
+
+                <div class="update-card">
+                    <div class="update-date">Oct 18 • 3:20 PM</div>
+                    <div class="update-title">Code Review Completed</div>
+                    <div class="update-desc">Reviewed 15 pull requests and merged critical bug fixes to main branch.</div>
+                </div>
+
+                <div class="update-card">
+                    <div class="update-date">Oct 17 • 1:00 PM</div>
+                    <div class="update-title">New Tech Stack Evaluation</div>
+                    <div class="update-desc">Completed evaluation of React 19 and Next.js 15 for upcoming projects.</div>
+                </div>
+            </div>
+
+            <!-- Right Column - Widgets -->
+            <div class="right-col">
+                <div class="widget clock">
+                    <h3>🕐 Current Time</h3>
+                    <div class="time" id="clock">00:00:00</div>
+                    <div class="date" id="date">Monday, October 20, 2025</div>
+                </div>
+
+                <div class="widget">
+                    <h3>🌤️ Weather</h3>
+                    <div class="weather-info">
+                        <div>
+                            <div class="temp">72°F</div>
+                            <div style="color: #b0b0b0; font-size: 14px; margin-top: 5px;">Partly Cloudy</div>
+                        </div>
+                        <div class="weather-icon">⛅</div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h3>📈 Key Stocks</h3>
+                    <div class="stock-item">
+                        <span>INTC</span>
+                        <span class="stock-price">$23.45 <small>+2.3%</small> ▲</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>TSLA</span>
+                        <span class="stock-price">$242.84 <small>+1.8%</small> ▲</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>QQQ</span>
+                        <span class="stock-price">$487.32 <small>+0.9%</small> ▲</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>NVDA</span>
+                        <span class="stock-price down">$138.21 <small>-1.2%</small> ▼</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>AMD</span>
+                        <span class="stock-price">$163.78 <small>+3.1%</small> ▲</span>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h3>⚡ Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">Open Terminal</button>
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">Launch IDE</button>
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">View Analytics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            © 2025 COCOBO TECH • SUN  • 
+        </div>
+    </div>
+
+    <script>
+        // ccbnotes: Animated background with particles creating 3D effect
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 100;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 181, 246, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        // ccbnotes: Initialize particles for background animation
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // ccbnotes: Draw connections between nearby particles for network effect
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(100, 181, 246, ${0.2 * (1 - distance / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // ccbnotes: Live clock function updating every second
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000); // ccbnotes: Clock updates every 1 second
+
+        // Button hover effects
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.background = 'rgba(100, 181, 246, 0.4)';
+                this.style.transform = 'scale(1.05)';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.background = 'rgba(100, 181, 246, 0.2)';
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
