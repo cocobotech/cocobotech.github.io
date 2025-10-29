@@ -320,7 +320,7 @@
         /* 特性卡片 */
         .features {
             position: relative;
-            padding: 50px 30px;
+            padding: 20px 10px;
             z-index: 1;
             display: grid;
             grid-template-columns: repeat(9, 1fr);
@@ -332,10 +332,15 @@
         .feature-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 255, 255, 0.2);
-            padding: 40px;
+            padding: 20px;
             border-radius: 10px;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .feature-card:hover {
