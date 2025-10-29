@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO 钢琴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .title {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .piano {
+            display: inline-block;
+            background: #2c2c2c;
+            padding: 20px 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .piano-logo {
+            text-align: center;
+            padding: 15px 0 20px;
+            font-family: 'Georgia', serif;
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #d4af37;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.8),
+                0 0 10px rgba(212, 175, 55, 0.5);
+            border-bottom: 2px solid #444;
+            margin-bottom: 20px;
+        }
+
+        .keys-container {
+            position: relative;
+            display: flex;
+        }
+
+        .white-keys {
+            display: flex;
+            gap: 3px;
+        }
+
+        .black-keys {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .key {
+            cursor: pointer;
+            user-select: none;
+            pointer-events: auto;
+            position: relative;
+            overflow: visible;
+        }
+
+        .white-key {
+            width: 50px;
+            height: 250px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
+            border: 2px solid #333;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.05s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 12px;
+        }
+
+        .white-key:hover {
+            background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+        }
+
+        .white-key.active {
+            background: linear-gradient(to bottom, #e0e0e0 0%, #d0d0d0 100%);
+            transform: translateY(3px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .black-key {
+            width: 35px;
+            height: 150px;
+            background: linear-gradient(to bottom, #3a3a3a 0%, #1a1a1a 100%);
+            border: 2px solid #000;
+            border-radius: 0 0 6px 6px;
+            position: absolute;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+            transition: all 0.05s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8px;
+        }
+
+        .black-key:hover {
+            background: linear-gradient(to bottom, #2a2a2a 0%, #0a0a0a 100%);
+        }
+
+        .black-key.active {
+            background: linear-gradient(to bottom, #1a1a1a 0%, #000000 100%);
+            transform: translateY(3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .key-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            opacity: 0.6;
+        }
+
+        .black-key .key-label {
+            color: #999;
+            font-size: 10px;
+        }
+
+        /* 紫色背光效果 */
+        .halo {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, 
+                rgba(147, 51, 234, 0.8) 0%, 
+                rgba(147, 51, 234, 0.4) 30%, 
+                transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s ease;
+            filter: blur(15px);
+            z-index: -1;
+        }
+
+        .key.active .halo {
+            opacity: 1;
+            animation: haloGlow 0.4s ease-out;
+        }
+
+        @keyframes haloGlow {
+            0% {
+                transform: translateX(-50%) scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(-50%) scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) scale(1.3);
+                opacity: 1;
+            }
+        }
+
+        .instructions {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 30px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .keyboard-hint {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 14px;
+            max-width: 90%;
+        }
+
+        .audio-status {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">🎹 COCOBO 钢琴</div>
+        <div class="subtitle">点击任意位置开始，然后用鼠标或键盘弹奏</div>
+        
+        <div class="piano">
+            <div class="piano-logo">COCOBO</div>
+            <div class="keys-container">
+                <div class="white-keys" id="white-keys"></div>
+                <div class="black-keys" id="black-keys"></div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <div class="audio-status" id="audio-status">🔊 准备就绪 - 点击开始</div>
+            <div class="keyboard-hint">
+                ⌨️ 键盘：Z X C V B N M A S D F G H J K L ; ' ] 1 2 3 4 5<br>
+                （左手低音区 | 中音区 | 右手高音区）
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 音符数据 - 从C3到D6，共3组多
+        const whiteNotes = [
+            // 左边新增的一组 (C3-B3)
+            { note: 'C3', key: 'Z', freq: 130.81 },
+            { note: 'D3', key: 'X', freq: 146.83 },
+            { note: 'E3', key: 'C', freq: 164.81 },
+            { note: 'F3', key: 'V', freq: 174.61 },
+            { note: 'G3', key: 'B', freq: 196.00 },
+            { note: 'A3', key: 'N', freq: 220.00 },
+            { note: 'B3', key: 'M', freq: 246.94 },
+            // 原有的中间组 (C4-D5)
+            { note: 'C4', key: 'A', freq: 261.63 },
+            { note: 'D4', key: 'S', freq: 293.66 },
+            { note: 'E4', key: 'D', freq: 329.63 },
+            { note: 'F4', key: 'F', freq: 349.23 },
+            { note: 'G4', key: 'G', freq: 392.00 },
+            { note: 'A4', key: 'H', freq: 440.00 },
+            { note: 'B4', key: 'J', freq: 493.88 },
+            { note: 'C5', key: 'K', freq: 523.25 },
+            { note: 'D5', key: 'L', freq: 587.33 },
+            // 右边新增 (E5-D6)
+            { note: 'E5', key: ';', freq: 659.25 },
+            { note: 'F5', key: "'", freq: 698.46 },
+            { note: 'G5', key: ']', freq: 783.99 },
+            { note: 'A5', key: '1', freq: 880.00 },
+            { note: 'B5', key: '2', freq: 987.77 },
+            { note: 'C6', key: '3', freq: 1046.50 },
+            { note: 'D6', key: '4', freq: 1174.66 }
+        ];
+
+        const blackNotes = [
+            // C3组的黑键
+            { note: 'C#3', key: 'Q', freq: 138.59, whiteIndex: 0 },
+            { note: 'D#3', key: 'W', freq: 155.56, whiteIndex: 1 },
+            { note: 'F#3', key: 'R', freq: 185.00, whiteIndex: 3 },
+            { note: 'G#3', key: 'T', freq: 207.65, whiteIndex: 4 },
+            { note: 'A#3', key: 'Y', freq: 233.08, whiteIndex: 5 },
+            // C4组的黑键
+            { note: 'C#4', key: 'U', freq: 277.18, whiteIndex: 7 },
+            { note: 'D#4', key: 'I', freq: 311.13, whiteIndex: 8 },
+            { note: 'F#4', key: 'P', freq: 369.99, whiteIndex: 10 },
+            { note: 'G#4', key: '[', freq: 415.30, whiteIndex: 11 },
+            { note: 'A#4', key: '\\', freq: 466.16, whiteIndex: 12 },
+            // C5组的黑键
+            { note: 'C#5', key: '6', freq: 554.37, whiteIndex: 14 },
+            { note: 'D#5', key: '7', freq: 622.25, whiteIndex: 15 },
+            { note: 'F#5', key: '8', freq: 739.99, whiteIndex: 17 },
+            { note: 'G#5', key: '9', freq: 830.61, whiteIndex: 18 },
+            { note: 'A#5', key: '0', freq: 932.33, whiteIndex: 19 }
+        ];
+
+        let audioContext = null;
+        const activeOscillators = {};
+        let audioInitialized = false;
+
+        function initAudio() {
+            if (!audioInitialized) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioInitialized = true;
+                document.getElementById('audio-status').textContent = '🔊 音频已激活';
+                document.getElementById('audio-status').style.background = 'rgba(76, 175, 80, 0.3)';
+            }
+        }
+
+        // 创建白键
+        const whiteKeysContainer = document.getElementById('white-keys');
+        whiteNotes.forEach(noteData => {
+            const key = document.createElement('div');
+            key.className = 'white-key key';
+            key.dataset.note = noteData.note;
+            key.dataset.key = noteData.key;
+            key.dataset.freq = noteData.freq;
+            
+            const halo = document.createElement('div');
+            halo.className = 'halo';
+            key.appendChild(halo);
+            
+            const label = document.createElement('span');
+            label.className = 'key-label';
+            label.textContent = noteData.key;
+            key.appendChild(label);
+            
+            whiteKeysContainer.appendChild(key);
+        });
+
+        // 创建黑键
+        const blackKeysContainer = document.getElementById('black-keys');
+        blackNotes.forEach(noteData => {
+            const key = document.createElement('div');
+            key.className = 'black-key key';
+            key.dataset.note = noteData.note;
+            key.dataset.key = noteData.key;
+            key.dataset.freq = noteData.freq;
+            
+            // 计算黑键位置（基于白键索引）
+            const whiteKeyWidth = 50;
+            const gap = 3;
+            const position = (whiteKeyWidth + gap) * noteData.whiteIndex + whiteKeyWidth * 0.7;
+            key.style.left = position + 'px';
+            
+            const halo = document.createElement('div');
+            halo.className = 'halo';
+            key.appendChild(halo);
+            
+            const label = document.createElement('span');
+            label.className = 'key-label';
+            label.textContent = noteData.key;
+            key.appendChild(label);
+            
+            blackKeysContainer.appendChild(key);
+        });
+
+        function playNote(freq, keyElement) {
+            if (!audioContext) return;
+
+            const note = keyElement.dataset.note;
+            
+            if (activeOscillators[note]) {
+                return;
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.02);
+            
+            oscillator.start(audioContext.currentTime);
+            
+            activeOscillators[note] = { oscillator, gainNode };
+            
+            keyElement.classList.add('active');
+        }
+
+        function stopNote(keyElement) {
+            const note = keyElement.dataset.note;
+            
+            if (activeOscillators[note]) {
+                const { oscillator, gainNode } = activeOscillators[note];
+                
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                delete activeOscillators[note];
+            }
+            
+            keyElement.classList.remove('active');
+        }
+
+        // 鼠标事件
+        const allKeys = document.querySelectorAll('.key');
+        
+        allKeys.forEach(key => {
+            key.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                initAudio();
+                const freq = parseFloat(key.dataset.freq);
+                playNote(freq, key);
+            });
+            
+            key.addEventListener('mouseup', () => {
+                stopNote(key);
+            });
+            
+            key.addEventListener('mouseleave', () => {
+                stopNote(key);
+            });
+
+            key.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                initAudio();
+                const freq = parseFloat(key.dataset.freq);
+                playNote(freq, key);
+            });
+
+            key.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                stopNote(key);
+            });
+        });
+
+        // 键盘映射
+        const keyMap = {};
+        allKeys.forEach(key => {
+            if (key.dataset.key) {
+                keyMap[key.dataset.key.toUpperCase()] = key;
+            }
+        });
+
+        const pressedKeys = new Set();
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toUpperCase();
+            
+            if (keyMap[key] && !pressedKeys.has(key)) {
+                initAudio();
+                pressedKeys.add(key);
+                const keyElement = keyMap[key];
+                const freq = parseFloat(keyElement.dataset.freq);
+                playNote(freq, keyElement);
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            const key = e.key.toUpperCase();
+            
+            if (keyMap[key]) {
+                pressedKeys.delete(key);
+                const keyElement = keyMap[key];
+                stopNote(keyElement);
+            }
+        });
+
+        document.body.addEventListener('click', initAudio, { once: true });
+    </script>
+</body>
+</html>
