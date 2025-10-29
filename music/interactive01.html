@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩色方块跑马灯</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            font-family: Arial, sans-serif;
+        }
+
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .marquee-row {
+            display: flex;
+            gap: 15px;
+            animation: scroll 8s linear infinite;
+            width: max-content;
+        }
+
+        .marquee-row:nth-child(2) {
+            animation-duration: 10s;
+            animation-direction: reverse;
+        }
+
+        .marquee-row:nth-child(3) {
+            animation-duration: 7s;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .box {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .box:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .box.glow {
+            animation: glowEffect 0.6s ease-out;
+            box-shadow: 0 0 30px 10px currentColor, 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes glowEffect {
+            0% {
+                box-shadow: 0 0 5px currentColor, 0 4px 15px rgba(0, 0, 0, 0.3);
+                transform: scale(1.2) rotate(10deg);
+            }
+            50% {
+                box-shadow: 0 0 40px 15px currentColor, 0 4px 15px rgba(0, 0, 0, 0.3);
+                transform: scale(1.4) rotate(15deg);
+            }
+            100% {
+                box-shadow: 0 0 30px 10px currentColor, 0 4px 15px rgba(0, 0, 0, 0.3);
+                transform: scale(1.2) rotate(10deg);
+            }
+        }
+
+        .color1 { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: #667eea;
+        }
+        .color2 { 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+            color: #f093fb;
+        }
+        .color3 { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
+            color: #4facfe;
+        }
+        .color4 { 
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+            color: #43e97b;
+        }
+        .color5 { 
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+            color: #fa709a;
+        }
+        .color6 { 
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); 
+            color: #30cfd0;
+        }
+        .color7 { 
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); 
+            color: #a8edea;
+        }
+        .color8 { 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); 
+            color: #ff9a9e;
+        }
+
+        .title {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="title">✨ 彩色方块跑马灯 ✨</div>
+    <div class="subtitle">🎵 鼠标触碰方块会发光并发出声音 🎵</div>
+    
+    <div class="marquee-container">
+        <div class="marquee-row" id="row1"></div>
+    </div>
+
+    <div class="marquee-container">
+        <div class="marquee-row" id="row2"></div>
+    </div>
+
+    <div class="marquee-container">
+        <div class="marquee-row" id="row3"></div>
+    </div>
+
+    <script>
+        const colors = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7', 'color8'];
+        
+        // 使用 Web Audio API 创建不同音调的声音
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // 为每种颜色定义不同的音高（频率）
+        const frequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C D E F G A B C (Do Re Mi Fa Sol La Si Do)
+        
+        function playSound(colorIndex) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // 设置音调
+            oscillator.frequency.value = frequencies[colorIndex];
+            oscillator.type = 'sine'; // 使用正弦波，声音更柔和
+            
+            // 设置音量渐变（淡入淡出效果）
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            // 播放声音
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+        
+        function createBoxes(rowId, count) {
+            const row = document.getElementById(rowId);
+            
+            // 创建两组相同的方块，确保无缝循环
+            for (let j = 0; j < 2; j++) {
+                for (let i = 0; i < count; i++) {
+                    const box = document.createElement('div');
+                    const colorIndex = i % colors.length;
+                    box.className = 'box ' + colors[colorIndex];
+                    
+                    // 添加鼠标进入事件
+                    box.addEventListener('mouseenter', function() {
+                        // 添加发光效果
+                        this.classList.add('glow');
+                        
+                        // 播放声音
+                        playSound(colorIndex);
+                        
+                        // 移除发光效果
+                        setTimeout(() => {
+                            this.classList.remove('glow');
+                        }, 600);
+                    });
+                    
+                    row.appendChild(box);
+                }
+            }
+        }
+
+        // 为每一行创建方块
+        createBoxes('row1', 20);
+        createBoxes('row2', 20);
+        createBoxes('row3', 20);
+        
+        // 首次点击页面时初始化音频上下文（浏览器要求用户交互后才能播放声音）
+        document.body.addEventListener('click', function initAudio() {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            document.body.removeEventListener('click', initAudio);
+        }, { once: true });
+    </script>
+</body>
+</html>
