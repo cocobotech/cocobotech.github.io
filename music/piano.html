@@ -238,6 +238,7 @@
             <div class="audio-status" id="audio-status">🔊 准备就绪 - 点击开始</div>
             <div class="keyboard-hint">
                 ⌨️ 键盘：Z X C V B N M A S D F G H J K L ; ' ] 1 2 3 4 5<br>
+                黑键：Q W R T Y U I P [ \ 6 7 8 9 0 -<br>
                 （左手低音区 | 中音区 | 右手高音区）
             </div>
         </div>
@@ -292,7 +293,9 @@
             { note: 'D#5', key: '7', freq: 622.25, whiteIndex: 15 },
             { note: 'F#5', key: '8', freq: 739.99, whiteIndex: 17 },
             { note: 'G#5', key: '9', freq: 830.61, whiteIndex: 18 },
-            { note: 'A#5', key: '0', freq: 932.33, whiteIndex: 19 }
+            { note: 'A#5', key: '0', freq: 932.33, whiteIndex: 19 },
+            // C6组的黑键
+            { note: 'C#6', key: '-', freq: 1108.73, whiteIndex: 21 }
         ];
 
         let audioContext = null;
