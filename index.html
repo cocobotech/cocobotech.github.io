@@ -316,6 +316,53 @@
             }
         }
 
+
+        /* 特性卡片 */
+        .features {
+            position: relative;
+            padding: 100px 60px;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffff;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00ffff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            color: #aaaaaa;
+            line-height: 1.6;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .main-content {
@@ -330,6 +377,26 @@
     <div class="container">
         <!-- Top Bar -->
         <div class="top-bar">
+
+            <!-- 特性区域 -->
+            <section class="features" id="features">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>体验极致的性能表现，毫秒级响应速度，让每一次交互都流畅自然。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Ultra Secure</h3>
+                    <p>企业级加密技术，多层安全防护，守护您的每一份数据安全。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Global Network</h3>
+                    <p>覆盖全球的服务网络，无论身在何处，都能获得稳定可靠的连接。</p>
+                </div>
+            </section>
+            
             <div class="user-info">
                 <div class="user-name">Welcome Back, User</div>
                 <div class="user-status">
