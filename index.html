@@ -43,6 +43,79 @@
             flex-direction: column;
         }
 
+
+        .world_clock_container {
+            max-width: 400px;
+            width: 100%;
+            background: linear-gradient(145deg, #1a1f3a 0%, #0f1229 100%);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(0, 150, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .world_clock_title {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+            
+        }
+
+        .clock-item {
+            padding: 10px 0;
+        }
+
+        .clock-item:not(:last-child) {
+            border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .city-line {
+            font-size: 12px;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .timezone-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 9px;
+        }
+
+        .datetime-line {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+        }
+
+        .date-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-right: 12px;
+        }
+
+        .time-text {
+            /* font-family: 'Courier New', monospace; */
+            font-size: 15px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #00ffff 50%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+        }
+
+
+
+
         /* Top Row */
         .top-bar {
             background: rgba(30, 30, 50, 0.7);
@@ -515,7 +588,7 @@
                 <div class="link-group">
                     <h3>AI.IT.IC.TECH</h3>
                     <a href="#">AI</a>
-                    <a href="#">IC</a>
+                    <a href="#">SEMICONDUCTOR</a>
                     <a href="#">TECH</a>
                     <a href="#">ooo</a>
                 </div>
@@ -566,14 +639,9 @@
             <!-- Right Column - Widgets -->
             <div class="right-col">
                 <div class="widget clock">
-                    <h3>🕐 Current Time</h3>
-                    <div class="time" id="clock">00:00:00</div>
+
                     <div class="date" id="date">Monday, October 20, 2025</div>
                 </div>
-
-                <canvas id="ccb_clock" width="300" height="300"></canvas>
-                <div id="digital-time" style="text-align:center;margin-top:5px;font-size:16px;font-weight:900;color:#00d4ff;letter-spacing:4px;font-family:'Courier New',monospace;"></div>
-   
 
 
                 <div class="widget">
@@ -586,6 +654,58 @@
                         <div class="weather-icon">⛅</div>
                     </div>
                 </div>
+
+
+                <canvas id="ccb_clock" width="300" height="300"></canvas>
+                
+                
+
+                
+
+
+                <div class="ccb_world_clock_container">
+                <div class="world_clock_title">🌍 世界时钟</div>
+                
+                <!-- 上海 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇨🇳 上海 <span class="timezone-text">(UTC+8 / CST · China Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_shanghai"></span>，时间 <span class="time-text" id="time_shanghai">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 旧金山 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇺🇸 旧金山 <span class="timezone-text">(UTC-8 / PST · Pacific Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_sanfrancisco"></span>，时间 <span class="time-text" id="time_sanfrancisco">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 纽约 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🗽 纽约 <span class="timezone-text">(UTC-5 / EST · Eastern Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_newyork"></span>，时间 <span class="time-text" id="time_newyork">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 米兰 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇮🇹 米兰 <span class="timezone-text">(UTC+1 / CET · Central European Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_milan"></span>，时间 <span class="time-text" id="time_milan">--:--:--</span>
+                    </div>
+                </div>
+            </div>
 
                 <div class="widget">
                     <h3>📈 Key Stocks</h3>
@@ -710,7 +830,7 @@
                 day: 'numeric' 
             });
             
-            document.getElementById('clock').textContent = time;
+            //document.getElementById('clock').textContent = time;
             document.getElementById('date').textContent = date;
         }
 
@@ -785,7 +905,7 @@
                 let h = String(time.getHours()).padStart(2, '0');
                 let m = String(time.getMinutes()).padStart(2, '0');
                 let s = String(time.getSeconds()).padStart(2, '0');
-                document.getElementById('digital-time').textContent = `${h}:${m}:${s}`;
+                //document.getElementById('digital-time').textContent = `${h}:${m}:${s}`;
             }
 
             function drawAllHands(ctx){
@@ -1154,6 +1274,71 @@
 
 
         ccb_clock()
+
+
+        const ccb_world_clocks = [
+            { 
+                id: 'shanghai', 
+                timezone: 'Asia/Shanghai',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'sanfrancisco', 
+                timezone: 'America/Los_Angeles',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'newyork', 
+                timezone: 'America/New_York',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'milan', 
+                timezone: 'Europe/Rome',
+                locale: 'zh-CN'
+            }
+        ];
+
+        function ccb_world_updateClock(ccb_world_config) {
+            const ccb_world_now = new Date();
+            
+            // 获取指定时区的时间
+            const ccb_world_timeString = ccb_world_now.toLocaleTimeString(ccb_world_config.locale, {
+                timeZone: ccb_world_config.timezone,
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // 获取日期 - 格式：11月2日星期六
+            const ccb_world_date = new Date(ccb_world_now.toLocaleString('en-US', { timeZone: ccb_world_config.timezone }));
+            const ccb_world_month = ccb_world_date.getMonth() + 1;
+            const ccb_world_day = ccb_world_date.getDate();
+            const ccb_world_weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const ccb_world_weekday = ccb_world_weekdays[ccb_world_date.getDay()];
+            const ccb_world_dateString = `${ccb_world_month}月${ccb_world_day}日${ccb_world_weekday}`;
+
+            // 更新显示
+            document.getElementById(`time_${ccb_world_config.id}`).textContent = ccb_world_timeString;
+            document.getElementById(`date_${ccb_world_config.id}`).textContent = ccb_world_dateString;
+        }
+
+        function ccb_world_updateAllClocks() {
+            ccb_world_clocks.forEach(ccb_world_clock => ccb_world_updateClock(ccb_world_clock));
+        }
+
+        // 初始更新
+        ccb_world_updateAllClocks();
+
+        // 每秒更新一次
+        setInterval(ccb_world_updateAllClocks, 1000);
+        
+        // 初始更新
+        //updateAllClocks();
+
+        // 每秒更新一次
+        //setInterval(updateAllClocks, 1000);
 
     </script>
 </body>
