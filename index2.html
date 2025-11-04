@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO TECH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .world_clock_container {
+            max-width: 400px;
+            width: 100%;
+            background: linear-gradient(145deg, #1a1f3a 0%, #0f1229 100%);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(0, 150, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .world_clock_title {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+            
+        }
+
+        .clock-item {
+            padding: 10px 0;
+        }
+
+        .clock-item:not(:last-child) {
+            border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .city-line {
+            font-size: 12px;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .timezone-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 9px;
+        }
+
+        .datetime-line {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+        }
+
+        .date-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-right: 12px;
+        }
+
+        .time-text {
+            /* font-family: 'Courier New', monospace; */
+            font-size: 15px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #00ffff 50%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+        }
+
+
+
+
+        /* Top Row */
+        .top-bar {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-name {
+            font-size: 32px;
+            font-weight: 700;
+            //background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 50%, #2196f3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(33, 150, 243, 0.3);
+        }
+
+        .user-status {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #b0b0b0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        /* Main Content - 3 Columns */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 25px;
+            flex: 1;
+            margin-bottom: 25px;
+        }
+
+        /* Left Column - Links */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .link-group {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .link-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(33, 150, 243, 0.4);
+        }
+
+        .link-group h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #64b5f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-group a {
+            display: block;
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .link-group a:hover {
+            background: rgba(100, 181, 246, 0.2);
+            padding-left: 20px;
+            color: #64b5f6;
+        }
+
+        /* Center Column - Updates */
+        .center-col {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .center-col h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #64b5f6;
+        }
+
+        .update-card {
+            background: rgba(40, 40, 70, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+            transition: transform 0.3s ease;
+        }
+
+        .update-card:hover {
+            transform: translateX(10px);
+            background: rgba(50, 50, 80, 0.7);
+        }
+
+        .update-date {
+            color: #64b5f6;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .update-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .update-desc {
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+
+        /* Right Column - Widgets */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .widget {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .widget h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #64b5f6;
+        }
+
+        .clock {
+            text-align: center;
+        }
+
+        .time {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+        }
+
+        .date {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-top: 8px;
+        }
+
+        .weather-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .temp {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .weather-icon {
+            font-size: 40px;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-price {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .stock-price.down {
+            color: #f44336;
+        }
+
+        .stock-price small {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-left: 5px;
+        }
+
+        /* Bottom Row */
+        .bottom-bar {
+            background: rgba(30, 30, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            50% {
+                opacity: 0.6;
+                box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* SVG动画装饰 */
+        .decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+
+        /* 特性卡片 */
+        .features {
+            position: relative;
+            padding: 10px 10px;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 10px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffff;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00ffff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            color: #aaaaaa;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+
+            <!-- 特性区域 -->
+            <section class="features" id="features">
+                <div class="feature-card">
+                    
+                    <h3>LOVE</h3>
+                    <p>仁爱</p>
+                </div>
+                <div class="feature-card">
+                   
+                    <h3>JOY</h3>
+                    <p>喜乐</p>
+                </div>
+                <div class="feature-card">
+                   
+                    <h3>Peace</h3>
+                    <p>和平</p>
+                </div>
+                <div class="feature-card">
+                    
+                    <h3>Patience</h3>
+                    <p>忍耐</p>
+                </div>
+                <div class="feature-card">
+                   
+                    <h3>Kindness</h3>
+                    <p>恩慈</p>
+                </div>
+
+                <div class="feature-card">
+                   
+                    <h3>Goodness</h3>
+                    <p>良善</p>
+                </div>
+
+                <div class="feature-card">
+                   
+                    <h3>Faithfulness</h3>
+                    <p>信实</p>
+                </div>
+
+                <div class="feature-card">
+                   
+                    <h3>Gentleness</h3>
+                    <p>温柔</p>
+                </div>
+
+                <div class="feature-card">
+                   
+                    <h3>Self-control</h3>
+                    <p>节制</p>
+                </div>
+
+                
+            </section>
+            
+            <div class="user-info">
+                <div class="user-name">🌞SUN🌞</div>
+
+                 <!-- SVG animation -->
+                <svg class="decoration" xmlns="http://www.w3.org/2000/svg">
+                    <circle id="circle1" cx="10%" cy="20%" r="50" fill="none" stroke="url(#gradient2)" stroke-width="5" opacity="0.6">
+                        <animate attributeName="r" from="50" to="100" dur="8s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" from="0.3" to="0.1" dur="4s" repeatCount="indefinite" />
+                    </circle>
+                     <circle id="circle2" cx="35%" cy="40%" r="80" fill="none" stroke="url(#gradient1)" stroke-width="3" opacity="0.5">
+                        <animate attributeName="r" from="80" to="100" dur="5s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" from="0.3" to="0.1" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle id="circle3" cx="55%" cy="60%" r="30" fill="none" stroke="url(#gradient3)" stroke-width="5" opacity="0.3">
+                        <animate attributeName="r" from="30" to="60" dur="6s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" from="0.3" to="0.1" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle id="circle4" cx="85%" cy="30%" r="100" fill="none" stroke="url(#gradient2)" stroke-width="5" opacity="0.55">
+                        <animate attributeName="r" from="100" to="180" dur="10s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" from="0.3" to="0.1" dur="4s" repeatCount="indefinite" />
+                    </circle>
+                    <defs>
+                        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0" />
+                        </linearGradient>
+                        <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0" />
+                        </linearGradient>
+                        <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#66ff00;stop-opacity:0" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                
+                <div class="user-status">
+                    <div class="status-item">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                    <div class="status-item">📍 San Francisco</div>
+                    <div class="status-item">⚡ Fast Connection</div>
+                </div>
+            </div>
+        </div>
+
+
+        
+
+        
+        <!-- Main 3 Columns -->
+        <div class="main-content">
+            <!-- Left Column - Links -->
+            <div class="left-col">
+                <div class="link-group">
+                    <h3>💻 主要链接</h3>
+                    <a href="https://cocobotech.github.io/xiaobao/">Xiaobao</a>
+                    <a href="https://cocobotech.github.io/xiaobao/apps/music/ccbMediaPlayer.html">COCOBO播放器</a>
+
+                </div>
+
+                <div class="link-group">
+                    <h3>AI.IT.IC.TECH</h3>
+                    <a href="#">AI</a>
+                    <a href="#">SEMICONDUCTOR</a>
+                    <a href="#">TECH</a>
+                    <a href="#">ooo</a>
+                </div>
+
+                <div class="link-group">
+                    <h3>🎨 3D Design</h3>
+                    <a href="#">Blender Projects</a>
+                    <a href="#">Unity Assets</a>
+                    <a href="#">LEGO Projects</a>
+                    <a href="#">3D Tutorials</a>
+                </div>
+
+                <div class="link-group">
+                    <h3>🔧 Tools</h3>
+                    <a href="#">Cloud Storage</a>
+                    <a href="#">Password Manager</a>
+                    <a href="#">Task Board</a>
+                    <a href="#">Analytics</a>
+                </div>
+            </div>
+
+            <!-- Center Column - Updates -->
+            <div class="center-col">
+                <h2>Key Updates</h2>
+                
+
+
+                <div class="update-card">
+                    <div class="update-date">Today </div>
+                    <div class="update-title">New 3D Model Completed</div>
+                    <div class="update-desc">3D  surfacemath</div>
+
+                    <div style="width:100%; height:400px;">
+                    <iframe src="https://cocobotech.github.io/math/3D_surface_t1.html" 
+                            style="width:100%;height:100%; border:none; overflow:hidden;"
+                    scrolling="no"></iframe>
+                    </div>
+                </div>
+
+                <div class="update-card">
+                    <div class="update-date">12/12/2024 </div>
+                    <div class="update-title">Radar Chart for Stock option </div>
+                    <div class="update-desc">Completed development of a radar chart module for stock option analysis.  ^_^ </div>
+                </div>
+
+
+                <div class="update-card">
+                    <div class="update-date">10/28/2023 </div>
+                    <div class="update-title">New Tech  Evaluation</div>
+                    <div class="update-desc">Completed evaluation of ultra low noise Devices for upcoming projects.</div>
+                </div>
+            </div>
+
+            <!-- Right Column - Widgets -->
+            <div class="right-col">
+                <div class="widget clock">
+
+                    <div class="date" id="date">Monday, October 20, 2025</div>
+                </div>
+
+
+                <div class="widget">
+                    <h3>🌤️ Weather</h3>
+                    <div class="weather-info">
+                        <div>
+                            <div class="temp">72°F</div>
+                            <div style="color: #b0b0b0; font-size: 14px; margin-top: 5px;">Partly Cloudy</div>
+                        </div>
+                        <div class="weather-icon">⛅</div>
+                    </div>
+                </div>
+
+
+                <canvas id="ccb_clock" width="300" height="300"></canvas>
+                
+                
+
+                
+
+
+                <div class="ccb_world_clock_container">
+                <div class="world_clock_title">🌍 世界时钟</div>
+                
+                <!-- 上海 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇨🇳 上海 <span class="timezone-text">(UTC+8 / CST · China Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_shanghai"></span>，时间 <span class="time-text" id="time_shanghai">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 旧金山 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇺🇸 旧金山 <span class="timezone-text">(UTC-8 / PST · Pacific Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_sanfrancisco"></span>，时间 <span class="time-text" id="time_sanfrancisco">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 纽约 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🗽 纽约 <span class="timezone-text">(UTC-5 / EST · Eastern Standard Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_newyork"></span>，时间 <span class="time-text" id="time_newyork">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- 米兰 -->
+                <div class="clock-item">
+                    <div class="city-line">
+                        🇮🇹 米兰 <span class="timezone-text">(UTC+1 / CET · Central European Time)</span>
+                    </div>
+                    <div class="datetime-line">
+                        <span class="date-text" id="date_milan"></span>，时间 <span class="time-text" id="time_milan">--:--:--</span>
+                    </div>
+                </div>
+            </div>
+
+                <div class="widget">
+                    <h3>📈 Key Stocks</h3>
+                    <div class="stock-item">
+                        <span>INTC</span>
+                        <span class="stock-price" id="stock-intc">$23.45 <small>+2.3%</small> ▲</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>TSLA</span>
+                        <span class="stock-price" id="stock-tsla">$242.84 <small>+1.8%</small> ▲</span>
+                    </div>
+                    <div class="stock-item">
+                        <span>QQQ</span>
+                        <span class="stock-price" id="stock-qqq">$487.32 <small>+0.9%</small> ▲</span>
+                    </div>
+
+                    
+             
+                </div>
+
+                <div class="widget">
+                    <h3>⚡ Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">Open Terminal</button>
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">Launch IDE</button>
+                        <button style="padding: 12px; background: rgba(100, 181, 246, 0.2); border: 1px solid #2196f3; border-radius: 8px; color: #64b5f6; cursor: pointer; transition: all 0.3s ease;">View Analytics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            © 2025 COCOBO TECH • SUN  • 
+        </div>
+    </div>
+
+    <script>
+        // ccbnotes: Animated background with particles creating 3D effect
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 100;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(100, 181, 246, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        // ccbnotes: Initialize particles for background animation
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // ccbnotes: Draw connections between nearby particles for network effect
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(100, 181, 246, ${0.2 * (1 - distance / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // ccbnotes: Live clock function updating every second
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour12: false });
+            const date = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            //document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000); // ccbnotes: Clock updates every 1 second
+
+
+        // ccbnotes: Stock price update simulation - updates every 1 second
+        const stocks = {
+            'intc': { price: 78.88, change: 2.3 },
+            'tsla': { price: 666.88, change: 1.8 },
+            'qqq': { price: 600.00, change: 0.9 },
+            //'nvda': { price: 128.11, change: -1.2 },
+            //'amd': { price: 126.22, change: 3.1 }
+        };
+
+        function updateStocks() {
+            Object.keys(stocks).forEach(symbol => {
+                const stock = stocks[symbol];
+                // ccbnotes: Simulate small random price changes (+/- 0.5%)
+                const priceChange = (Math.random() - 0.5) * stock.price * 0.005;
+                stock.price += priceChange;
+                
+                // ccbnotes: Update percentage change
+                const changeAmount = (Math.random() - 0.5) * 0.2;
+                stock.change += changeAmount;
+                
+                const element = document.getElementById(`stock-${symbol}`);
+                const isPositive = stock.change >= 0;
+                const arrow = isPositive ? '▲' : '▼';
+                
+                element.className = isPositive ? 'stock-price' : 'stock-price down';
+                element.innerHTML = `${stock.price.toFixed(2)} <small>${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(1)}%</small> ${arrow}`;
+            });
+        }
+
+        setInterval(updateStocks, 1000); // ccbnotes: Update stocks every 1 second
+
+        
+        // Button hover effects
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.background = 'rgba(100, 181, 246, 0.4)';
+                this.style.transform = 'scale(1.05)';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.background = 'rgba(100, 181, 246, 0.2)';
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+    
+
+        function ccb_clock(){
+            var canvas = document.getElementById('ccb_clock');
+            if(!canvas.getContext) return;
+            var ctx = canvas.getContext("2d");
+
+            draw();
+
+            function draw(){
+                drawDial(ctx);
+                drawCenterCircle(ctx);
+                drawNumber(ctx);
+                drawAllHands(ctx); 
+                updateDigitalTime();
+                requestAnimationFrame(draw);
+            }
+
+            function updateDigitalTime(){
+                let time = new Date();
+                let h = String(time.getHours()).padStart(2, '0');
+                let m = String(time.getMinutes()).padStart(2, '0');
+                let s = String(time.getSeconds()).padStart(2, '0');
+                //document.getElementById('digital-time').textContent = `${h}:${m}:${s}`;
+            }
+
+            function drawAllHands(ctx){
+                let time = new Date();
+                let s = time.getSeconds();
+                let m = time.getMinutes();
+                let h = time.getHours();
+                let ms = time.getMilliseconds();
+
+                let pi = Math.PI;
+                let secondAngle = pi / 180 * 6 * s + pi / 180 * 6 * ms / 1000;
+                let minuteAngle = pi / 180 * 6 * m + secondAngle / 60;
+                let hourAngle = pi / 180 * 30 * h + minuteAngle / 12;
+
+                // 绘制时针阴影（金色系）
+                drawHandShadow(hourAngle, 68, 10, ctx);
+                // 绘制分针阴影（银色系）
+                drawHandShadow(minuteAngle, 90, 8, ctx);
+                // 绘制秒针阴影
+                drawHandShadow(secondAngle, 113, 3, ctx);
+
+                // 绘制时针（金色金属）
+                drawMetallicHand(hourAngle, 68, 10, "#ffd700", "#ff8c00", "#fff5cc", ctx);
+                // 绘制分针（银色金属）
+                drawMetallicHand(minuteAngle, 90, 8, "#c0c0c0", "#708090", "#ffffff", ctx);
+                // 绘制秒针（霓虹红）
+                drawGlowingHand(secondAngle, 113, 3, "#ff0080", ctx);
+            }
+
+            function drawHandShadow(angle, len, width, ctx){
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(-Math.PI / 2 + angle);
+                ctx.beginPath();
+                ctx.moveTo(-6, 0);
+                ctx.lineTo(len, 0);
+                ctx.lineWidth = width + 3;
+                ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+                ctx.lineCap = "round";
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+            }
+
+            function drawMetallicHand(angle, len, width, color1, color2, highlightColor, ctx){
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(-Math.PI / 2 + angle);
+
+                // 创建金属渐变（深色到亮色到深色）
+                let gradient = ctx.createLinearGradient(0, -width/2, 0, width/2);
+                gradient.addColorStop(0, color2);
+                gradient.addColorStop(0.3, color1);
+                gradient.addColorStop(0.5, highlightColor);
+                gradient.addColorStop(0.7, color1);
+                gradient.addColorStop(1, color2);
+
+                // 主针体
+                ctx.beginPath();
+                ctx.moveTo(-6, 0);
+                ctx.lineTo(len, 0);
+                ctx.lineWidth = width;
+                ctx.strokeStyle = gradient;
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // 添加高光条纹
+                ctx.beginPath();
+                ctx.moveTo(8, 0);
+                ctx.lineTo(len - 8, 0);
+                ctx.lineWidth = width * 0.25;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // 添加暗部增强立体感
+                ctx.beginPath();
+                ctx.moveTo(4, width * 0.3);
+                ctx.lineTo(len - 4, width * 0.3);
+                ctx.lineWidth = width * 0.15;
+                ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                ctx.closePath();
+                ctx.restore();
+            }
+
+            function drawGlowingHand(angle, len, width, color, ctx){
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(-Math.PI / 2 + angle);
+
+                // 外发光
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+
+                ctx.beginPath();
+                ctx.moveTo(-6, 0);
+                ctx.lineTo(len, 0);
+                ctx.lineWidth = width;
+                ctx.strokeStyle = color;
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // 内部亮线
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.moveTo(-6, 0);
+                ctx.lineTo(len, 0);
+                ctx.lineWidth = width * 0.5;
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                ctx.closePath();
+                ctx.restore();
+            }
+
+            function drawCenterCircle(ctx){
+                // 外圈发光
+                ctx.save();
+                ctx.shadowColor = "#00d4ff";
+                ctx.shadowBlur = 23;
+                ctx.beginPath();
+                ctx.arc(150, 150, 15, 0, Math.PI*2);
+                ctx.fillStyle = "#1a2a4a";
+                ctx.fill();
+                ctx.restore();
+
+                // 金属圆环
+                let gradient = ctx.createRadialGradient(150, 150, 8, 150, 150, 15);
+                gradient.addColorStop(0, "#4a90e2");
+                gradient.addColorStop(0.5, "#ffffff");
+                gradient.addColorStop(1, "#2c5aa0");
+
+                ctx.beginPath();
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 5;
+                ctx.arc(150, 150, 13, 0, Math.PI*2);
+                ctx.stroke();
+
+                // 内部核心
+                ctx.beginPath();
+                ctx.arc(150, 150, 9, 0, Math.PI*2);
+                ctx.fillStyle = "#00d4ff";
+                ctx.fill();
+
+                // 核心高光
+                ctx.beginPath();
+                ctx.arc(147, 147, 4, 0, Math.PI*2);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.fill();
+            }
+
+            function drawDial(ctx){
+                let pi = Math.PI;
+                let tickLength;
+
+                // 清除画布
+                ctx.fillStyle = "rgba(10, 14, 39, 0.05)";
+                ctx.fillRect(0, 0, 300, 300);
+
+                // 绘制背景光晕
+                let bgGradient = ctx.createRadialGradient(150, 150, 38, 150, 150, 150);
+                bgGradient.addColorStop(0, "rgba(0, 150, 255, 0.15)");
+                bgGradient.addColorStop(0.5, "rgba(26, 31, 58, 0.8)");
+                bgGradient.addColorStop(1, "rgba(10, 14, 39, 0.95)");
+                ctx.fillStyle = bgGradient;
+                ctx.beginPath();
+                ctx.arc(150, 150, 150, 0, 2 * pi);
+                ctx.fill();
+
+                // 绘制LOGO
+                ctx.save();
+                ctx.font = "bold 18px Georgia, serif";
+                let logoGradient = ctx.createLinearGradient(113, 98, 188, 98);
+                logoGradient.addColorStop(0, "#ffd700");
+                logoGradient.addColorStop(0.5, "#ffffff");
+                logoGradient.addColorStop(1, "#ffd700");
+                ctx.fillStyle = logoGradient;
+                ctx.textAlign = 'center';
+                ctx.shadowColor = "#ffd700";
+                ctx.shadowBlur = 15;
+                ctx.fillText("COCOBO", 150, 98);
+                ctx.restore();
+
+                // 绘制外圈
+                ctx.save();
+                ctx.translate(150, 150);
+
+                // 外圈金属效果
+                let outerGradient = ctx.createRadialGradient(0, 0, 139, 0, 0, 146);
+                outerGradient.addColorStop(0, "rgba(0, 150, 255, 0.3)");
+                outerGradient.addColorStop(0.5, "rgba(138, 43, 226, 0.5)");
+                outerGradient.addColorStop(1, "rgba(0, 150, 255, 0.3)");
+
+                ctx.beginPath();
+                ctx.strokeStyle = outerGradient;
+                ctx.lineWidth = 6;
+                ctx.arc(0, 0, 143, 0, 2 * pi);
+                ctx.stroke();
+                ctx.closePath();
+
+                // 内圈装饰
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(0, 212, 255, 0.4)";
+                ctx.lineWidth = 2;
+                ctx.arc(0, 0, 146, 0, 2 * pi);
+                ctx.stroke();
+
+                // 绘制刻度
+                for (let i = 0; i < 60; i++){
+                    ctx.save();
+                    ctx.rotate(-pi / 2 + i * pi / 30);
+                    ctx.beginPath();
+                    
+                    tickLength = i % 5 ? 6 : 14;
+                    let isHourTick = i % 5 === 0;
+
+                    ctx.moveTo(126, 0);
+                    ctx.lineTo(tickLength + 126, 0);
+                    ctx.lineWidth = isHourTick ? 5 : 2;
+
+                    if(isHourTick){
+                        // 小时刻度金属渐变
+                        let tickGradient = ctx.createLinearGradient(126, -2.5, 140, 2.5);
+                        tickGradient.addColorStop(0, "#00d4ff");
+                        tickGradient.addColorStop(0.5, "#ffffff");
+                        tickGradient.addColorStop(1, "#8a2be2");
+                        ctx.strokeStyle = tickGradient;
+                        ctx.shadowColor = "#00d4ff";
+                        ctx.shadowBlur = 8;
+                    } else {
+                        ctx.strokeStyle = "rgba(100, 150, 200, 0.6)";
+                        ctx.shadowBlur = 0;
+                    }
+
+                    ctx.lineCap = "round";
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.restore();
+                }
+
+                // 绘制装饰圆环
+                for(let r = 120; r > 105; r -= 8){
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(0, 150, 255, ${(120-r)*0.012})`;
+                    ctx.lineWidth = 1;
+                    ctx.arc(0, 0, r, 0, 2 * pi);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            }
+
+            function drawNumber(ctx){
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.font = "bold 24px Arial, sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                let numbers = [1,2,3,4,5,6,7,8,9,10,11,12];
+                let time = new Date();
+                let currentHour = time.getHours() % 12;
+                if(currentHour === 0) currentHour = 12;
+
+                for (let i = 0; i < numbers.length; i++){
+                    let angle = Math.PI * 2 / 12 * i - Math.PI / 3;
+                    let x = Math.cos(angle) * 105;
+                    let y = Math.sin(angle) * 105;
+
+                    // 判断是否为当前小时
+                    if(numbers[i] === currentHour){
+                        // 火焰效果
+                        drawFlameNumber(ctx, numbers[i], x, y);
+                    } else {
+                        // 普通数字金属渐变
+                        let numGradient = ctx.createLinearGradient(x, y - 12, x, y + 12);
+                        numGradient.addColorStop(0, "#00d4ff");
+                        numGradient.addColorStop(0.5, "#ffffff");
+                        numGradient.addColorStop(1, "#0096ff");
+                        
+                        ctx.fillStyle = numGradient;
+                        ctx.shadowColor = "#00d4ff";
+                        ctx.shadowBlur = 12;
+                        ctx.fillText(numbers[i], x, y);
+                    }
+                }
+
+                ctx.restore();
+            }
+
+            function drawFlameNumber(ctx, number, x, y){
+                let time = Date.now();
+                
+                // 多层火焰效果
+                // 外层橙红色火焰
+                ctx.save();
+                ctx.shadowColor = "#ff4500";
+                ctx.shadowBlur = 25 + Math.sin(time * 0.01) * 5;
+                
+                let flameGradient1 = ctx.createLinearGradient(x, y - 15, x, y + 15);
+                flameGradient1.addColorStop(0, "#ff8c00");
+                flameGradient1.addColorStop(0.3, "#ff4500");
+                flameGradient1.addColorStop(0.6, "#ff6347");
+                flameGradient1.addColorStop(1, "#ff0000");
+                
+                ctx.fillStyle = flameGradient1;
+                ctx.fillText(number, x + Math.sin(time * 0.005) * 0.5, y);
+                ctx.restore();
+
+                // 中层黄色火焰
+                ctx.save();
+                ctx.shadowColor = "#ffa500";
+                ctx.shadowBlur = 20 + Math.cos(time * 0.008) * 4;
+                
+                let flameGradient2 = ctx.createLinearGradient(x, y - 12, x, y + 12);
+                flameGradient2.addColorStop(0, "#ffff00");
+                flameGradient2.addColorStop(0.4, "#ffa500");
+                flameGradient2.addColorStop(0.7, "#ff8c00");
+                flameGradient2.addColorStop(1, "#ff4500");
+                
+                ctx.fillStyle = flameGradient2;
+                ctx.fillText(number, x + Math.cos(time * 0.006) * 0.5, y);
+                ctx.restore();
+
+                // 内层白色火焰核心
+                ctx.save();
+                ctx.shadowColor = "#ffff00";
+                ctx.shadowBlur = 15 + Math.sin(time * 0.012) * 3;
+                
+                let flameGradient3 = ctx.createLinearGradient(x, y - 10, x, y + 10);
+                flameGradient3.addColorStop(0, "#ffffff");
+                flameGradient3.addColorStop(0.5, "#ffffcc");
+                flameGradient3.addColorStop(1, "#ffff00");
+                
+                ctx.fillStyle = flameGradient3;
+                ctx.globalAlpha = 0.9;
+                ctx.fillText(number, x, y);
+                ctx.restore();
+
+                // 火焰粒子效果
+                ctx.save();
+                for(let i = 0; i < 3; i++){
+                    let particleX = x + Math.sin(time * 0.003 + i) * 8;
+                    let particleY = y - 15 + Math.cos(time * 0.004 + i) * 5;
+                    let particleSize = 2 + Math.sin(time * 0.01 + i) * 1;
+                    
+                    ctx.fillStyle = `rgba(255, ${100 + Math.random() * 155}, 0, ${0.3 + Math.random() * 0.4})`;
+                    ctx.beginPath();
+                    ctx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+
+
+
+
+
+
+        ccb_clock()
+
+
+        const ccb_world_clocks = [
+            { 
+                id: 'shanghai', 
+                timezone: 'Asia/Shanghai',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'sanfrancisco', 
+                timezone: 'America/Los_Angeles',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'newyork', 
+                timezone: 'America/New_York',
+                locale: 'zh-CN'
+            },
+            { 
+                id: 'milan', 
+                timezone: 'Europe/Rome',
+                locale: 'zh-CN'
+            }
+        ];
+
+        function ccb_world_updateClock(ccb_world_config) {
+            const ccb_world_now = new Date();
+            
+            // 获取指定时区的时间
+            const ccb_world_timeString = ccb_world_now.toLocaleTimeString(ccb_world_config.locale, {
+                timeZone: ccb_world_config.timezone,
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // 获取日期 - 格式：11月2日星期六
+            const ccb_world_date = new Date(ccb_world_now.toLocaleString('en-US', { timeZone: ccb_world_config.timezone }));
+            const ccb_world_month = ccb_world_date.getMonth() + 1;
+            const ccb_world_day = ccb_world_date.getDate();
+            const ccb_world_weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const ccb_world_weekday = ccb_world_weekdays[ccb_world_date.getDay()];
+            const ccb_world_dateString = `${ccb_world_month}月${ccb_world_day}日${ccb_world_weekday}`;
+
+            // 更新显示
+            document.getElementById(`time_${ccb_world_config.id}`).textContent = ccb_world_timeString;
+            document.getElementById(`date_${ccb_world_config.id}`).textContent = ccb_world_dateString;
+        }
+
+        function ccb_world_updateAllClocks() {
+            ccb_world_clocks.forEach(ccb_world_clock => ccb_world_updateClock(ccb_world_clock));
+        }
+
+        // 初始更新
+        ccb_world_updateAllClocks();
+
+        // 每秒更新一次
+        setInterval(ccb_world_updateAllClocks, 1000);
+        
+        // 初始更新
+        //updateAllClocks();
+
+        // 每秒更新一次
+        //setInterval(updateAllClocks, 1000);
+
+    </script>
+</body>
+</html>
