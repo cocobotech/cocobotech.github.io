@@ -1,18 +1,52 @@
 [
   {
-    "name": "Documentation",
+    "name": "Javascript",
     "children": [
       {
-        "name": "Getting Started",
-        "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web"
+        "name": "2D",
+        "children": [
+          {
+            "name": "D3JS",
+            "url": "https://d3js.org/"
+          },
+          {
+            "name": "echarts",
+            "url": "https://echarts.apache.org/examples/en/index.html#chart-type-bar"
+          },
+          {
+            "name": "plotly",
+            "url": "https://plotly.com/javascript/"
+          },
+          {
+            "name": "apexcharts",
+            "url": "https://apexcharts.com/apexgantt/demos/"
+          },
+          {
+            "name": "highcharts",
+            "url": "https://www.highcharts.com/demo"
+          },
+          {
+            "name": "google charts",
+            "url": "https://developers.google.com/chart/interactive/docs/gallery"
+          },
+           {
+            "name": "chartjs",
+            "url": "https://www.chartjs.org/docs/latest/samples/scales/stacked.html"
+          }
+        ]
       },
       {
-        "name": "HTML Guide",
-        "url": "https://developer.mozilla.org/en-US/docs/Web/HTML"
-      },
-      {
-        "name": "CSS Guide",
-        "url": "https://developer.mozilla.org/en-US/docs/Web/CSS"
+        "name": "3D",
+        "children": [
+          {
+            "name": "Three.js",
+            "url": "https://threejs.org/examples/#webgl_animation_keyframes"
+          },
+          {
+            "name": "echarts 3D",
+            "url": "https://echarts.apache.org/examples/en/index.html#chart-type-surface"
+          }
+        ]
       }
     ]
   },
