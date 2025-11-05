@@ -1,0 +1,58 @@
+[
+            {
+                name: "Documentation",
+                children: [
+                    {
+                        name: "Getting Started",
+                        url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web"
+                    },
+                    {
+                        name: "HTML Guide",
+                        url: "https://developer.mozilla.org/en-US/docs/Web/HTML"
+                    },
+                    {
+                        name: "CSS Guide",
+                        url: "https://developer.mozilla.org/en-US/docs/Web/CSS"
+                    }
+                ]
+            },
+            {
+                name: "Resources",
+                children: [
+                    {
+                        name: "Web APIs",
+                        children: [
+                            {
+                                name: "Fetch API",
+                                url: "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+                            },
+                            {
+                                name: "Canvas API",
+                                url: "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"
+                            }
+                        ]
+                    },
+                    {
+                        name: "JavaScript",
+                        url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+                    }
+                ]
+            },
+            {
+                name: "Tools",
+                children: [
+                    {
+                        name: "GitHub",
+                        url: "https://github.com"
+                    },
+                    {
+                        name: "Stack Overflow",
+                        url: "https://stackoverflow.com"
+                    },
+                    {
+                        name: "CodePen",
+                        url: "https://codepen.io"
+                    }
+                ]
+            }
+        ]
