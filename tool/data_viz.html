@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO data viz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px 30px;
+            border-bottom: 2px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 350px;
+            border-right: 2px solid #e0e0e0;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .right-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+        }
+
+        .tree {
+            list-style: none;
+        }
+
+        .tree ul {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .tree-item {
+            margin: 2px 0;
+        }
+
+        .tree-node {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .tree-node:hover {
+            background: #e8e8e8;
+        }
+
+        .tree-node.active {
+            background: #1967d2;
+            color: white;
+        }
+
+        .tree-node.active .toggle-icon,
+        .tree-node.active .folder-icon {
+            color: white;
+        }
+
+        .toggle-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+            color: #666;
+        }
+
+        .toggle-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .folder-icon {
+            font-size: 16px;
+        }
+
+        .children {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .children.expanded {
+            max-height: 3000px;
+        }
+
+        .tree-node-content {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .content-display {
+            display: none;
+        }
+
+        .content-display.active {
+            display: block;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #999;
+            padding: 100px 20px;
+        }
+
+        .welcome-message h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .welcome-message p {
+            font-size: 18px;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100vh - 140px);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .content-header h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .content-header .url-link {
+            color: #1967d2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .content-header .url-link:hover {
+            text-decoration: underline;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 COCOBO data viz</h1>
+        </div>
+        <div class="content-wrapper">
+            <div class="left-panel">
+                <ul class="tree" id="tree"></ul>
+            </div>
+            <div class="right-panel" id="rightPanel">
+                <div class="welcome-message">
+                    <h2>👈 Select an item</h2>
+                    <p>Click on any item in the tree to view its content</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration: URL to your JSON file
+        const JSON_URL = 'https://cocobotech.github.io/tool/data_visualization.json';
+
+        const rightPanel = document.getElementById('rightPanel');
+        let treeData = [];
+
+        function showContent(item) {
+            if (item.url) {
+                rightPanel.innerHTML = `
+                    <div class="content-display active">
+                        <div class="content-header">
+                            <h2>${item.name}</h2>
+                            <a href="${item.url}" target="_blank" class="url-link">🔗 ${item.url}</a>
+                        </div>
+                        <iframe src="${item.url}"></iframe>
+                    </div>
+                `;
+            }
+        }
+
+        function createTreeNode(item, level = 0) {
+            const li = document.createElement('li');
+            li.className = 'tree-item';
+
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'tree-node';
+
+            if (item.children) {
+                // Folder node with children
+                const toggleIcon = document.createElement('span');
+                toggleIcon.className = 'toggle-icon';
+                toggleIcon.innerHTML = '▶';
+                nodeDiv.appendChild(toggleIcon);
+
+                const folderIcon = document.createElement('span');
+                folderIcon.className = 'folder-icon';
+                folderIcon.innerHTML = '📁';
+                nodeDiv.appendChild(folderIcon);
+
+                const content = document.createElement('span');
+                content.className = 'tree-node-content';
+                content.textContent = item.name;
+                nodeDiv.appendChild(content);
+
+                // Create children container
+                const childrenUl = document.createElement('ul');
+                childrenUl.className = 'children';
+
+                item.children.forEach(child => {
+                    childrenUl.appendChild(createTreeNode(child, level + 1));
+                });
+
+                // Toggle functionality
+                nodeDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = childrenUl.classList.contains('expanded');
+                    
+                    if (isExpanded) {
+                        childrenUl.classList.remove('expanded');
+                        toggleIcon.classList.remove('expanded');
+                        folderIcon.innerHTML = '📁';
+                    } else {
+                        childrenUl.classList.add('expanded');
+                        toggleIcon.classList.add('expanded');
+                        folderIcon.innerHTML = '📂';
+                    }
+                });
+
+                li.appendChild(nodeDiv);
+                li.appendChild(childrenUl);
+            } else {
+                // Leaf node (file/link)
+                const fileIcon = document.createElement('span');
+                fileIcon.className = 'folder-icon';
+                fileIcon.innerHTML = item.url ? '🔗' : '📄';
+                nodeDiv.appendChild(fileIcon);
+
+                const content = document.createElement('span');
+                content.className = 'tree-node-content';
+                content.textContent = item.name;
+                nodeDiv.appendChild(content);
+
+                nodeDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active'));
+                    nodeDiv.classList.add('active');
+                    
+                    if (item.url) {
+                        showContent(item);
+                    }
+                });
+
+                li.appendChild(nodeDiv);
+            }
+
+            return li;
+        }
+
+        // Initialize tree from JSON file
+        async function loadTreeData() {
+            const treeContainer = document.getElementById('tree');
+            const loadingMessage = document.createElement('div');
+            loadingMessage.style.padding = '20px';
+            loadingMessage.style.color = '#666';
+            loadingMessage.textContent = 'Loading tree data...';
+            treeContainer.appendChild(loadingMessage);
+
+            try {
+                const response = await fetch(JSON_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                treeData = await response.json();
+                
+                // Clear loading message
+                treeContainer.innerHTML = '';
+                
+                // Build tree
+                treeData.forEach(item => {
+                    treeContainer.appendChild(createTreeNode(item));
+                });
+            } catch (error) {
+                console.error('Error loading tree data:', error);
+                treeContainer.innerHTML = `
+                    <div style="padding: 20px; color: #d32f2f;">
+                        <strong>Error loading data:</strong><br>
+                        ${error.message}<br><br>
+                        Please check:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>The JSON file URL is correct</li>
+                            <li>The server has CORS enabled</li>
+                            <li>The JSON file is accessible</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        // Load data on page load
+        loadTreeData();
+    </script>
+</body>
+</html>
