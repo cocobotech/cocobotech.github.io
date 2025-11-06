@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Graphing Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    #input-form { margin-bottom: 20px; }
+    label { display: block; margin: 10px 0 5px; }
+    input[type="text"], input[type="number"] { width: 300px; padding: 5px; }
+    button { padding: 8px 16px; }
+    #plot { width: 800px; height: 600px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <div id="input-form">
+    <label for="expression">Enter z = f(x, y) (e.g., sin(sqrt(x^2 + y^2))):</label>
+    <input type="text" id="expression" value="sin(sqrt(x^2 + y^3))">
+
+    <label for="range">Range for x and y (-range to +range):</label>
+    <input type="number" id="range" value="10" min="1" step="0.1">
+
+    <label for="resolution">Grid resolution (higher = smoother):</label>
+    <input type="number" id="resolution" value="50" min="10" max="200">
+
+    <button onclick="plotSurface()">Plot</button>
+  </div>
+  <div id="plot"></div>
+
+  <script>
+    function plotSurface() {
+      const exprInput = document.getElementById('expression').value;
+      const range = parseFloat(document.getElementById('range').value);
+      const res = parseInt(document.getElementById('resolution').value);
+
+      try {
+        // Parse expression with math.js
+        const parser = math.parser();
+        const node = math.parse(exprInput);
+
+        // Generate x and y arrays
+        const x = [], y = [], z = [];
+        const step = (2 * range) / (res - 1);
+        for (let i = 0; i < res; i++) {
+          const val = -range + i * step;
+          x.push(val);
+          y.push(val);
+          z.push(new Array(res));
+        }
+
+        // Evaluate z = f(x,y) for grid
+        for (let i = 0; i < res; i++) {
+          for (let j = 0; j < res; j++) {
+            parser.set('x', x[i]);
+            parser.set('y', y[j]);
+            z[i][j] = parser.evaluate(exprInput);
+          }
+        }
+
+        // Define trace for surface
+        const data = [{
+          x: x,
+          y: y,
+          z: z,
+          type: 'surface',
+          colorscale: 'Viridis',
+          contours: {
+            z: { show: true, usecolormap: true, highlightcolor: "#42f462", project: { z: true } }
+          }
+        }];
+
+        // Layout
+        const layout = {
+          title: `3D Surface: z = ${exprInput}`,
+          scene: {
+            xaxis: { title: 'X', range: [-range, range] },
+            yaxis: { title: 'Y', range: [-range, range] },
+            zaxis: { title: 'Z' },
+            camera: { eye: { x: 1.5, y: 1.5, z: 1 } }
+          },
+          autosize: true,
+          width: 800,
+          height: 600,
+          margin: { l: 65, r: 50, b: 65, t: 90 }
+        };
+
+        // Render interactive plot
+        Plotly.newPlot('plot', data, layout);
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Initial plot
+    plotSurface();
+  </script>
+</body>
+</html>
