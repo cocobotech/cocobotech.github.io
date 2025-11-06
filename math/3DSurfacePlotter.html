@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO 3D Surface Plotter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            gap: 0;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 10;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .equations-panel {
+            padding: 15px;
+        }
+        
+        .equation-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        
+        .equation-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .equation-item.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .equation-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .color-picker {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .equation-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .equation-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .delete-btn:hover {
+            background: #ee5a6f;
+        }
+        
+        .add-equation-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .add-equation-btn:hover {
+            background: #5568d3;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #1a1a2e;
+        }
+        
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .control-group {
+            margin-bottom: 12px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .control-group input[type="range"] {
+            width: 150px;
+        }
+        
+        .control-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        
+        .examples {
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .examples h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .example-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        
+        .example-btn:hover {
+            background: #f8f9ff;
+            border-color: #667eea;
+        }
+        
+        .help-text {
+            font-size: 11px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>COCOBO 3D Grapher</h1>
+                <p>Plot mathematical surfaces in 3D</p>
+            </div>
+            
+            <div class="equations-panel" id="equations-panel">
+                <!-- Equations will be added here -->
+            </div>
+            
+            <div style="padding: 15px;">
+                <button class="add-equation-btn" onclick="addEquation()">+ Add Equation</button>
+            </div>
+            
+            <div class="examples">
+                <h3>Example Surfaces</h3>
+                <button class="example-btn" onclick="loadExample('sin(sqrt(x^2 + y^2))')">Wave: sin(√(x² + y²))</button>
+                <button class="example-btn" onclick="loadExample('(x^2 - y^2)/5')">Saddle: (x² - y²)/5</button>
+                <button class="example-btn" onclick="loadExample('sin(x*x) * cos(y*y)')">Ripple: sin(x²)cos(y²)</button>
+                <button class="example-btn" onclick="loadExample('(x^2 + y^2)/6')">Paraboloid: (x² + y²)/6</button>
+                <button class="example-btn" onclick="loadExample('cos(x) * cos(y*y)')">Egg Crate: cos(x)cos(y²)</button>
+
+                <div class="help-text">
+                    <strong>Syntax:</strong> Use x and y as variables. Supported: +, -, *, /, ^, sin(), cos(), tan(), sqrt(), abs(), exp(), log()
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="canvas3d"></canvas>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Grid Resolution</label>
+                    <input type="range" id="resolution" min="20" max="100" value="50" step="5">
+                    <span id="resolution-value">50</span>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="show-axes" checked>
+                        Show Axes
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="show-grid" checked>
+                        Show Grid
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, controls;
+        let equations = [];
+        let meshes = [];
+        let axesHelper, gridHelper;
+        
+        const rangeMin = -5;
+        const rangeMax = 5;
+        
+        // Initialize Three.js scene
+        function initScene() {
+            const canvas = document.getElementById('canvas3d');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            camera = new THREE.PerspectiveCamera(
+                75,
+                canvas.clientWidth / canvas.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(8, 8, 8);
+            camera.lookAt(0, 0, 0);
+            
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 10);
+            scene.add(directionalLight);
+            
+            // Axes helper
+            axesHelper = new THREE.AxesHelper(6);
+            scene.add(axesHelper);
+            
+            // Grid helper
+            gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x222222);
+            scene.add(gridHelper);
+            
+            // Simple orbit controls
+            setupOrbitControls();
+            
+            animate();
+        }
+        
+        function setupOrbitControls() {
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let rotation = { x: 0.5, y: 0.5 };
+            let distance = 12;
+            
+            const canvas = renderer.domElement;
+            
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+                    
+                    rotation.y += deltaX * 0.01;
+                    rotation.x += deltaY * 0.01;
+                    
+                    rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.x));
+                    
+                    updateCameraPosition();
+                    
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                distance += e.deltaY * 0.01;
+                distance = Math.max(5, Math.min(30, distance));
+                updateCameraPosition();
+            });
+            
+            function updateCameraPosition() {
+                camera.position.x = distance * Math.cos(rotation.x) * Math.sin(rotation.y);
+                camera.position.y = distance * Math.sin(rotation.x);
+                camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
+                camera.lookAt(0, 0, 0);
+            }
+            
+            updateCameraPosition();
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        
+        // Math parser
+        function parseExpression(expr, x, y) {
+            try {
+                let exp = expr
+                    .replace(/\^/g, '**')
+                    .replace(/sqrt/g, 'Math.sqrt')
+                    .replace(/sin/g, 'Math.sin')
+                    .replace(/cos/g, 'Math.cos')
+                    .replace(/tan/g, 'Math.tan')
+                    .replace(/abs/g, 'Math.abs')
+                    .replace(/exp/g, 'Math.exp')
+                    .replace(/log/g, 'Math.log');
+                
+                return eval(exp);
+            } catch (e) {
+                return 0;
+            }
+        }
+        
+        function createSurface(equation, color, resolution = 50) {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            const indices = [];
+            const normals = [];
+            
+            const step = (rangeMax - rangeMin) / resolution;
+            
+            // Generate vertices
+            for (let i = 0; i <= resolution; i++) {
+                for (let j = 0; j <= resolution; j++) {
+                    const x = rangeMin + i * step;
+                    const y = rangeMin + j * step;
+                    const z = parseExpression(equation, x, y);
+                    
+                    vertices.push(x, z, y);
+                }
+            }
+            
+            // Generate indices
+            for (let i = 0; i < resolution; i++) {
+                for (let j = 0; j < resolution; j++) {
+                    const a = i * (resolution + 1) + j;
+                    const b = a + resolution + 1;
+                    
+                    indices.push(a, b, a + 1);
+                    indices.push(b, b + 1, a + 1);
+                }
+            }
+            
+            geometry.setIndex(indices);
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.computeVertexNormals();
+            
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+                shininess: 30,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const mesh = new THREE.Mesh(geometry, material);
+            return mesh;
+        }
+        
+        function updateGraphs() {
+            // Remove old meshes
+            meshes.forEach(mesh => scene.remove(mesh));
+            meshes = [];
+            
+            const resolution = parseInt(document.getElementById('resolution').value);
+            
+            // Create new meshes
+            equations.forEach(eq => {
+                if (eq.equation && eq.visible) {
+                    const mesh = createSurface(eq.equation, eq.color, resolution);
+                    scene.add(mesh);
+                    meshes.push(mesh);
+                }
+            });
+        }
+        
+        function addEquation(equation = '', color = null) {
+            const id = Date.now();
+            const randomColor = color || '#' + Math.floor(Math.random()*16777215).toString(16);
+            
+            equations.push({
+                id,
+                equation,
+                color: randomColor,
+                visible: true
+            });
+            
+            renderEquations();
+            updateGraphs();
+        }
+        
+        function deleteEquation(id) {
+            equations = equations.filter(eq => eq.id !== id);
+            renderEquations();
+            updateGraphs();
+        }
+        
+        function updateEquation(id, field, value) {
+            const eq = equations.find(e => e.id === id);
+            if (eq) {
+                eq[field] = value;
+                updateGraphs();
+            }
+        }
+        
+        function renderEquations() {
+            const panel = document.getElementById('equations-panel');
+            panel.innerHTML = equations.map(eq => `
+                <div class="equation-item">
+                    <div class="equation-header">
+                        <input type="color" class="color-picker" value="${eq.color}" 
+                               onchange="updateEquation(${eq.id}, 'color', this.value)">
+                        <input type="text" class="equation-input" 
+                               placeholder="z = f(x,y)" 
+                               value="${eq.equation}"
+                               oninput="updateEquation(${eq.id}, 'equation', this.value)">
+                        <button class="delete-btn" onclick="deleteEquation(${eq.id})">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function loadExample(equation) {
+            equations = [];
+            addEquation(equation, '#667eea');
+        }
+        
+        // Event listeners
+        document.getElementById('resolution').addEventListener('input', (e) => {
+            document.getElementById('resolution-value').textContent = e.target.value;
+            updateGraphs();
+        });
+        
+        document.getElementById('show-axes').addEventListener('change', (e) => {
+            axesHelper.visible = e.target.checked;
+        });
+        
+        document.getElementById('show-grid').addEventListener('change', (e) => {
+            gridHelper.visible = e.target.checked;
+        });
+        
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('canvas3d');
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        });
+        
+        // Initialize
+        initScene();
+        addEquation('sin(sqrt(x^2 + y^2))', '#667eea');
+    </script>
+</body>
+</html>
