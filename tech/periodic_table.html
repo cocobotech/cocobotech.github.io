@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元素周期表 - Periodic Table of Elements</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #0f172a, #581c87, #0f172a);
+            padding: 2rem;
+            overflow-x: auto;
+            color: white;
+            font-family: sans-serif;
+        }
+        .container {
+            max-width: 1280px;
+            margin: auto;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #06b6d4, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .perspective-container {
+            position: relative;
+            perspective: 1500px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(18, 65px);
+            grid-template-rows: repeat(7, 65px);
+            gap: 4px;
+            margin-bottom: 2rem;
+        }
+        .element {
+            position: relative;
+            width: 65px;
+            height: 65px;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+        }
+        .element:hover {
+            transform: scale(1.25);
+            z-index: 50;
+        }
+        .inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s;
+        }
+        .element:hover .inner {
+            box-shadow: 0 25px 50px -12px rgba(255,255,255,0.5);
+            transform: translateZ(20px);
+        }
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent);
+            opacity: 0.5;
+        }
+        .atomic {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 8px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.8);
+        }
+        .symbol {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        .name {
+            font-size: 7px;
+            color: rgba(255,255,255,0.7);
+        }
+        .nameCn {
+            font-size: 9px;
+            color: rgba(255,255,255,0.9);
+            margin-top: 2px;
+            font-weight: bold;
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: -64px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 50;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .element:hover .tooltip {
+            display: block;
+        }
+        .border-hover {
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 0.5rem;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .element:hover .border-hover {
+            opacity: 1;
+        }
+        .flex-container {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        /* Category colors */
+        .alkali .inner {
+            background: linear-gradient(to bottom right, #ef4444, #dc2626);
+        }
+        .alkaline .inner {
+            background: linear-gradient(to bottom right, #f97316, #ea580c);
+        }
+        .transition .inner {
+            background: linear-gradient(to bottom right, #ec4899, #db2777);
+        }
+        .post-transition .inner {
+            background: linear-gradient(to bottom right, #14b8a6, #0d9488);
+        }
+        .metalloid .inner {
+            background: linear-gradient(to bottom right, #22c55e, #16a34a);
+        }
+        .nonmetal .inner {
+            background: linear-gradient(to bottom right, #3b82f6, #2563eb);
+        }
+        .halogen .inner {
+            background: linear-gradient(to bottom right, #eab308, #ca8a04);
+        }
+        .noble-gas .inner {
+            background: linear-gradient(to bottom right, #a855f7, #9333ea);
+        }
+        .lanthanide .inner {
+            background: linear-gradient(to bottom right, #06b6d4, #0891b2);
+        }
+        .actinide .inner {
+            background: linear-gradient(to bottom right, #6366f1, #4f46e5);
+        }
+        /* Legend */
+        .legend {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+            font-size: 0.75rem;
+        }
+        @media (min-width: 768px) {
+            .legend {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .legend-swatch {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 0.25rem;
+        }
+        .legend-text {
+            color: rgba(255,255,255,0.8);
+        }
+        /* Sections */
+        .section {
+            margin-top: 3rem;
+            space-y: 0.5rem;
+        }
+        .section-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            margin-left: 0.5rem;
+        }
+        .actinides-label {
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       
+        <h2>⚛️ COCOBO-元素周期表-Periodic Table of Elements</h2>
+        <div class="perspective-container">
+            <div id="grid" class="grid"></div>
+            <div class="section">
+                <div class="section-label">镧系元素 / Lanthanides</div>
+                <div id="lanthanides" class="flex-container"></div>
+                <div class="section-label actinides-label">锕系元素 / Actinides</div>
+                <div id="actinides" class="flex-container"></div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #ef4444, #dc2626);"></div>
+                    <span class="legend-text">碱金属 Alkali</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #f97316, #ea580c);"></div>
+                    <span class="legend-text">碱土金属 Alkaline</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #ec4899, #db2777);"></div>
+                    <span class="legend-text">过渡金属 Transition</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #14b8a6, #0d9488);"></div>
+                    <span class="legend-text">其他金属 Post-transition</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #22c55e, #16a34a);"></div>
+                    <span class="legend-text">类金属 Metalloid</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #3b82f6, #2563eb);"></div>
+                    <span class="legend-text">非金属 Nonmetal</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #eab308, #ca8a04);"></div>
+                    <span class="legend-text">卤素 Halogen</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #a855f7, #9333ea);"></div>
+                    <span class="legend-text">惰性气体 Noble Gas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #06b6d4, #0891b2);"></div>
+                    <span class="legend-text">镧系 Lanthanide</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-swatch" style="background: linear-gradient(to bottom right, #6366f1, #4f46e5);"></div>
+                    <span class="legend-text">锕系 Actinide</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const elementsData = [
+            { symbol: 'H', name: 'Hydrogen', nameCn: '氢', number: 1, group: 1, period: 1, category: 'nonmetal' },
+            { symbol: 'He', name: 'Helium', nameCn: '氦', number: 2, group: 18, period: 1, category: 'noble-gas' },
+            { symbol: 'Li', name: 'Lithium', nameCn: '锂', number: 3, group: 1, period: 2, category: 'alkali' },
+            { symbol: 'Be', name: 'Beryllium', nameCn: '铍', number: 4, group: 2, period: 2, category: 'alkaline' },
+            { symbol: 'B', name: 'Boron', nameCn: '硼', number: 5, group: 13, period: 2, category: 'metalloid' },
+            { symbol: 'C', name: 'Carbon', nameCn: '碳', number: 6, group: 14, period: 2, category: 'nonmetal' },
+            { symbol: 'N', name: 'Nitrogen', nameCn: '氮', number: 7, group: 15, period: 2, category: 'nonmetal' },
+            { symbol: 'O', name: 'Oxygen', nameCn: '氧', number: 8, group: 16, period: 2, category: 'nonmetal' },
+            { symbol: 'F', name: 'Fluorine', nameCn: '氟', number: 9, group: 17, period: 2, category: 'halogen' },
+            { symbol: 'Ne', name: 'Neon', nameCn: '氖', number: 10, group: 18, period: 2, category: 'noble-gas' },
+            { symbol: 'Na', name: 'Sodium', nameCn: '钠', number: 11, group: 1, period: 3, category: 'alkali' },
+            { symbol: 'Mg', name: 'Magnesium', nameCn: '镁', number: 12, group: 2, period: 3, category: 'alkaline' },
+            { symbol: 'Al', name: 'Aluminum', nameCn: '铝', number: 13, group: 13, period: 3, category: 'post-transition' },
+            { symbol: 'Si', name: 'Silicon', nameCn: '硅', number: 14, group: 14, period: 3, category: 'metalloid' },
+            { symbol: 'P', name: 'Phosphorus', nameCn: '磷', number: 15, group: 15, period: 3, category: 'nonmetal' },
+            { symbol: 'S', name: 'Sulfur', nameCn: '硫', number: 16, group: 16, period: 3, category: 'nonmetal' },
+            { symbol: 'Cl', name: 'Chlorine', nameCn: '氯', number: 17, group: 17, period: 3, category: 'halogen' },
+            { symbol: 'Ar', name: 'Argon', nameCn: '氩', number: 18, group: 18, period: 3, category: 'noble-gas' },
+            { symbol: 'K', name: 'Potassium', nameCn: '钾', number: 19, group: 1, period: 4, category: 'alkali' },
+            { symbol: 'Ca', name: 'Calcium', nameCn: '钙', number: 20, group: 2, period: 4, category: 'alkaline' },
+            { symbol: 'Sc', name: 'Scandium', nameCn: '钪', number: 21, group: 3, period: 4, category: 'transition' },
+            { symbol: 'Ti', name: 'Titanium', nameCn: '钛', number: 22, group: 4, period: 4, category: 'transition' },
+            { symbol: 'V', name: 'Vanadium', nameCn: '钒', number: 23, group: 5, period: 4, category: 'transition' },
+            { symbol: 'Cr', name: 'Chromium', nameCn: '铬', number: 24, group: 6, period: 4, category: 'transition' },
+            { symbol: 'Mn', name: 'Manganese', nameCn: '锰', number: 25, group: 7, period: 4, category: 'transition' },
+            { symbol: 'Fe', name: 'Iron', nameCn: '铁', number: 26, group: 8, period: 4, category: 'transition' },
+            { symbol: 'Co', name: 'Cobalt', nameCn: '钴', number: 27, group: 9, period: 4, category: 'transition' },
+            { symbol: 'Ni', name: 'Nickel', nameCn: '镍', number: 28, group: 10, period: 4, category: 'transition' },
+            { symbol: 'Cu', name: 'Copper', nameCn: '铜', number: 29, group: 11, period: 4, category: 'transition' },
+            { symbol: 'Zn', name: 'Zinc', nameCn: '锌', number: 30, group: 12, period: 4, category: 'transition' },
+            { symbol: 'Ga', name: 'Gallium', nameCn: '镓', number: 31, group: 13, period: 4, category: 'post-transition' },
+            { symbol: 'Ge', name: 'Germanium', nameCn: '锗', number: 32, group: 14, period: 4, category: 'metalloid' },
+            { symbol: 'As', name: 'Arsenic', nameCn: '砷', number: 33, group: 15, period: 4, category: 'metalloid' },
+            { symbol: 'Se', name: 'Selenium', nameCn: '硒', number: 34, group: 16, period: 4, category: 'nonmetal' },
+            { symbol: 'Br', name: 'Bromine', nameCn: '溴', number: 35, group: 17, period: 4, category: 'halogen' },
+            { symbol: 'Kr', name: 'Krypton', nameCn: '氪', number: 36, group: 18, period: 4, category: 'noble-gas' },
+            { symbol: 'Rb', name: 'Rubidium', nameCn: '铷', number: 37, group: 1, period: 5, category: 'alkali' },
+            { symbol: 'Sr', name: 'Strontium', nameCn: '锶', number: 38, group: 2, period: 5, category: 'alkaline' },
+            { symbol: 'Y', name: 'Yttrium', nameCn: '钇', number: 39, group: 3, period: 5, category: 'transition' },
+            { symbol: 'Zr', name: 'Zirconium', nameCn: '锆', number: 40, group: 4, period: 5, category: 'transition' },
+            { symbol: 'Nb', name: 'Niobium', nameCn: '铌', number: 41, group: 5, period: 5, category: 'transition' },
+            { symbol: 'Mo', name: 'Molybdenum', nameCn: '钼', number: 42, group: 6, period: 5, category: 'transition' },
+            { symbol: 'Tc', name: 'Technetium', nameCn: '锝', number: 43, group: 7, period: 5, category: 'transition' },
+            { symbol: 'Ru', name: 'Ruthenium', nameCn: '钌', number: 44, group: 8, period: 5, category: 'transition' },
+            { symbol: 'Rh', name: 'Rhodium', nameCn: '铑', number: 45, group: 9, period: 5, category: 'transition' },
+            { symbol: 'Pd', name: 'Palladium', nameCn: '钯', number: 46, group: 10, period: 5, category: 'transition' },
+            { symbol: 'Ag', name: 'Silver', nameCn: '银', number: 47, group: 11, period: 5, category: 'transition' },
+            { symbol: 'Cd', name: 'Cadmium', nameCn: '镉', number: 48, group: 12, period: 5, category: 'transition' },
+            { symbol: 'In', name: 'Indium', nameCn: '铟', number: 49, group: 13, period: 5, category: 'post-transition' },
+            { symbol: 'Sn', name: 'Tin', nameCn: '锡', number: 50, group: 14, period: 5, category: 'post-transition' },
+            { symbol: 'Sb', name: 'Antimony', nameCn: '锑', number: 51, group: 15, period: 5, category: 'metalloid' },
+            { symbol: 'Te', name: 'Tellurium', nameCn: '碲', number: 52, group: 16, period: 5, category: 'metalloid' },
+            { symbol: 'I', name: 'Iodine', nameCn: '碘', number: 53, group: 17, period: 5, category: 'halogen' },
+            { symbol: 'Xe', name: 'Xenon', nameCn: '氙', number: 54, group: 18, period: 5, category: 'noble-gas' },
+            { symbol: 'Cs', name: 'Cesium', nameCn: '铯', number: 55, group: 1, period: 6, category: 'alkali' },
+            { symbol: 'Ba', name: 'Barium', nameCn: '钡', number: 56, group: 2, period: 6, category: 'alkaline' },
+            { symbol: 'La', name: 'Lanthanum', nameCn: '镧', number: 57, group: 3, period: 6, category: 'lanthanide' },
+            { symbol: 'Hf', name: 'Hafnium', nameCn: '铪', number: 72, group: 4, period: 6, category: 'transition' },
+            { symbol: 'Ta', name: 'Tantalum', nameCn: '钽', number: 73, group: 5, period: 6, category: 'transition' },
+            { symbol: 'W', name: 'Tungsten', nameCn: '钨', number: 74, group: 6, period: 6, category: 'transition' },
+            { symbol: 'Re', name: 'Rhenium', nameCn: '铼', number: 75, group: 7, period: 6, category: 'transition' },
+            { symbol: 'Os', name: 'Osmium', nameCn: '锇', number: 76, group: 8, period: 6, category: 'transition' },
+            { symbol: 'Ir', name: 'Iridium', nameCn: '铱', number: 77, group: 9, period: 6, category: 'transition' },
+            { symbol: 'Pt', name: 'Platinum', nameCn: '铂', number: 78, group: 10, period: 6, category: 'transition' },
+            { symbol: 'Au', name: 'Gold', nameCn: '金', number: 79, group: 11, period: 6, category: 'transition' },
+            { symbol: 'Hg', name: 'Mercury', nameCn: '汞', number: 80, group: 12, period: 6, category: 'transition' },
+            { symbol: 'Tl', name: 'Thallium', nameCn: '铊', number: 81, group: 13, period: 6, category: 'post-transition' },
+            { symbol: 'Pb', name: 'Lead', nameCn: '铅', number: 82, group: 14, period: 6, category: 'post-transition' },
+            { symbol: 'Bi', name: 'Bismuth', nameCn: '铋', number: 83, group: 15, period: 6, category: 'post-transition' },
+            { symbol: 'Po', name: 'Polonium', nameCn: '钋', number: 84, group: 16, period: 6, category: 'post-transition' },
+            { symbol: 'At', name: 'Astatine', nameCn: '砹', number: 85, group: 17, period: 6, category: 'halogen' },
+            { symbol: 'Rn', name: 'Radon', nameCn: '氡', number: 86, group: 18, period: 6, category: 'noble-gas' },
+            { symbol: 'Fr', name: 'Francium', nameCn: '钫', number: 87, group: 1, period: 7, category: 'alkali' },
+            { symbol: 'Ra', name: 'Radium', nameCn: '镭', number: 88, group: 2, period: 7, category: 'alkaline' },
+            { symbol: 'Ac', name: 'Actinium', nameCn: '锕', number: 89, group: 3, period: 7, category: 'actinide' },
+            { symbol: 'Rf', name: 'Rutherfordium', nameCn: '𬬻', number: 104, group: 4, period: 7, category: 'transition' },
+            { symbol: 'Db', name: 'Dubnium', nameCn: '𬭊', number: 105, group: 5, period: 7, category: 'transition' },
+            { symbol: 'Sg', name: 'Seaborgium', nameCn: '𬭳', number: 106, group: 6, period: 7, category: 'transition' },
+            { symbol: 'Bh', name: 'Bohrium', nameCn: '𬭛', number: 107, group: 7, period: 7, category: 'transition' },
+            { symbol: 'Hs', name: 'Hassium', nameCn: '𬭶', number: 108, group: 8, period: 7, category: 'transition' },
+            { symbol: 'Mt', name: 'Meitnerium', nameCn: '鿏', number: 109, group: 9, period: 7, category: 'transition' },
+        ];
+        const lanthanidesData = [
+            { symbol: 'Ce', name: 'Cerium', nameCn: '铈', number: 58, category: 'lanthanide' },
+            { symbol: 'Pr', name: 'Praseodymium', nameCn: '镨', number: 59, category: 'lanthanide' },
+            { symbol: 'Nd', name: 'Neodymium', nameCn: '钕', number: 60, category: 'lanthanide' },
+            { symbol: 'Pm', name: 'Promethium', nameCn: '钷', number: 61, category: 'lanthanide' },
+            { symbol: 'Sm', name: 'Samarium', nameCn: '钐', number: 62, category: 'lanthanide' },
+            { symbol: 'Eu', name: 'Europium', nameCn: '铕', number: 63, category: 'lanthanide' },
+            { symbol: 'Gd', name: 'Gadolinium', nameCn: '钆', number: 64, category: 'lanthanide' },
+            { symbol: 'Tb', name: 'Terbium', nameCn: '铽', number: 65, category: 'lanthanide' },
+            { symbol: 'Dy', name: 'Dysprosium', nameCn: '镝', number: 66, category: 'lanthanide' },
+            { symbol: 'Ho', name: 'Holmium', nameCn: '钬', number: 67, category: 'lanthanide' },
+            { symbol: 'Er', name: 'Erbium', nameCn: '铒', number: 68, category: 'lanthanide' },
+            { symbol: 'Tm', name: 'Thulium', nameCn: '铥', number: 69, category: 'lanthanide' },
+            { symbol: 'Yb', name: 'Ytterbium', nameCn: '镱', number: 70, category: 'lanthanide' },
+            { symbol: 'Lu', name: 'Lutetium', nameCn: '镥', number: 71, category: 'lanthanide' },
+        ];
+        const actinidesData = [
+            { symbol: 'Th', name: 'Thorium', nameCn: '钍', number: 90, category: 'actinide' },
+            { symbol: 'Pa', name: 'Protactinium', nameCn: '镤', number: 91, category: 'actinide' },
+            { symbol: 'U', name: 'Uranium', nameCn: '铀', number: 92, category: 'actinide' },
+            { symbol: 'Np', name: 'Neptunium', nameCn: '镎', number: 93, category: 'actinide' },
+            { symbol: 'Pu', name: 'Plutonium', nameCn: '钚', number: 94, category: 'actinide' },
+            { symbol: 'Am', name: 'Americium', nameCn: '镅', number: 95, category: 'actinide' },
+            { symbol: 'Cm', name: 'Curium', nameCn: '锔', number: 96, category: 'actinide' },
+            { symbol: 'Bk', name: 'Berkelium', nameCn: '锫', number: 97, category: 'actinide' },
+            { symbol: 'Cf', name: 'Californium', nameCn: '锎', number: 98, category: 'actinide' },
+            { symbol: 'Es', name: 'Einsteinium', nameCn: '锿', number: 99, category: 'actinide' },
+            { symbol: 'Fm', name: 'Fermium', nameCn: '镄', number: 100, category: 'actinide' },
+            { symbol: 'Md', name: 'Mendelevium', nameCn: '钔', number: 101, category: 'actinide' },
+            { symbol: 'No', name: 'Nobelium', nameCn: '锘', number: 102, category: 'actinide' },
+            { symbol: 'Lr', name: 'Lawrencium', nameCn: '铹', number: 103, category: 'actinide' },
+        ];
+
+        function createElement(el) {
+            const div = document.createElement('div');
+            div.className = `element ${el.category}`;
+            if (el.group) div.style.gridColumn = el.group;
+            if (el.period) div.style.gridRow = el.period;
+            div.innerHTML = `
+                <div class="inner">
+                    <div class="overlay"></div>
+                    <div class="atomic">${el.number}</div>
+                    <div class="symbol">${el.symbol}</div>
+                    <div class="name">${el.name}</div>
+                    <div class="nameCn">${el.nameCn}</div>
+                    <div class="border-hover"></div>
+                </div>
+                <div class="tooltip">
+                    <div style="font-weight: bold;">${el.name}</div>
+                    <div style="color: rgba(255,255,255,0.8);">${el.nameCn}</div>
+                </div>
+            `;
+            div.addEventListener('mouseenter', () => speakElement(el.name));
+            return div;
+        }
+
+        function speakElement(name) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(name);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        const grid = document.getElementById('grid');
+        elementsData.forEach(el => grid.appendChild(createElement(el)));
+
+        const lanthanides = document.getElementById('lanthanides');
+        lanthanidesData.forEach(el => lanthanides.appendChild(createElement(el)));
+
+        const actinides = document.getElementById('actinides');
+        actinidesData.forEach(el => actinides.appendChild(createElement(el)));
+    </script>
+</body>
+</html>
