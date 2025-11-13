@@ -1,5 +1,10 @@
 
-    // --- 动态背景动画的入口函数 (相当于 js1.js 的主要功能) ---
+function sayHello() {
+  alert("✅ JS Loaded Successfully!\nHello from GitHub Pages 🚀");
+  document.body.style.background = "#" + Math.floor(Math.random() * 16777215).toString(16);
+}    
+
+// --- 动态背景动画的入口函数 (相当于 js1.js 的主要功能) ---
     // 接受 canvasId 参数，实现动态绑定，避免硬编码 ID
     function startBackgroundAnimation(canvasId) {
         const canvas = document.getElementById(canvasId);
