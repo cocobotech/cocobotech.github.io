@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO Blender 资源中心</title>
+    <style>
+        /* --- 颜色变量定义 --- */
+        :root {
+            --color-bg-deep: #0f0c29;       /* 深黑背景 */
+            --color-accent-cyan: #00FFFF;   /* 电光青色强调色 */
+            --color-card-bg-dark: #151535;  /* 卡片背景 */
+            --color-text-light: #F0F8FF;    /* 亮白文本 */
+            --color-text-faded: #A0AEC0;    /* 柔和的次要文本 */
+            --spacing-xs: 0.75rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+        }
+
+        /* --- 全局和主体样式 --- */
+        body {
+            padding: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--color-bg-deep), #302b63, #24243e);
+            font-family: 'Inter', sans-serif;
+            color: var(--color-text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden; /* 防止body自身出现滚动条 */
+        }
+
+        /* 响应式 padding */
+        @media (min-width: 540px) {
+            body {
+                padding: var(--spacing-md);
+            }
+        }
+
+        /* --- 标题发光效果 --- */
+        .neon-glow {
+            text-shadow: 0 0 10px var(--color-accent-cyan), 0 0 20px var(--color-accent-cyan);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--color-accent-cyan); }
+            to { text-shadow: 0 0 20px var(--color-accent-cyan), 0 0 30px #007bff; }
+        }
+
+        /* --- 卡片和边框光效 --- */
+        .card-border-glow {
+            border-radius: 0.75rem;
+            background-color: rgba(21, 21, 53, 0.7);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            
+            box-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.2), 
+                inset 0 0 5px rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .card-border-glow:hover {
+            border-color: var(--color-accent-cyan);
+            box-shadow: 
+                0 0 15px var(--color-accent-cyan), 
+                inset 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        /* --- Header 样式 --- */
+        header {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            position: relative;
+            z-index: 10;
+        }
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+        }
+        header p {
+            font-size: 1.25rem;
+            margin-top: 1rem;
+            color: var(--color-accent-cyan);
+        }
+        @media (min-width: 440px) {
+            header h1 {
+                font-size: 3rem;
+            }
+        }
+
+        /* --- Main Content Fixed Row Layout --- 
+        使用 Flexbox 强制所有卡片在一行，并启用水平滚动。
+        */
+        .resource-grid {
+            display: flex; /* 强制单行 */
+            gap: 1.5rem; /* 卡片间距 */
+            max-width: 100%; /* 使用全部可用宽度 */
+            padding-bottom: 1.5rem; /* 为滚动条留出空间 */
+            overflow-x: auto; /* 关键：启用水平滚动 */
+            -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+            position: relative;
+            z-index: 10;
+            /* 居中网格容器，但内容仍可滚动 */
+            margin-left: auto; 
+            margin-right: auto;
+        }
+        
+        /* 隐藏滚动条但保留功能 (可选优化) */
+        .resource-grid::-webkit-scrollbar {
+            height: 0.5rem;
+            background-color: transparent;
+        }
+        .resource-grid::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 255, 255, 0.4);
+            border-radius: 9999px;
+        }
+
+        /* --- 类别卡片样式 --- */
+        .category-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* 关键：设置最小宽度并防止收缩 */
+            min-width: 230px; /* 确保卡片内容可读 */
+            max-width: 230px; /* 确保卡片内容可读 */
+            flex-shrink: 0; /* 强制卡片不收缩，确保并排 */
+        }
+        .category-card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-accent-cyan);
+        }
+        .category-card .icon {
+            margin-right: 0.75rem;
+            font-size: 1.875rem;
+        }
+        .category-card .summary {
+            font-size: 0.875rem;
+            color: var(--color-text-faded);
+            margin-bottom: 1.5rem;
+        }
+        .category-card .header-content {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(160, 174, 192, 0.2);
+        }
+        .category-card .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex-grow: 1;
+        }
+
+        /* --- 链接项样式 --- */
+        .link-item {
+            padding: var(--spacing-xs);
+            border-radius: 0.5rem;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            background-color: var(--color-bg-deep);
+        }
+
+        .link-item:hover {
+            border-color: var(--color-accent-cyan);
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+        }
+
+        .link-item a {
+            text-decoration: none;
+            display: block;
+        }
+        .link-item h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-text-light);
+            transition: color 0.2s;
+        }
+        .link-item a:hover h3 {
+            color: var(--color-accent-cyan);
+        }
+        .link-item p {
+            font-size: 0.75rem;
+            color: var(--color-text-faded);
+            margin-top: 0.25rem;
+        }
+        .link-item .access-info {
+            color: var(--color-accent-cyan);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            font-family: monospace;
+        }
+        .link-item .access-info:hover {
+            text-decoration: underline;
+        }
+        .link-item svg {
+            margin-left: 0.25rem;
+            width: 0.75rem;
+            height: 0.75rem;
+        }
+
+
+        /* --- Footer 样式 --- */
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--color-text-faded);
+            font-size: 0.75rem;
+            padding: var(--spacing-sm);
+            border-top: 1px solid var(--color-card-bg-dark);
+            max-width: 80rem;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- 粒子背景 Canvas 样式 --- */
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <!-- 背景 Canvas 元素 -->
+    <canvas id="bg"></canvas>
+
+    <!-- Header 标题区 (高科技感) -->
+    <header class="card-border-glow">
+        <h1 class="neon-glow">
+            COCOBO BLENDER 资源中心
+        </h1>
+        <p>
+            // COCOBO-TECH-STUDIO //
+        </p>
+    </header>
+
+    <!-- Main Content Grid 主要内容网格 -->
+    <!-- 注意：这里将强制所有内容水平排列，并启用滚动条 -->
+    <main id="resourceGrid" class="resource-grid">
+        <!-- 资源卡片将通过 JavaScript 注入到这里 -->
+    </main>
+    
+    <!-- Footer 脚注 -->
+    <footer>
+        <p>COCOBO-TECH BLENDER</p>
+    </footer>
+
+    <script>
+        // --- 核心数据结构：Blender 资源列表 ---
+        const blenderResources = [
+            {
+                category: "官方核心资源",
+                icon: "📚",
+                summary: "官方手册、下载与开发信息。",
+                items: [
+                    { title: "Blender 官方网站", description: "下载最新版本，了解基金会新闻。", url: "https://www.blender.org/" },
+                    { title: "Blender 手册 (Manual)", description: "官方文档，涵盖所有工具和功能。", url: "https://docs.blender.org/manual/en/latest/" },
+                    { title: "Blender 开发者博客", description: "获取最新的开发更新和功能路线图。", url: "https://code.blender.org/" },
+                    { title: "release_notes", description: "release_notes", url: "https://developer.blender.org/docs/release_notes/5.0/" },
+                ]
+            },
+            {
+                category: "学习教程",
+                icon: "💡",
+                summary: "知识包下载：从基础甜甜圈到高级渲染技术。",
+                items: [
+                    { title: "Blender Guru (Donut)", description: "经典的甜甜圈教程，新手必经之路。", url: "https://www.blenderguru.com/tutorials/blender-beginner-tutorial-series-part-1" },
+                    { title: "Grant Abbitt 频道", description: "专注于游戏资产和环境艺术的快速教程。", url: "https://www.youtube.com/@GrantAbbitt" },
+                    { title: "Default Cube (Poliigon)", description: "讲解高级材质、渲染和工作流程。", url: "https://www.youtube.com/@PoliigonOfficial" },
+                ]
+            },
+            {
+                category: "社区与问答",
+                icon: "💬",
+                summary: "协作网络：技术交流、故障排除与作品展示平台。",
+                items: [
+                    { title: "Blender Artists Forum", description: "最老牌的 Blender 社区，作品展示和技术交流。", url: "https://blenderartists.org/" },
+                    { title: "Reddit r/blender", description: "活跃的 Reddit 社区，分享酷炫渲染图和快速提问。", url: "https://www.reddit.com/r/blender/" },
+                    { title: "Blender Stack Exchange", description: "针对具体技术问题的问答平台。", url: "https://blender.stackexchange.com/" },
+                ]
+            },
+            {
+                category: "资产",
+                icon: "📦",
+                summary: "模块商店：获取高质量模型、纹理和工作流增效工具。",
+                items: [
+                    { title: "Blender Market", description: "最大的 Blender 专用插件和资产商店。", url: "https://blendermarket.com/" },
+                    { title: "Poly Haven (HDRI/Texture)", description: "高质量、免费的 HDRIs、纹理和模型。", url: "https://polyhaven.com/" },
+                    { title: "Sketchfab", description: "发现和分享 3D 模型，许多可用于 Blender。", url: "https://sketchfab.com/" },
+                ]
+            },
+            {
+                category: "渲染器与引擎",
+                icon: "✨",
+                summary: "计算核心：外部渲染工具和游戏引擎集成。",
+                items: [
+                    { title: "Octane Render", description: "流行的 GPU 路径追踪渲染器插件。", url: "https://home.otoy.com/render/octane-render/" },
+                    { title: "LuxCoreRender", description: "基于物理的开源渲染器。", url: "https://luxcorerender.org/" },
+                    { title: "Unreal Engine Bridge", description: "将 Blender 模型导出到虚幻引擎的工具。", url: "https://www.unrealengine.com/en-US/blender" },
+                ]
+            },
+            {
+                category: "ADDONS",
+                icon: "🛠️",
+                summary: "python codes",
+                items: [
+                    { title: "animation_nodes", description: "Node based visual scripting system", url: "https://github.com/JacquesLucke/animation_nodes" },
+                    { title: "sverchok", description: "sverchok", url: "https://github.com/nortikin/sverchok" },
+                    { title: "ComfyUI-BlenderAI", description: "ComfyUI-BlenderAI", url: "https://github.com/AIGODLIKE/ComfyUI-BlenderAI-node" },
+                ]
+            }
+        ];
+
+        /**
+         * 根据数据结构动态渲染 HTML 资源卡片。
+         */
+        function renderResources() {
+            const grid = document.getElementById('resourceGrid');
+            let htmlContent = '';
+
+            blenderResources.forEach(resource => {
+                let categoryHtml = `
+                    <div class="category-card card-border-glow">
+                        <div class="header-content">
+                            <span class="icon">${resource.icon}</span>
+                            <h2>${resource.category}</h2>
+                        </div>
+                        <p class="summary">${resource.summary}</p>
+                        
+                        <div class="link-list">
+                `;
+
+                resource.items.forEach(item => {
+                    categoryHtml += `
+                        <div class="link-item">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer">
+                                <h3>${item.title}</h3>
+                                <p>${item.description}</p>
+                                <span class="access-info">
+                                    [link] 
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="15 3 21 3 21 9"></polyline><polyline points="10 14 21 3"></polyline><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </div>
+                    `;
+                });
+
+                categoryHtml += `
+                        </div>
+                    </div>
+                `;
+                
+                htmlContent += categoryHtml;
+            });
+
+            grid.innerHTML = htmlContent;
+        }
+
+        // --- 粒子背景动画逻辑 (保持不变) ---
+        const canvas = document.getElementById('bg');
+        const ctx = canvas.getContext('2d');
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 5 + 1;
+                this.speedX = Math.random() * 1.5 - 0.75; 
+                this.speedY = Math.random() * 1.5 - 0.75; 
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.05; 
+            }
+            draw() {
+                ctx.fillStyle = '#00ffff'; 
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        let particles = [];
+        function animateParticles() {
+            ctx.fillStyle = 'rgba(15, 12, 41, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height); 
+
+            if (particles.length < 50) particles.push(new Particle()); 
+            
+            particles.forEach((p, i) => {
+                p.update();
+                p.draw();
+                if (p.size <= 0.2 || p.x < -10 || p.x > canvas.width + 10 || p.y > canvas.height + 10) {
+                    particles.splice(i, 1);
+                }
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        // 统一初始化所有功能
+        window.onload = function() {
+            // 1. 渲染主要内容
+            renderResources(); 
+            
+            // 2. 初始化 Canvas 尺寸
+            const setCanvasSize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            setCanvasSize();
+
+            // 3. 启动粒子动画
+            animateParticles();
+
+            // 4. 响应窗口尺寸变化
+            window.addEventListener('resize', setCanvasSize);
+        };
+    </script>
+</body>
+</html>
