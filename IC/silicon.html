@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D 硅晶体结构模拟器 (Three.js)</title>
+<style>
+  body { margin: 0; overflow: hidden; background-color: #111; }
+  canvas { display: block; }
+  #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+  }
+  #controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 101;
+      background: rgba(0,0,0,0.45);
+      padding: 8px;
+      border-radius: 6px;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+  button {
+      background: #2563eb;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      margin: 5px 6px 0 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+  }
+  button:hover { background: #1e40af; }
+  .control-row { margin-top: 8px; display:flex; align-items:center; gap:8px; }
+  input[type=range] { width: 160px; }
+  .label { font-size:13px; color:#ddd; }
+</style>
+</head>
+<body>
+  <div id="info">
+      <h3>硅 (Silicon) 晶体结构</h3>
+      <p>钻石立方晶格 (Diamond Cubic)</p>
+      
+  </div>
+
+  <div id="controls">
+    <div>
+      <button id="btn100">(100)</button>
+      <button id="btn110">(110)</button>
+      <button id="btn111">(111)</button>
+    </div>
+    <div class="control-row">
+      <span class="label">光强:</span>
+      <input id="lightSlider" type="range" min="0" max="2" step="0.01" value="1">
+      <span id="lightValue" class="label">1.00</span>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    let scene, camera, renderer, controls, center;
+    let ambientLight, hemiLight;
+    const ATOM_RADIUS = 0.4;
+    const BOND_RADIUS = 0.1;
+    const UNIT_CELL_SIZE = 4;
+
+    const SI_COLOR = 0x544e52;  //SI_COLOR = 0x5a5a5a;
+
+    // 生成硅原子位置 (3x3x3)
+    function generateSiliconAtoms() {
+      const atoms = [];
+      const fractionalCoords = [
+          [0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5],
+          [0.25, 0.25, 0.25], [0.75, 0.75, 0.25], [0.75, 0.25, 0.75], [0.25, 0.75, 0.75]
+      ];
+      const N = 3; // 3x3x3
+      for (let i = 0; i < N; i++) {
+          for (let j = 0; j < N; j++) {
+              for (let k = 0; k < N; k++) {
+                  fractionalCoords.forEach(f => {
+                      atoms.push(new THREE.Vector3(
+                          (f[0] + i) * UNIT_CELL_SIZE,
+                          (f[1] + j) * UNIT_CELL_SIZE,
+                          (f[2] + k) * UNIT_CELL_SIZE
+                      ));
+                  });
+              }
+          }
+      }
+      return atoms;
+    }
+
+    // 创建原子
+    function createAtoms(atomPositions) {
+      const material = new THREE.MeshStandardMaterial({
+        color: SI_COLOR,
+        roughness: 0.4,
+        metalness: 0.8
+      });
+      const geometry = new THREE.SphereGeometry(ATOM_RADIUS, 32, 32);
+      atomPositions.forEach(pos => {
+        const atom = new THREE.Mesh(geometry, material);
+        atom.position.copy(pos);
+        scene.add(atom);
+      });
+    }
+
+    // 创建共价键（chrome-like，稍微增加粗糙度）
+    function createBond(start, end) {
+      const direction = new THREE.Vector3().subVectors(end, start);
+      const length = direction.length();
+      const bondGeometry = new THREE.CylinderGeometry(BOND_RADIUS, BOND_RADIUS, length, 16);
+      const bondMaterial = new THREE.MeshStandardMaterial({
+        color: 0xccffcc,
+        metalness: 1.0,
+        roughness: 0.3 // 略微增加粗糙度，使反光更自然
+      });
+      const bond = new THREE.Mesh(bondGeometry, bondMaterial);
+      bond.position.addVectors(start, end).divideScalar(2);
+      bond.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+      scene.add(bond);
+    }
+
+    // 自动生成键
+    function createBonds(atomPositions) {
+      const bondLengthSquared = (Math.sqrt(3) / 4 * UNIT_CELL_SIZE) ** 2;
+      const tolerance = 0.1;
+      for (let i = 0; i < atomPositions.length; i++) {
+          for (let j = i + 1; j < atomPositions.length; j++) {
+              const distSq = atomPositions[i].distanceToSquared(atomPositions[j]);
+              if (Math.abs(distSq - bondLengthSquared) < tolerance) {
+                  createBond(atomPositions[i], atomPositions[j]);
+              }
+          }
+      }
+    }
+
+    // 初始化 scene / camera / lights / controls
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x111111);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.physicallyCorrectLights = true;
+      document.body.appendChild(renderer.domElement);
+
+      const totalSize = UNIT_CELL_SIZE * 3;
+      center = new THREE.Vector3(totalSize / 2, totalSize / 2, totalSize / 2);
+
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+      camera.position.set(center.x + 15, center.y + 10, center.z + 15);
+
+      ambientLight = new THREE.AmbientLight(0xffffff, 1.0); // 默认强度 1.0
+      hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 1.0); // 默认强度 1.0
+      hemiLight.position.set(0, 1, 0);
+
+      const dir = new THREE.DirectionalLight(0xffffff, 2.0);
+      dir.position.set(10, 15, 10);
+      scene.add(ambientLight, hemiLight, dir);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.target.copy(center);
+      controls.update();
+
+      const atoms = generateSiliconAtoms();
+      createAtoms(atoms);
+      createBonds(atoms);
+
+      animate();
+    }
+
+    // 平滑旋转相机到指定法向（使晶面正对屏幕）
+    function smoothCameraTo(normalVec) {
+      const distance = Math.max(12, UNIT_CELL_SIZE * 3.5);
+      const targetPos = new THREE.Vector3(
+          center.x + normalVec.x * distance,
+          center.y + normalVec.y * distance,
+          center.z + normalVec.z * distance
+      );
+
+      let frame = 0;
+      const totalFrames = 60;
+      const startPos = camera.position.clone();
+
+      function animateMove() {
+        frame++;
+        const t = frame / totalFrames;
+        camera.position.lerpVectors(startPos, targetPos, t);
+        controls.target.copy(center);
+        controls.update();
+        if (frame < totalFrames) requestAnimationFrame(animateMove);
+      }
+      animateMove();
+    }
+
+    // 显示晶面（在中心位置放一透明平面），并使其法向朝向摄像机
+    let planeGroup = new THREE.Group();
+    function clearPlanes() {
+      while (planeGroup.children.length > 0) planeGroup.remove(planeGroup.children[0]);
+    }
+
+    function showPlane(type) {
+      clearPlanes();
+      const size = UNIT_CELL_SIZE * 3;
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x00ffff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.25
+      });
+      let plane, normal;
+      if (type === '100') {
+        plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size), material);
+        plane.rotation.y = Math.PI / 2;
+        plane.position.copy(center);
+        normal = new THREE.Vector3(1, 0, 0);
+      } else if (type === '110') {
+        plane = new THREE.Mesh(new THREE.PlaneGeometry(size * 1.2, size * 1.2), material);
+        // rotate to have (1,1,0) as normal
+        plane.rotation.z = Math.PI / 4;
+        plane.position.copy(center);
+        normal = new THREE.Vector3(1, 1, 0).normalize();
+      } else if (type === '111') {
+        plane = new THREE.Mesh(new THREE.PlaneGeometry(size * 1.2, size * 1.2), material);
+        // align plane normal to (1,1,1)
+        // one way: rotate so that plane normal ~ (1,1,1)
+        const n = new THREE.Vector3(1,1,1).normalize();
+        // build quaternion rotating Z axis to n, then rotate plane so its normal matches n
+        const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1), n);
+        plane.applyQuaternion(q);
+        plane.position.copy(center);
+        normal = n;
+      }
+      planeGroup.add(plane);
+
+      // add to scene if not added
+      if (!scene.getObjectByName('planeGroup')) {
+        planeGroup.name = 'planeGroup';
+        scene.add(planeGroup);
+      }
+
+      // move camera to face the plane normal
+      smoothCameraTo(normal);
+    }
+
+    // 渲染循环
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // 光强滑杆事件绑定（初始化后）
+    function setupUI() {
+      const s = document.getElementById('lightSlider');
+      const v = document.getElementById('lightValue');
+      // initialize display
+      v.textContent = parseFloat(s.value).toFixed(2);
+      s.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        ambientLight.intensity = val;
+        hemiLight.intensity = val;
+        v.textContent = val.toFixed(2);
+      });
+
+      document.getElementById('btn100').addEventListener('click', () => showPlane('100'));
+      document.getElementById('btn110').addEventListener('click', () => showPlane('110'));
+      document.getElementById('btn111').addEventListener('click', () => showPlane('111'));
+    }
+
+    // 启动
+    window.addEventListener('DOMContentLoaded', () => {
+      init();
+      setupUI();
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
