@@ -27,6 +27,18 @@
       transform: scale(1.1);
       box-shadow: 0 0 20px #00b4ff;
     }
+
+     /* --- 粒子背景 Canvas 样式 --- */
+        #bg_animation_wave1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            pointer-events: none;
+            /* 确保 canvas 覆盖整个视口 */
+            width: 100vw;
+            height: 100vh;
+        }
   </style>
 </head>
 <body>
