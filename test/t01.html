@@ -1,13 +1,40 @@
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Pages JS Test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #0b0b0b;
+      color: white;
+      text-align: center;
+      padding-top: 40px;
+    }
+    button {
+      background: #00b4ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #00b4ff;
+    }
+  </style>
 </head>
-
 <body>
+  <h1>🎯 GitHub JS Test</h1>
+  <p>If the button below works, JS is loaded correctly.</p>
+  <button onclick="sayHello()">Click me!</button>
 
-  <canvas id="bg_animation_wave1"></canvas>
-
-
-    <script src="../web/js/bg_animation1.js"></script>
+  <!-- You can use relative path -->
+  <script src="test.js"></script>
 </body>
 </html>
