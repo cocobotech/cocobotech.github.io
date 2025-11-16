@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Physics 1 - Linear Momentum Teaching Experiment</title>
+
+<style>
+/* --- Fonts & Theme --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
+
+body { 
+  font-family:'Noto Sans SC','Inter',sans-serif; 
+  background-color: var(--bg-light); 
+  color: var(--text-dark); 
+  line-height: 1.6;
+  margin:0; padding:0;
+}
+.container-app { 
+  max-width: 1200px; 
+  margin:20px auto; 
+  padding:20px; 
+  background-color:rgba(244, 244, 247, 0.863); 
+  border-radius:24px; 
+  box-shadow:0 10px 30px rgba(26, 122, 177, 0.384);
+}
+h1 { 
+  color: var(--primary-color); 
+  font-weight:700; 
+  text-align:center; 
+  padding-bottom:10px;
+}
+h2 { 
+  font-size:1.5rem; 
+  font-weight:600; 
+  color:var(--text-dark); 
+  border-left:5px solid var(--primary-color); 
+  padding-left:10px; 
+  margin-bottom:20px;
+}
+
+.text2xl
+{ 
+  color: var(--primary-color); 
+  font-weight:900; 
+  text-align:left; 
+  padding-bottom:10px;
+}
+.concept-card { 
+  background:rgb(237, 240, 241); 
+  border-radius:16px; 
+  padding:20px; 
+  box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); 
+  transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.concept-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+.formula { 
+  font-family:'Times New Roman', serif; 
+  font-size:1.5rem; 
+  font-weight:bold; 
+  color: var(--secondary-color); 
+  padding:10px 0; 
+  text-align:center; 
+  border-top:1px solid #e5e7eb; 
+  margin-top:15px;
+}
+.katex { color: var(--secondary-color) !important; }
+
+#simulationCanvas { 
+  border:2px solid var(--primary-color); 
+  background-color:#eef2ff; 
+  border-radius:12px; 
+  cursor:pointer;
+}
+
+.control-group label { font-weight:500; color:var(--text-dark);}
+.control-group input[type="range"] { width:100%; }
+.btn-simulate { 
+  background-color: var(--primary-color); 
+  color:white; 
+  padding:10px 20px; 
+  border-radius:12px; 
+  font-weight:600; 
+  transition: background-color 0.3s;
+  border:none;
+  cursor:pointer;
+}
+.btn-simulate:hover:not(:disabled) { background-color:#6366f1; }
+.btn-simulate:disabled { background-color:#9ca3af; cursor:not-allowed; }
+.results-box { 
+  background-color:#f0fdf4; 
+  border:1px solid var(--secondary-color); 
+  border-radius:12px; 
+  padding:2px;
+  text-align:center;
+}
+.results-box strong { color: var(--secondary-color); }
+
+/* --- Grid Layout --- */
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+}
+
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+.my-10 { margin-top: 2.5rem; margin-bottom: 2.5rem; }
+.p-4 { padding: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.w-full { width: 100%; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-mono { font-family: monospace; }
+.text-center { text-align: center; }
+
+.bg-red-50 { background-color: #fef2f2; }
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-yellow-50 { background-color: #fefce8; }
+.bg-green-50 { background-color: #f0fdf4; }
+
+.border { border-width: 1px; }
+.border-red-200 { border-color: #fecaca; }
+.border-blue-200 { border-color: #bfdbfe; }
+.border-yellow-200 { border-color: #fef08a; }
+.border-green-500 { border-color: #22c55e; }
+
+.rounded { border-radius: 0.25rem; }
+.rounded-lg { border-radius: 0.5rem; }
+
+.text-red-600 { color: #dc2626; }
+.text-blue-600 { color: #2563eb; }
+.text-yellow-600 { color: #ca8a04; }
+.text-green-600 { color: #16a34a; }
+.text-gray-500 { color: #6b7280; }
+
+.flex { display: flex; }
+.items-center { align-items: center; }
+.cursor-pointer { cursor: pointer; }
+.mr-2 { margin-right: 0.5rem; }
+</style>
+
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+</head>
+<body>
+<div class="container-app">
+<h1>COCOBO-TECH AP Physics 1<p>CH4:Linear Momentum </p></h1>
+
+
+<!-- Core Concept Cards -->
+<div class="my-8">
+    <h2>Core Concepts and Formulas</h2>
+    
+    <!-- Linear Momentum & Impulse-Momentum Side by Side -->
+    <div class="grid-2 mb-4">
+        <!-- Momentum -->
+        <div class="concept-card">
+            <h3 class="text2xl">1. Linear Momentum</h3>
+            <p>Momentum is the product of mass and velocity, with direction same as velocity.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: kg·m/s</li>
+                <li>Vector property, momentum change relates to force</li>
+            </ul>
+            <div class="formula">p = m v</div>
+        </div>
+
+        <!-- Impulse -->
+        <div class="concept-card">
+            <h3 class="text2xl">2. Impulse-Momentum Theorem</h3>
+            <p>Net impulse equals momentum change.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: N·s (equivalent to kg·m/s)</li>
+                <li>Extending impact time reduces collision force, e.g. airbags</li>
+            </ul>
+            <div class="formula">J = \Delta p = F_\text{net} \Delta t</div>
+        </div>
+    </div>
+
+    <!-- Conservation & 2D Momentum Side by Side -->
+    <div class="grid-2 mb-4">
+        <!-- Conservation -->
+        <div class="concept-card">
+            <h3 class="text2xl">3. Conservation of Momentum</h3>
+            <p>Total momentum remains constant in an isolated system.</p>
+            <div class="formula">\sum \mathbf{p}_\text{initial} = \sum \mathbf{p}_\text{final}</div>
+        </div>
+
+        <!-- 2D Momentum -->
+        <div class="concept-card">
+            <h3 class="text2xl">4. 2D Momentum Conservation</h3>
+            <p>Conserved along x, y directions separately:</p>
+            <div class="formula">
+\begin{cases}
+m_A \vec{v}_{A,i} + m_B \vec{v}_{B,i} = m_A \vec{v}_{A,f} + m_B \vec{v}_{B,f} \\
+x\text{-axis: } p_{x,i} = p_{x,f}, \quad y\text{-axis: } p_{y,i} = p_{y,f}
+\end{cases}
+            </div>
+        </div>
+    </div>
+
+    <!-- Collision Types -->
+    <div class="concept-card mb-4">
+        <h3 class="text2xl">5. Collision Formulas (1D)</h3>
+        <p>Perfectly Elastic Collision (momentum and kinetic energy conserved):</p>
+        <div class="formula">
+        m_1 v_1 + m_2 v_2 = m_1 v_1' + m_2 v_2'
+        </div>
+
+        <div class="formula">
+        \frac{1}{2} m_1 v_1^{2} + \frac{1}{2} m_2 v_2^{2}
+=
+\frac{1}{2} m_1 {v_1'}^{2} + \frac{1}{2} m_2 {v_2'}^{2}
+
+        </div>
+
+        <div class="formula"><p>弹性碰撞后速度:</p></div>
+        <div class="formula">
+        v_1' = \frac{(m_1 - m_2)v_1 + 2 m_2 v_2}{m_1 + m_2}
+
+        </div>
+
+        <div class="formula">
+        v_2' = \frac{(m_2 - m_1)v_2 + 2 m_1 v_1}{m_1 + m_2}
+
+
+        </div>        
+
+        <p>Perfectly Inelastic Collision (objects stick together):</p>
+        <div class="formula">
+        v' = \frac{m_1 v_1 + m_2 v_2}{m_1 + m_2}
+
+        </div>
+    </div>
+</div>
+
+<!-- Momentum Simulator -->
+<div class="my-10">
+<h2>Momentum Collision Simulator (1D)</h2>
+
+<!-- Controls Side by Side A/B/Settings -->
+<div class="grid-3 mb-6">
+  <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+    <h4 class="font-bold text-lg text-red-600 mb-2">Object A</h4>
+    <div class="control-group mb-2">
+      <label>Mass mA (<span id="m_a_val">1.0</span> kg):</label>
+      <input type="range" id="massA" min="0.5" max="10.0" step="0.5" value="1.0">
+    </div>
+    <div class="control-group">
+      <label>Velocity vA (<span id="v_a_val">5.0</span> m/s):</label>
+      <input type="range" id="velA" min="0" max="10" step="0.1" value="5.0">
+    </div>
+  </div>
+
+  <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <h4 class="font-bold text-lg text-blue-600 mb-2">Object B</h4>
+    <div class="control-group mb-2">
+      <label>Mass mB (<span id="m_b_val">1.0</span> kg):</label>
+      <input type="range" id="massB" min="0.5" max="10.0" step="0.5" value="1.0">
+    </div>
+    <div class="control-group">
+      <label>Velocity vB (<span id="v_b_val">0.0</span> m/s):</label>
+      <input type="range" id="velB" min="-5" max="5" step="0.1" value="0.0">
+    </div>
+  </div>
+
+  <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+    <h4 class="font-bold text-lg text-yellow-600 mb-2">Collision Settings</h4>
+    <div class="control-group mb-3">
+      <label>Type:</label>
+      <select id="collisionType" class="w-full p-2 border rounded mt-1">
+        <option value="elastic">Elastic Collision</option>
+        <option value="inelastic">Inelastic Collision</option>
+      </select>
+    </div>
+    <div class="control-group mb-3">
+      <label class="flex items-center cursor-pointer">
+        <input type="checkbox" id="boundaryBounce" class="mr-2">
+        <span>Boundary Bounce</span>
+      </label>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button id="startBtn" class="btn-simulate" style="flex: 1;">Start</button>
+      <button id="pauseBtn" class="btn-simulate" style="flex: 1;">Pause</button>
+      <button id="resetBtn" class="btn-simulate" style="flex: 1;">Reset</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="simulationCanvas" width="1200" height="300" class="w-full mb-4"></canvas>
+
+<!-- Results Side by Side -->
+<div class="grid-3">
+  <div class="results-box">
+    <p class="font-semibold">Initial Momentum: <span id="initialMomentum" class="text-xl font-mono">0.00</span></p>
+  </div>
+  <div class="results-box bg-green-50 border-green-500">
+    <p class="font-semibold">Final Momentum: <span id="finalMomentum" class="text-xl font-mono text-green-600">0.00</span></p>
+  </div>
+  <div class="results-box">
+    <p class="font-semibold">Momentum Difference: <span id="momentumDiff" class="text-xl font-mono">0.00</span></p>
+  </div>
+</div>
+
+</div>
+
+<script>
+// --- KaTeX Rendering ---
+function renderAllFormulas(){
+  document.querySelectorAll('.formula').forEach(el=>{
+    if(typeof katex!=='undefined'){
+      katex.render(el.textContent,el,{displayMode:true,throwOnError:false});
+    }
+  });
+}
+
+// --- Controls ---
+const massA=document.getElementById('massA'), velA=document.getElementById('velA'),
+      massB=document.getElementById('massB'), velB=document.getElementById('velB');
+const m_a_val=document.getElementById('m_a_val'), v_a_val=document.getElementById('v_a_val'),
+      m_b_val=document.getElementById('m_b_val'), v_b_val=document.getElementById('v_b_val');
+const collisionTypeSelect=document.getElementById('collisionType');
+const boundaryBounceCheckbox=document.getElementById('boundaryBounce');
+const startBtn=document.getElementById('startBtn'), pauseBtn=document.getElementById('pauseBtn'), resetBtn=document.getElementById('resetBtn');
+const canvas=document.getElementById('simulationCanvas'), ctx=canvas.getContext('2d');
+const initialMomentumLabel=document.getElementById('initialMomentum'),
+      finalMomentumLabel=document.getElementById('finalMomentum'),
+      momentumDiffLabel=document.getElementById('momentumDiff');
+
+let A={},B={},collisionType='elastic';
+let animationId,isSimulating=false,isPaused=false;
+const PIXELS_PER_METER=50;
+let collisionHappened=false;
+
+// --- Initialize Controls Display ---
+function initControls(){
+  [massA,velA,massB,velB].forEach(i=>i.addEventListener('input',updateLabels));
+  collisionTypeSelect.addEventListener('change',()=>{collisionType=collisionTypeSelect.value});
+  updateLabels();
+}
+function updateLabels(){
+  m_a_val.textContent=parseFloat(massA.value).toFixed(1);
+  v_a_val.textContent=parseFloat(velA.value).toFixed(1);
+  m_b_val.textContent=parseFloat(massB.value).toFixed(1);
+  v_b_val.textContent=parseFloat(velB.value).toFixed(1);
+}
+
+// --- Initial State ---
+function drawInitialState(){
+  collisionType=collisionTypeSelect.value;
+  const mA = parseFloat(massA.value);
+  const mB = parseFloat(massB.value);
+  
+  // Calculate radius based on mass (radius proportional to square root of mass)
+  const baseRadius = 15;
+  const rA = baseRadius * Math.sqrt(mA / 1.0); // Base: 1kg
+  const rB = baseRadius * Math.sqrt(mB / 1.0);
+  
+  A={m:mA, v:parseFloat(velA.value), r:rA, color:'red', pos:{x:100,y:canvas.height/2}};
+  B={m:mB, v:parseFloat(velB.value), r:rB, color:'blue', pos:{x:500,y:canvas.height/2}};
+  collisionHappened=false;
+  initialMomentumLabel.textContent=(A.m*A.v + B.m*B.v).toFixed(2);
+  finalMomentumLabel.textContent='0.00';
+  momentumDiffLabel.textContent='0.00';
+  drawObjects();
+}
+
+// --- Draw ---
+function drawObjects(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  [A,B].forEach(o=>{
+    ctx.beginPath(); ctx.arc(o.pos.x,o.pos.y,o.r,0,Math.PI*2);
+    ctx.fillStyle=o.color; ctx.fill(); ctx.strokeStyle='#1f2937'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#1f2937'; ctx.font='12px Arial'; ctx.textAlign='center';
+    ctx.fillText(`v=${o.v.toFixed(1)} m/s`,o.pos.x,o.pos.y+o.r+15);
+    ctx.fillText(`m=${o.m.toFixed(1)} kg`,o.pos.x,o.pos.y-o.r-5);
+  });
+}
+
+// --- Animation Loop ---
+function updatePhysics(dt){
+  A.pos.x += A.v * PIXELS_PER_METER * dt;
+  B.pos.x += B.v * PIXELS_PER_METER * dt;
+
+  const distance = Math.abs(A.pos.x - B.pos.x);
+  if(distance <= (A.r + B.r)){
+    if(!collisionHappened){
+      if(collisionType==='elastic'){
+        const vA_final = ((A.m-B.m)*A.v + 2*B.m*B.v)/(A.m+B.m);
+        const vB_final = ((B.m-A.m)*B.v + 2*A.m*A.v)/(A.m+B.m);
+        A.v = vA_final; B.v = vB_final;
+      }else{
+        const vFinal = (A.m*A.v + B.m*B.v)/(A.m+B.m);
+        A.v = B.v = vFinal;
+        const midX = (A.pos.x+B.pos.x)/2;
+        A.pos.x = midX - B.r; B.pos.x = midX + B.r;
+      }
+      collisionHappened = true;
+    }
+  }else{
+    collisionHappened = false;
+  }
+
+  // Boundary Bounce (only when checkbox is checked)
+  if(boundaryBounceCheckbox.checked){
+    [A,B].forEach(o=>{
+      if(o.pos.x-o.r<0){ o.pos.x=o.r; o.v=-o.v; }
+      if(o.pos.x+o.r>canvas.width){ o.pos.x=canvas.width-o.r; o.v=-o.v; }
+    });
+  }
+}
+
+function animate(timestamp){
+  if(!isSimulating || isPaused){ animationId=requestAnimationFrame(animate); return; }
+  if(!animate.last) animate.last=timestamp;
+  const dt=(timestamp-animate.last)/1000; 
+  animate.last=timestamp;
+  updatePhysics(dt); drawObjects();
+  const initialP = A.m*parseFloat(velA.value) + B.m*parseFloat(velB.value);
+  const finalP = A.m*A.v + B.m*B.v;
+  finalMomentumLabel.textContent=finalP.toFixed(2);
+  momentumDiffLabel.textContent=(Math.abs(finalP-initialP)).toFixed(2);
+  animationId=requestAnimationFrame(animate);
+}
+
+// --- Control Buttons ---
+startBtn.onclick=function(){ 
+  if(!isSimulating) drawInitialState();
+  isSimulating=true; isPaused=false; animate.last=null; animationId=requestAnimationFrame(animate);
+}
+pauseBtn.onclick=function(){ isPaused=!isPaused; pauseBtn.textContent=isPaused?'Resume':'Pause';}
+resetBtn.onclick=function(){ isSimulating=false; isPaused=false; drawInitialState(); pauseBtn.textContent='Pause';}
+
+window.onload=function(){ renderAllFormulas(); initControls(); drawInitialState(); }
+</script>
+
+</body>
+</html>
