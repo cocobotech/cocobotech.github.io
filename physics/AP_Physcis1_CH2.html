@@ -235,7 +235,7 @@ table {
          <h2>经典问题：斜面📐</h2>
         <div class="grid-2 mb-4">
             <div class="status">
-            <div class="status-title" id="statusTitle">✓ 物体保持静止 (HOLD)</div>
+            <div class="status-title" id="statusTitle">斜坡物理模拟器设定</div>
             <div class="info-grid">
                 <div class="card">
 
@@ -388,15 +388,17 @@ table {
             document.getElementById('kineticFriction').textContent = physics.kineticFrictionForce.toFixed(2);
             
             if (isMoving) {
-                statusTitle.textContent = '⚠️ 物体正在滑动 (MOVING)';
+                //statusTitle.textContent = '⚠️ 物体正在滑动 (MOVING)';
                 statusTitle.className = 'status-title moving';
-                document.getElementById('velocityDisplay').textContent = `速度: ${velocity.toFixed(2)} m/s`;
+                //document.getElementById('velocityDisplay').textContent = `速度: ${velocity.toFixed(2)} m/s`;
+                document.getElementById('velocityDisplay').textContent = '⚠️ 物体正在滑动 (MOVING)';
             } else if (velocity === 0 && position < 0.98) {
-                statusTitle.textContent = '✓ 物体保持静止 (HOLD)';
+                //statusTitle.textContent = '✓ 物体保持静止 (HOLD)';
+                document.getElementById('velocityDisplay').textContent = '✓ 物体保持静止 (HOLD)';
                 statusTitle.className = 'status-title hold';
-                document.getElementById('velocityDisplay').textContent = '';
+                
             } else {
-                statusTitle.textContent = '🛑 已停止在地面 (STOPPED)';
+                //statusTitle.textContent = '🛑 已停止在地面 (STOPPED)';
                 statusTitle.className = 'status-title stopped';
                 document.getElementById('velocityDisplay').textContent = '';
             }
