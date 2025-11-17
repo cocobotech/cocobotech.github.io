@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO AP Physics 1</title>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
+body { font-family:'Inter','Noto Sans SC',sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; margin:0; padding:0; }
+.container-app { max-width: 1200px; margin:10px auto; padding:10px; background-color:rgba(244, 244, 247, 0.863); border-radius:24px; box-shadow:0 10px 30px rgba(26, 122, 177, 0.384); }
+.container-header { background: white; border-radius: 25px; padding: 10px; margin-bottom: 5px; box-shadow: 0 15px 10px rgba(0,0,0,0.3); text-align: center; position: relative; overflow: hidden; }
+h1 { font-size: 2.5rem; color: var(--primary-color); font-weight:700; text-align:center; margin: 0; }
+h2 { font-size:1.5rem; font-weight:600; color:var(--text-dark); border-left:5px solid var(--primary-color); padding-left:10px; margin-bottom:20px; }
+.text2xl { color: var(--primary-color); font-weight:900; text-align:left; padding-bottom:10px; }
+.concept-card { background:rgb(242, 247, 248); border-radius:16px; padding:20px; box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+.concept-card:hover { transform: translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.15); }
+.formula { font-family:'Times New Roman', serif; font-size:1.2rem; font-weight:bold; color: var(--secondary-color); padding:10px 0; text-align:center; border-top:1px solid #e5e7eb; margin-top:15px; }
+.grid-1 { display: grid; grid-template-columns: repeat(1,1fr); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.grid-2a { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
+.my-8 { margin: 2rem 0; }
+.mb-4 { margin-bottom: 1rem; }
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-gray-500 { color: #6b7280; }
+
+.card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.0rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.2rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 0.35rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f1f3f5;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+
+.legend {
+            background: #f8f9fa;
+            padding: 5px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+</style>
+
+<!-- KaTeX 备用 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+</head>
+
+<body>
+<div class="container-app">
+    <div class="container-header">
+        <h1>COCOBO-TECH AP Physics 1</h1>
+        <p style="text-align: center;text-decoration: underline; font-weight: 600; color: #4f46e5;">
+            Unit 2 – Force and Translational Dynamics
+        </p>
+    </div>
+
+    <!-- ================ 核心概念与公式 ================ -->
+    <div class="my-8">
+        <h2>🔑 牛顿三大定律 (Newton's Three Laws)</h2>
+
+        <!-- 第一行：两个卡片 -->
+        <div class="grid-3 mb-4">
+            <!-- 1. 力的定义与牛顿第一定律 -->
+            <div class="concept-card">
+                <h3 class="text2xl">1. Force & Newton's First Law</h3>
+                <p>A force is a vector interaction that, when unopposed, changes an object's velocity.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Force is a vector (magnitude + direction)</li>
+                    <li>Inertia: tendency to maintain motion state</li>
+                    <li>Equilibrium: ΣF = 0 → constant velocity (including zero)</li>
+                </ul>
+                <div class="formula">\( \sum \vec{F} = 0 \;\rightarrow\; \vec{a} = 0 \)</div>
+            </div>
+
+            <!-- 2. 牛顿第二定律（最核心） -->
+            <div class="concept-card">
+                <h3 class="text2xl">2. Newton's Second Law</h3>
+                <p>The net force on an object equals its mass times its acceleration.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Proportional relationship: F ∝ a</li>
+                    <li>Cause → effect: force causes acceleration</li>
+                    <li>Vector equation, applies in each direction independently</li>
+                </ul>
+                <div class="formula">\( \sum \vec{F} = m \vec{a} \)</div>
+            </div>
+
+
+            <!-- 6. 牛顿第三定律（作用力反作用力） -->
+            <div class="concept-card">
+                <h3 class="text2xl">6. Newton's Third Law</h3>
+                <p>For every action, there is an equal and opposite reaction.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Forces come in pairs: F<sub>A→B</sub> = −F<sub>B→A</sub></li>
+                    <li>Act on different objects → never cancel each other</li>
+                    <li>Essential for free-body diagrams</li>
+                </ul>
+                <div class="formula">\( \vec{F}_{A\text{ on }B} = -\vec{F}_{B\text{ on }A} \)</div>
+            </div>
+        </div>
+
+        <!-- 第二行：三个卡片 -->
+        <h2>🎯 常见力和分析工具 (Common Forces & Tools)</h2>
+        <div class="grid-3 mb-4">
+            <!-- 3. 重量与重力 -->
+            <div class="concept-card">
+                <h3 class="text2xl">3. Weight (Gravitational Force)</h3>
+                <p>The attractive force between object and Earth.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Weight ≠ mass</li>
+                    <li>Near Earth: F<sub>g</sub> = mg (g ≈ 9.8 m/s²)</li>
+                    <li>Weight is a force, measured in newtons</li>
+                </ul>
+                <div class="formula">\( F_g = mg \)</div>
+            </div>
+
+            <!-- 4. 法向力 -->
+            <div class="concept-card">
+                <h3 class="text2xl">4. Normal Force (F<sub>N</sub>)</h3>
+                <p>Perpendicular contact force exerted by a surface.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Prevents objects from passing through surfaces</li>
+                    <li>Can be greater, equal, or less than weight</li>
+                    <li>Adjusts itself to satisfy ΣF = ma</li>
+                </ul>
+                <div class="formula">\( F_N \perp \text{surface} \)</div>
+            </div>
+
+            <!-- 5. 摩擦力（静摩擦与动摩擦） -->
+            <div class="concept-card">
+                <h3 class="text2xl">5. Friction Forces</h3>
+                <p>Opposes relative motion (or tendency) between surfaces.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Static friction: f<sub>s</sub> ≤ μ<sub>s</sub> F<sub>N</sub> (adjustable)</li>
+                    <li>Kinetic friction: f<sub>k</sub> = μ<sub>k</sub> F<sub>N</sub> (constant)</li>
+                    <li>μ<sub>s</sub> > μ<sub>k</sub> always</li>
+                </ul>
+                <div class="formula">
+                    \( f_s \leq \mu_s F_N \quad ;\quad f_k = \mu_k F_N \)
+                </div>
+            </div>
+        </div>
+
+        <!-- 第三行：三个经典应用 -->
+        <div class="grid-3 mb-4">
+            
+
+           
+        </div>
+
+        <!-- 最后一行：弹簧力（胡克定律）单独强调 -->
+        <div class="grid-2 mb-4">
+            <div class="concept-card">
+                <h3 class="text2xl">9. Hooke's Law (Spring Force)</h3>
+                <p>Elastic force exerted by a spring is proportional to its displacement.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Only for springs within elastic limit</li>
+                    <li>Direction: always toward equilibrium position</li>
+                    <li>Negative sign indicates restoring force</li>
+                </ul>
+                <div class="formula">\( F_s = -kx \)</div>
+            </div>
+
+            <div class="concept-card">
+                <h3 class="text2xl">10. Net Force & System Analysis</h3>
+                <p>Key strategy: Choose system wisely.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Single object → use ΣF = ma</li>
+                    <li>Multiple connected objects → treat as one system or separate</li>
+                    <li>Internal forces cancel in Newton's 3rd Law pairs</li>
+                </ul>
+                <div class="formula">\( \sum \vec{F}_{ext} = m_{total} \vec{a}_{cm} \)</div>
+            </div>
+        </div>
+
+
+
+        <!-- 经典问题：斜面问题 -->
+         <h2>经典问题：斜面📐</h2>
+        <div class="grid-2 mb-4">
+            <div class="status">
+            <div class="status-title" id="statusTitle">✓ 物体保持静止 (HOLD)</div>
+            <div class="info-grid">
+                <div class="card">
+
+                    <table>
+
+
+                        <tr><td>重力沿斜面分量:</td><td><span id="parallelForce">0.00</span> N</td></tr>
+                        <tr><td>最大静摩擦力: </td><td><span id="maxStaticFriction">0.00</span> N</td></tr>
+
+                        <tr><td>支持力: </td><td><span id="normalForce">0.00</span> N</td></tr>
+                        <tr><td>动摩擦力: </td><td><span id="kineticFriction">0.00</span> N</td></tr>
+
+                        <tr><td>斜坡角度:<span id="angleValue">30</span>°</td><td><input type="range" id="angleSlider" min="0" max="60" value="30"></td></tr>
+                        <tr><td>静摩擦系数 (μs): <span id="staticValue">0.50</span></td><td><input type="range" id="staticSlider" min="0" max="1" step="0.01" value="0.5"></td></tr>
+                        <tr><td>动摩擦系数 (μk): <span id="kineticValue">0.30</span></td><td><input type="range" id="kineticSlider" min="0" max="1" step="0.01" value="0.3"></td></tr>
+
+                    </table>
+
+
+                </div>
+               
+            
+            <button class="reset-btn" id="resetBtn">🔄 重置位置</button>
+
+
+            <div class="legend">
+            <h3>力的图例:</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196F3;"></div>
+                    <span>蓝色 - 重力 (G)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4CAF50;"></div>
+                    <span>绿色 - 支持力 (N)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF9800;"></div>
+                    <span>橙色 - 摩擦力 (f)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #F44336; opacity: 0.5;"></div>
+                    <span>红色虚线 - 重力沿斜面分量</span>
+                </div>
+            </div>
+        </div>
+
+            </div>
+
+
+
+            
+        </div>
+
+        <div class="concept-card">
+                <canvas id="canvas" width="700" height="500"></canvas>
+            </div>
+
+
+    </div>
+
+</div>
+
+<script>
+// Canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Physics constants
+        const mass = 1; // kg
+        const g = 9.8; // m/s²
+        const forceScale = 16;
+        
+        // State variables
+        let angle = 20;
+        let staticFriction = 0.5;
+        let kineticFriction = 0.3;
+        let position = 0.8; // 0 = top, 1 = bottom
+        let velocity = 0;
+        let isMoving = false;
+        let animationId = null;
+        
+        // Canvas dimensions
+        const inclineLength = 400;
+        const inclineBaseY = 400;
+        const inclineStartX = 100;
+        const blockSize = 40;
+        
+        // Get DOM elements
+        const angleSlider = document.getElementById('angleSlider');
+        const staticSlider = document.getElementById('staticSlider');
+        const kineticSlider = document.getElementById('kineticSlider');
+        const resetBtn = document.getElementById('resetBtn');
+        const statusTitle = document.getElementById('statusTitle');
+        
+        // Event listeners
+        angleSlider.addEventListener('input', (e) => {
+            angle = Number(e.target.value);
+            document.getElementById('angleValue').textContent = angle;
+            resetPosition();
+        });
+        
+        staticSlider.addEventListener('input', (e) => {
+            staticFriction = Number(e.target.value);
+            document.getElementById('staticValue').textContent = staticFriction.toFixed(2);
+            resetPosition();
+        });
+        
+        kineticSlider.addEventListener('input', (e) => {
+            kineticFriction = Number(e.target.value);
+            document.getElementById('kineticValue').textContent = kineticFriction.toFixed(2);
+        });
+        
+        resetBtn.addEventListener('click', resetPosition);
+        
+        function resetPosition() {
+            position = 0.3;
+            velocity = 0;
+            isMoving = false;
+        }
+        
+        // Physics calculations
+        function calculatePhysics() {
+            const angleRad = (angle * Math.PI) / 180;
+            const weight = mass * g;
+            const normalForce = weight * Math.cos(angleRad);
+            const parallelComponent = weight * Math.sin(angleRad);
+            const maxStaticFriction = staticFriction * normalForce;
+            const kineticFrictionForce = kineticFriction * normalForce;
+            
+            return {
+                angleRad,
+                weight,
+                normalForce,
+                parallelComponent,
+                maxStaticFriction,
+                kineticFrictionForce
+            };
+        }
+        
+        // Update display
+        function updateDisplay(physics) {
+            document.getElementById('parallelForce').textContent = physics.parallelComponent.toFixed(2);
+            document.getElementById('maxStaticFriction').textContent = physics.maxStaticFriction.toFixed(2);
+            document.getElementById('normalForce').textContent = physics.normalForce.toFixed(2);
+            document.getElementById('kineticFriction').textContent = physics.kineticFrictionForce.toFixed(2);
+            
+            if (isMoving) {
+                statusTitle.textContent = '⚠️ 物体正在滑动 (MOVING)';
+                statusTitle.className = 'status-title moving';
+                document.getElementById('velocityDisplay').textContent = `速度: ${velocity.toFixed(2)} m/s`;
+            } else if (velocity === 0 && position < 0.98) {
+                statusTitle.textContent = '✓ 物体保持静止 (HOLD)';
+                statusTitle.className = 'status-title hold';
+                document.getElementById('velocityDisplay').textContent = '';
+            } else {
+                statusTitle.textContent = '🛑 已停止在地面 (STOPPED)';
+                statusTitle.className = 'status-title stopped';
+                document.getElementById('velocityDisplay').textContent = '';
+            }
+        }
+        
+        // Draw arrow
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const arrowSize = 6;
+            
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // Draw arrowhead
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(
+                x2 - arrowSize * Math.cos(angle - Math.PI / 6),
+                y2 - arrowSize * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                x2 - arrowSize * Math.cos(angle + Math.PI / 6),
+                y2 - arrowSize * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw label
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(label, (x1 + x2) / 2 + 15, (y1 + y2) / 2);
+        }
+        
+        // Draw scene
+        function draw() {
+            const physics = calculatePhysics();
+            const angleRad = physics.angleRad;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate positions
+            const inclineEndX = inclineStartX + inclineLength * Math.cos(angleRad);
+            const inclineEndY = inclineBaseY - inclineLength * Math.sin(angleRad);
+            
+            const blockDistanceFromStart = inclineLength * position;
+            const blockCenterX = inclineStartX +0.96* blockDistanceFromStart * Math.cos(angleRad);
+            const blockCenterY = inclineBaseY - blockDistanceFromStart * Math.sin(angleRad);
+            
+            // Draw ground
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            //ctx.moveTo(100, inclineBaseY);
+            //ctx.lineTo(650, inclineBaseY);
+            ctx.stroke();
+            
+            // Draw incline
+            ctx.fillStyle = '#D4A574';
+            ctx.strokeStyle = '#8B6914';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(inclineStartX, inclineBaseY);
+            ctx.lineTo(inclineEndX, inclineEndY); 
+            ctx.lineTo(inclineEndX, inclineBaseY);
+            ctx.closePath();
+            //ctx.fill();
+            ctx.stroke();
+            
+            // Draw block
+            ctx.save();
+            ctx.translate(blockCenterX, blockCenterY);
+            ctx.rotate(-angleRad);
+            
+            ctx.fillStyle = isMoving ? '#FF6B6B' : '#4ECDC4';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.fillRect(-blockSize/2, -blockSize, blockSize, blockSize);
+            ctx.strokeRect(-blockSize/2, -blockSize, blockSize, blockSize);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('1kg', 0, 0);
+            
+            ctx.restore();
+            
+            // Draw forces
+            // Gravity (blue, downward)
+            drawArrow(
+                blockCenterX-blockSize/2 * Math.sin(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad),
+                blockCenterX-blockSize/2 * Math.sin(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad) + physics.weight * forceScale,
+                '#2196F3',
+                `G=${physics.weight.toFixed(1)}N`
+            );
+            
+            // Normal force (green, perpendicular to incline)
+            drawArrow(
+                blockCenterX-blockSize/2 * Math.sin(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad),
+                blockCenterX-blockSize/2 * Math.sin(angleRad) - physics.normalForce * forceScale * Math.sin(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad) - physics.normalForce * forceScale * Math.cos(angleRad),
+                '#4CAF50',
+                `N=${physics.normalForce.toFixed(1)}N`
+            );
+            
+            // Friction force (orange, up the incline)
+            const frictionForce = isMoving ? physics.kineticFrictionForce : Math.min(physics.parallelComponent, physics.maxStaticFriction);
+            drawArrow(
+                blockCenterX-blockSize/2 * Math.sin(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad),
+                blockCenterX-blockSize/2 * Math.sin(angleRad) + frictionForce * forceScale * Math.cos(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad) - frictionForce * forceScale * Math.sin(angleRad),
+                '#FF9800',
+                `f=${frictionForce.toFixed(1)}N`
+            );
+            
+            // Parallel component (red dashed, down the incline)
+            ctx.strokeStyle = '#F44336';
+            ctx.lineWidth = 2;
+            //ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(blockCenterX-blockSize/2 * Math.sin(angleRad), blockCenterY-blockSize/2 * Math.cos(angleRad));
+            ctx.lineTo(
+                blockCenterX-blockSize/2 * Math.sin(angleRad) - physics.parallelComponent * forceScale * Math.cos(angleRad),
+                blockCenterY-blockSize/2 * Math.cos(angleRad) + physics.parallelComponent * forceScale * Math.sin(angleRad)
+            );
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = '#F44336';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(
+                `F∥=${physics.parallelComponent.toFixed(1)}N`,
+                blockCenterX - (physics.parallelComponent * forceScale * Math.cos(angleRad)) / 2 - 80,
+                blockCenterY + (physics.parallelComponent * forceScale * Math.sin(angleRad)) / 2
+            );
+            
+            // Draw angle
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`${angle}°`, inclineStartX + 50, inclineBaseY - 10);
+            
+            updateDisplay(physics);
+        }
+        
+        // Animation loop
+        function animate() {
+            const physics = calculatePhysics();
+            
+            // Check if should move
+            if (!isMoving && physics.parallelComponent > physics.maxStaticFriction) {
+                isMoving = true;
+            }
+            
+            // Update position if moving
+            if (isMoving && position < 0.98) {
+                const netForce = physics.parallelComponent - physics.kineticFrictionForce;
+                const acceleration = netForce / mass;
+                
+                velocity += acceleration * 0.016;
+                velocity = Math.max(0, velocity)*0.5 ;
+                
+                position -= velocity * 0.016;
+                
+                if (position >= 0.98) {
+                    position = 0.98;
+                    velocity = 0;
+                    isMoving = false;
+                }
+            }
+            
+            draw();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Start animation
+        animate();
+</script>
+</body>
+</html>
