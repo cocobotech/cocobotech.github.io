@@ -54,7 +54,7 @@ h2 {
   padding-bottom:10px;
 }
 .concept-card { 
-  background:rgb(237, 240, 241); 
+  background:rgb(242, 247, 248); 
   border-radius:16px; 
   padding:20px; 
   box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); 
@@ -66,7 +66,7 @@ h2 {
 }
 .formula { 
   font-family:'Times New Roman', serif; 
-  font-size:1.5rem; 
+  font-size:1.2rem; 
   font-weight:bold; 
   color: var(--secondary-color); 
   padding:10px 0; 
@@ -168,8 +168,8 @@ h2 {
 </head>
 <body>
 <div class="container-app">
-<h1>COCOBO-TECH AP Physics 1<p>CH4:Linear Momentum </p></h1>
-
+<h1>COCOBO-TECH AP Physics 1</h1>
+<p style="text-align: center;text-decoration: underline;">CH4:Linear Momentum </p>
 
 <!-- Core Concept Cards -->
 <div class="my-8">
@@ -223,9 +223,10 @@ x\text{-axis: } p_{x,i} = p_{x,f}, \quad y\text{-axis: } p_{y,i} = p_{y,f}
     </div>
 
     <!-- Collision Types -->
-    <div class="concept-card mb-4">
-        <h3 class="text2xl">5. Collision Formulas (1D)</h3>
-        <p>Perfectly Elastic Collision (momentum and kinetic energy conserved):</p>
+     <div class="grid-2 mb-4">
+          <div class="concept-card mb-4">
+        <h3 class="text2xl">5. Elastic Collision</h3>
+        <p><span style="background-color: yellow;">Perfectly</span> Elastic Collision (<span style="background-color: yellow;">momentum and kinetic energy</span> conserved):</p>
         <div class="formula">
         m_1 v_1 + m_2 v_2 = m_1 v_1' + m_2 v_2'
         </div>
@@ -237,7 +238,7 @@ x\text{-axis: } p_{x,i} = p_{x,f}, \quad y\text{-axis: } p_{y,i} = p_{y,f}
 
         </div>
 
-        <div class="formula"><p>弹性碰撞后速度:</p></div>
+        <p>弹性碰撞后速度:</p>
         <div class="formula">
         v_1' = \frac{(m_1 - m_2)v_1 + 2 m_2 v_2}{m_1 + m_2}
 
@@ -249,12 +250,29 @@ x\text{-axis: } p_{x,i} = p_{x,f}, \quad y\text{-axis: } p_{y,i} = p_{y,f}
 
         </div>        
 
-        <p>Perfectly Inelastic Collision (objects stick together):</p>
-        <div class="formula">
-        v' = \frac{m_1 v_1 + m_2 v_2}{m_1 + m_2}
-
-        </div>
+        
     </div>
+
+    <div class="concept-card mb-4">
+      <h3 class="text2xl">Inelastic Collision </h3>
+  <p><span style="background-color: yellow;">Perfectly</span> Inelastic Collision (objects stick together,<span style="background-color: yellow;">only momentum </span> conserved):</p>
+  <div class="formula">
+        m_1 v_1 + m_2 v_2 = m_1 v_1' + m_2 v_2'
+        </div>
+  <div class="formula">
+       v_1'=v_2'= v'
+        </div>      
+        <p>碰撞后共同速度:</p>
+  
+  <div class="formula">
+          v' = \frac{m_1 v_1 + m_2 v_2}{m_1 + m_2}
+
+          </div>
+
+    </div>
+      
+     </div>
+
 </div>
 
 <!-- Momentum Simulator -->
