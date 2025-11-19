@@ -1,48 +1,96 @@
-<svg width="320" height="430" viewBox="0 0 320 430" xmlns="http://www.w3.org/2000/svg">
+<svg id="principled-svg" width="360" height="480" viewBox="0 0 360 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Principled BSDF node">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#2e2f31"/>
+        <stop offset="100%" stop-color="#252627"/>
+      </linearGradient>
+      <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feOffset dx="0" dy="2"/>
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feComposite in="b" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0"/>
+      </filter>
+      <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000" flood-opacity="0.25"/>
+      </filter>
+      <style type="text/css"><![CDATA[
+        .title { font: 700 16px/1.0 'Inter', 'Segoe UI', Arial, sans-serif; fill: #fff; }
+        .label { font: 400 13px/1 'Inter', 'Segoe UI', Arial, sans-serif; fill: #f3f4f6; }
+        .muted { fill: #9ca3af; }
+      ]]></style>
+    </defs>
 
-  <!-- node body -->
-  <rect x="10" y="10" width="300" height="410" rx="12" fill="#2B2B2B" stroke="#000" stroke-width="1.5"/>
+    <!-- Node base -->
+    <rect x="8" y="8" width="344" height="464" rx="14" fill="url(#bgGrad)" stroke="#0b0b0b" stroke-opacity="0.35"/>
+    <rect x="8" y="8" width="344" height="56" rx="12" fill="#2f8540" />
+    <g transform="translate(20,40)">
+      <text class="title" x="0" y="2">Principled BSDF</text>
+    </g>
+    <!-- Output socket (right) -->
+    <g>
+      <circle cx="332" cy="36" r="8" fill="#8ef78b" stroke="#063b12" stroke-width="1" />
+      <circle cx="332" cy="36" r="3" fill="#052a0e" />
+    </g>
 
-  <!-- title bar -->
-  <rect x="10" y="10" width="300" height="32" rx="12" fill="#3A7939"/>
-  <text x="25" y="31" font-size="15" fill="white" font-family="Arial, sans-serif">Principled BSDF</text>
+    <!-- subtle inner shadow -->
+    <rect x="8" y="8" width="344" height="464" rx="14" fill="transparent" filter="url(#innerShadow)" />
 
-  <!-- output socket -->
-  <circle cx="300" cy="26" r="6" fill="#55FF55" stroke="#000" stroke-width="1.3"/>
+    <!-- Rows -->
+    <!-- Base Color row -->
+    <g transform="translate(18,82)">
+      <circle cx="6" cy="16" r="6" fill="#f3bb40" stroke="#2b2b2b" stroke-width="0.8" />
+      <text class="label" x="22" y="20">Base Color</text>
+      <rect x="180" y="6" width="146" height="22" rx="5" fill="#ffffff" stroke="#bfc4c8" stroke-opacity="0.6" />
+    </g>
 
-  <!-- Base Color -->
-  <circle cx="25" cy="70" r="6" fill="#FCCF4A" stroke="#000"/>
-  <text x="45" y="74" font-size="14" fill="white">Base Color</text>
-  <rect x="160" y="55" width="130" height="30" rx="4" fill="#E5E5E5" stroke="#000" opacity="0.9"/>
+    <!-- Metallic -->
+    <g transform="translate(18,122)">
+      <circle cx="6" cy="16" r="6" fill="#9b9b9b" stroke="#222" stroke-width="0.8" />
+      <text class="label" x="22" y="20">Metallic</text>
+      <rect x="180" y="6" width="146" height="22" rx="5" fill="#3b3b3b" stroke="#222" />
+      <text class="muted" x="188" y="20">0.000</text>
+    </g>
 
-  <!-- Metallic -->
-  <circle cx="25" cy="115" r="6" fill="#8C8C8C" stroke="#000"/>
-  <text x="45" y="120" font-size="14" fill="white">Metallic</text>
-  <rect x="160" y="100" width="130" height="30" rx="4" fill="#333" stroke="#000"/>
+    <!-- Roughness -->
+    <g transform="translate(18,162)">
+      <circle cx="6" cy="16" r="6" fill="#3b82f6" stroke="#163b6a" stroke-width="0.8" />
+      <text class="label" x="22" y="20">Roughness</text>
+      <rect x="180" y="6" width="146" height="22" rx="5" fill="#3b82f6" fill-opacity="0.45" stroke="#234e8a" />
+      <text class="muted" x="188" y="20">0.500</text>
+    </g>
 
-  <!-- Roughness -->
-  <circle cx="25" cy="160" r="6" fill="#4A90E2" stroke="#000"/>
-  <text x="45" y="164" font-size="14" fill="white">Roughness</text>
-  <rect x="160" y="145" width="130" height="30" rx="4" fill="#4A90E2" opacity="0.4" stroke="#000"/>
+    <!-- IOR -->
+    <g transform="translate(18,202)">
+      <circle cx="6" cy="16" r="6" fill="#d1d1d1" stroke="#2b2b2b" stroke-width="0.8" />
+      <text class="label" x="22" y="20">IOR</text>
+      <rect x="180" y="6" width="146" height="22" rx="5" fill="#4b4b4b" stroke="#222" />
+      <text class="muted" x="188" y="20">1.450</text>
+    </g>
 
-  <!-- IOR -->
-  <circle cx="25" cy="205" r="6" fill="#8C8C8C" stroke="#000"/>
-  <text x="45" y="209" font-size="14" fill="white">IOR</text>
-  <rect x="160" y="190" width="130" height="30" rx="4" fill="#333" stroke="#000"/>
+    <!-- Alpha -->
+    <g transform="translate(18,242)">
+      <circle cx="6" cy="16" r="6" fill="#3b82f6" stroke="#163b6a" stroke-width="0.8" />
+      <text class="label" x="22" y="20">Alpha</text>
+      <rect x="180" y="6" width="146" height="22" rx="5" fill="#3b82f6" fill-opacity="0.6" stroke="#234e8a" />
+      <text class="muted" x="188" y="20">1.000</text>
+    </g>
 
-  <!-- Alpha -->
-  <circle cx="25" cy="250" r="6" fill="#4A90E2" stroke="#000"/>
-  <text x="45" y="254" font-size="14" fill="white">Alpha</text>
-  <rect x="160" y="235" width="130" height="30" rx="4" fill="#4A90E2" opacity="0.3" stroke="#000"/>
+    <!-- Normal header -->
+    <g transform="translate(18,292)">
+      <circle cx="6" cy="16" r="6" fill="#6b7280" stroke="#222" stroke-width="0.8" />
+      <text class="label" x="22" y="20">Normal</text>
+    </g>
 
-  <!-- Normal block -->
-  <circle cx="25" cy="305" r="6" fill="#4A90E2" stroke="#000"/>
-  <text x="45" y="309" font-size="14" fill="white">Normal</text>
+    <!-- Expandable list -->
+    <g transform="translate(38,332)">
+      <text class="label" x="0" y="0">▸ Diffuse</text>
+      <text class="label" x="0" y="28">▸ Subsurface</text>
+      <text class="label" x="0" y="56">▸ Specular</text>
+      <text class="label" x="0" y="84">▸ Transmission</text>
+      <text class="label" x="0" y="112">▸ Coat</text>
+      <text class="label" x="0" y="140">▸ Sheen</text>
+      <text class="label" x="0" y="168">▸ Emission</text>
+      <text class="label" x="0" y="196">▸ Thin Film</text>
+    </g>
 
-  <!-- sub-entries -->
-  <text x="60" y="340" font-size="13" fill="#ccc">▸ Diffuse</text>
-  <text x="60" y="360" font-size="13" fill="#ccc">▸ Subsurface</text>
-  <text x="60" y="380" font-size="13" fill="#ccc">▸ Specular</text>
-  <text x="60" y="400" font-size="13" fill="#ccc">▸ Transmission</text>
-
-</svg>
+  </svg>
