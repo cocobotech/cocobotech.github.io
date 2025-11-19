@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COCOBO</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600&family=Noto+Serif+SC:wght@700;900&display=swap');
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'Orbitron', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* EPIC 3D COCOBO TITLE */
+    .title-3d {
+      position: absolute;
+      top: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(3rem, 12vw, 8rem);
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      margin: 0;
+      padding: 20px 40px;
+      text-align: center;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .title-3d a {
+      color: transparent;
+      text-decoration: none;
+      background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #fb5607, #ff006e);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: rainbowFlow 8s ease infinite, float 6s ease-in-out infinite;
+      text-shadow: 
+        0 0 20px rgba(255,0,110,0.8),
+        0 0 40px rgba(131,56,236,0.7),
+        0 0 80px rgba(58,134,255,0.6),
+        5px 5px 0px #000,
+        10px 10px 0px #111,
+        15px 15px 0px #222,
+        20px 20px 30px rgba(0,0,0,0.8);
+      filter: drop-shadow(0 0 30px #8338ec);
+      transform: perspective(800px) rotateX(15deg);
+      transition: all 0.4s ease;
+    }
+
+    .title-3d a:hover {
+      transform: perspective(800px) rotateX(20deg) scale(1.05);
+      text-shadow: 
+        0 0 40px #8b0540,
+        0 0 80px #8338ec,
+        0 0 120px #3a86ff,
+        10px 10px 30px rgba(0,0,0,0.9);
+    }
+
+    @keyframes rainbowFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: perspective(800px) rotateX(15deg) translateY(0px); }
+      50%      { transform: perspective(800px) rotateX(15deg) translateY(-30px); }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: -1;
+    }
+
+    button {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 20px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      background: linear-gradient(45deg, #ff006e, #3a86ff);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255,0,110,0.4);
+      transition: all 0.3s;
+      z-index: 10;
+    }
+    button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(131,56,236,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D COCOBO TITLE -->
+  <h1 class="title-3d">
+    <a href="https://cocobotech.github.io/home.html">COCOBO</a>
+  </h1>
+
+  <button onclick="window.location='https://cocobotech.github.io/home.html'">Enter</button>
+
+  <canvas id="bg_animation_wave1"></canvas>
+
+  <script>
+    function startBackgroundAnimation(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      let time = 0;
+      let lines = [];
+
+      const numLines = 6;
+      const lineHeight = 38;
+      const amplitude = 110;
+      const frequency = 0.012;
+      const speed = 0.01;
+      const hueShiftSpeed = 2;
+
+      const fixedNumbers = [];
+      const meteors = [];
+
+      // 流星类
+      class Meteor {
+        constructor() {
+          this.reset();
+        }
+
+        reset() {
+          // 从屏幕右上方开始
+          this.x = canvas.width + Math.random() * 200;
+          this.y = -50 - Math.random() * 100;
+          
+          // 向左下方移动
+          this.speedX = -(3 + Math.random() * 4);
+          this.speedY = 2 + Math.random() * 3;
+          
+          this.length = 80 + Math.random() * 120;
+          this.thickness = 1.5 + Math.random() * 2;
+          
+          // 彩虹色系
+          this.hue = Math.random() * 360;
+          this.alpha = 0.8 + Math.random() * 0.2;
+          
+          // 尾迹效果
+          this.trail = [];
+          this.maxTrail = 15;
+        }
+
+        update() {
+          // 保存轨迹
+          this.trail.push({ x: this.x, y: this.y });
+          if (this.trail.length > this.maxTrail) {
+            this.trail.shift();
+          }
+
+          this.x += this.speedX;
+          this.y += this.speedY;
+
+          // 如果流星飞出屏幕，重置
+          if (this.x < -this.length || this.y > canvas.height + 100) {
+            this.reset();
+          }
+        }
+
+        draw() {
+          // 绘制流星尾迹（渐变透明）
+          for (let i = 0; i < this.trail.length; i++) {
+            const point = this.trail[i];
+            const trailAlpha = (i / this.trail.length) * this.alpha * 0.5;
+            
+            ctx.beginPath();
+            ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, ${trailAlpha})`;
+            ctx.lineWidth = this.thickness * (i / this.trail.length);
+            
+            if (i > 0) {
+              const prev = this.trail[i - 1];
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(point.x, point.y);
+            }
+            ctx.stroke();
+          }
+
+          // 绘制流星主体（带发光效果）
+          const gradient = ctx.createLinearGradient(
+            this.x, this.y,
+            this.x + this.speedX * 10, this.y + this.speedY * 10
+          );
+          
+          gradient.addColorStop(0, `hsla(${this.hue}, 100%, 90%, ${this.alpha})`);
+          gradient.addColorStop(0.5, `hsla(${this.hue}, 100%, 70%, ${this.alpha * 0.6})`);
+          gradient.addColorStop(1, `hsla(${this.hue}, 100%, 50%, 0)`);
+
+          ctx.save();
+          ctx.shadowBlur = 25;
+          ctx.shadowColor = `hsl(${this.hue}, 100%, 70%)`;
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = this.thickness;
+          ctx.lineCap = 'round';
+
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y);
+          ctx.lineTo(this.x + this.speedX * 10, this.y + this.speedY * 10);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // 固定数字类（优化中文字体）
+      class FixedNumber {
+        constructor(char, lineIndex, positionRatio, english) {
+          this.char = char;
+          this.english = english;
+          this.lineIndex = lineIndex;
+          this.positionRatio = positionRatio;
+          this.size = 36;
+          this.englishSize = 16;
+          this.glowIntensity = 0;
+        }
+
+        draw(currentTime) {
+          if (this.lineIndex >= lines.length) return;
+          const line = lines[this.lineIndex];
+          const x = this.positionRatio * canvas.width;
+          const y = getWaveY(line, x, currentTime);
+
+          const hue = (line.colorHue + currentTime * hueShiftSpeed + this.lineIndex * 40) % 360;
+          const alpha = 0.92 + Math.sin(currentTime * 2 + this.lineIndex) * 0.08;
+          const glow = 35 + Math.sin(currentTime * 3 + this.lineIndex * 0.5) * 15;
+
+          ctx.save();
+          
+          // 绘制中文
+          ctx.shadowBlur = glow;
+          ctx.shadowColor = `hsl(${hue}, 100%, 65%)`;
+          ctx.font = `900 ${this.size}px 'Noto Serif SC', 'STKaiti', 'KaiTi', serif`;
+          ctx.fillStyle = `hsla(${hue}, 100%, 80%, ${alpha})`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.strokeStyle = `hsla(${hue}, 100%, 90%, ${alpha * 0.6})`;
+          ctx.lineWidth = 2;
+          ctx.strokeText(this.char, x, y);
+          ctx.fillText(this.char, x, y);
+          
+          // 绘制英文（下方，暗灰色，无发光）
+          ctx.shadowBlur = 0;
+          ctx.font = `600 ${this.englishSize}px 'Rajdhani', sans-serif`;
+          ctx.fillStyle = `rgba(160, 160, 160, 0.85)`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText(this.english, x, y + 22);
+          
+          ctx.restore();
+        }
+      }
+
+      // 初始化9个固定数字
+      function initFixedNumbers() {
+        fixedNumbers.length = 0;
+        const spacing = 1 / 4;
+
+        // 第1条波浪线：仁爱 喜乐 和平
+        fixedNumbers.push(new FixedNumber('仁爱', 0, spacing * 0.6, 'Love'));
+        fixedNumbers.push(new FixedNumber('喜乐', 0, spacing * 1.6, 'Joy'));
+        fixedNumbers.push(new FixedNumber('和平', 0, spacing * 2.6, 'Peace'));
+
+        // 第3条波浪线：忍耐 恩慈 良善
+        fixedNumbers.push(new FixedNumber('忍耐', 2, spacing * 1.2, 'Patience'));
+        fixedNumbers.push(new FixedNumber('恩慈', 2, spacing * 2.2, 'Kindness'));
+        fixedNumbers.push(new FixedNumber('良善', 2, spacing * 3.2, 'Goodness'));
+
+        // 第5条波浪线：信实 温柔 节制
+        fixedNumbers.push(new FixedNumber('信实', 4, spacing * 0.8, 'Faithfulness'));
+        fixedNumbers.push(new FixedNumber('温柔', 4, spacing * 1.8, 'Gentleness'));
+        fixedNumbers.push(new FixedNumber('节制', 4, spacing * 2.8, 'Self-Control'));
+      }
+
+      // 初始化流星
+      function initMeteors() {
+        meteors.length = 0;
+        const meteorCount = 8; // 同时存在的流星数量
+        for (let i = 0; i < meteorCount; i++) {
+          const meteor = new Meteor();
+          // 让流星初始位置分散
+          meteor.x = canvas.width + Math.random() * canvas.width;
+          meteor.y = -Math.random() * canvas.height * 0.5;
+          meteors.push(meteor);
+        }
+      }
+
+      function initLines() {
+        lines = [];
+        const startY = (canvas.height - (numLines * lineHeight * 2)) / 2 + 50;
+        for (let i = 0; i < numLines; i++) {
+          lines.push({
+            startY: startY + i * lineHeight * 2,
+            colorHue: i * 60,
+            offset: i * 1.2
+          });
+        }
+      }
+
+      function getWaveY(line, x, t) {
+        return line.startY +
+          Math.sin(x * frequency + t * 1.5 + line.offset) * amplitude * 0.6 +
+          Math.sin(x * frequency * 0.7 - t * 0.9 + line.offset * 2) * amplitude * 0.4;
+      }
+
+      function animate() {
+        // 纯黑背景（更强的拖尾清除效果）
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        time += speed;
+
+        // 绘制波浪线
+        lines.forEach((line, i) => {
+          ctx.beginPath();
+          const hue = (line.colorHue + time * hueShiftSpeed) % 360;
+          const thickness = 4 + Math.sin(time * 2 + i) * 3;
+
+          ctx.strokeStyle = `hsla(${hue}, 100%, 70%, 0.85)`;
+          ctx.lineWidth = thickness;
+          ctx.shadowBlur = 22;
+          ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+
+          for (let x = 0; x <= canvas.width; x += 2) {
+            const y = getWaveY(line, x, time);
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        });
+
+        // 更新和绘制流星
+        meteors.forEach(meteor => {
+          meteor.update();
+          meteor.draw();
+        });
+
+        // 绘制固定数字
+        fixedNumbers.forEach(n => n.draw(time));
+
+        requestAnimationFrame(animate);
+      }
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        // 初始化时填充纯黑背景
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        initLines();
+        initFixedNumbers();
+        initMeteors();
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      animate();
+    }
+
+    window.onload = () => startBackgroundAnimation('bg_animation_wave1');
+  </script>
+</body>
+</html>
