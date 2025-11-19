@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>炫酷跳舞小人 by GSAP</title>
+<style>
+  body,html{margin:0;background:#f9f9f9;display:grid;place-items:center;height:100vh;overflow:hidden;}
+  svg{width:320px;filter:drop-shadow(0 10px 20px rgba(0,0,0,0.15));}
+  .line{stroke:#000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none;}
+</style>
+</head>
+<body>
+
+<svg viewBox="0 0 400 600">
+  <!-- 头发 -->
+  <path class="line" d="M150,80 Q120,30 200,50 Q280,30 250,80" />
+  <!-- 头 -->
+  <circle class="line" cx="200" cy="100" r="50"/>
+  <!-- 眼睛 -->
+  <circle cx="180" cy="90" r="8" fill="#000"/>
+  <circle cx="220" cy="90" r="8" fill="#000"/>
+  <!-- 笑嘴 -->
+  <path d="M170,110 Q200,140 230,110" class="line"/>
+  
+  <!-- 身体 -->
+  <path id="body" class="line" d="M200,150 L200,280"/>
+  
+  <!-- 左手 -->
+  <path id="left-arm" class="line" d="M200,180 L140,240"/>
+  <!-- 右手 -->
+  <path id="right-arm" class="line" d="M200,180 L260,240"/>
+  
+  <!-- 左腿 -->
+  <path id="left-leg" class="line" d="M200,280 L160,420"/>
+  <!-- 右腿 -->
+  <path id="right-leg" class="line" d="M200,280 L240,420"/>
+  
+  <!-- 鞋子 -->
+  <ellipse cx="155" cy="430" rx="30" ry="15" fill="#000"/>
+  <ellipse cx="245" cy="430" rx="30" ry="15" fill="#000"/>
+</svg>
+
+<!-- GSAP 最新免费版（2025） -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+// 一、描边一笔一划出现（加载动画）
+gsap.from(".line", {
+  drawSVG: 0,
+  duration: 2.5,
+  ease: "power2.inOut",
+  stagger: 0.08
+});
+
+// 二、无限跳舞时间轴（超炫酷节奏感）
+let dance = gsap.timeline({repeat: -1, yoyo: true});
+
+dance
+  // 跳
+  .to("#body", {y: -80, duration: 0.35, ease: "power2.out"}, 0)
+  .to("#body", {y: 0, duration: 0.35, ease: "power2.in"}, 0.35)
+  
+  // 甩手
+  .to("#left-arm",  {rotation: -120, transformOrigin: "top center", duration: 0.4}, 0)
+  .to("#right-arm", {rotation: 120,  transformOrigin: "top center", duration: 0.4}, 0)
+  
+  // 踢腿
+  .to("#left-leg",  {rotation: -60, transformOrigin: "top center", duration: 0.3}, 0.2)
+  .to("#right-leg", {rotation: 60,  transformOrigin: "top center", duration: 0.3}, 0.2)
+  
+  // 转头
+  .to("circle[cx='200']", {rotation: 15, transformOrigin: "center", duration: 0.25}, 0)
+  .to("circle[cx='200']", {rotation: -15, transformOrigin: "center", duration: 0.25}, 0.5)
+
+// 三、加上轻微的整体摇摆（更有音乐感）
+gsap.to("svg", {
+  rotation: 3,
+  transformOrigin: "center bottom",
+  duration: 1.2,
+  ease: "sine.inOut",
+  repeat: -1,
+  yoyo: true
+});
+
+
+
+// 粒子背景（2025新宠）
+gsap.to("svg", {filter: "hue-rotate(360deg)", duration: 10, repeat: -1, ease: "none"});
+
+// 鼠标跟随眼睛（互动）
+document.onmousemove = (e) => {
+  let eyes = document.querySelectorAll("circle[cx='180'],circle[cx='220']");
+  eyes.forEach(eye => {
+    let x = (e.clientX * 0.02);
+    let y = (e.clientY * 0.02);
+    gsap.to(eye, {x: x-10, y: y-10, duration: 0.8});
+  });
+};
+</script>
+
+</body>
+</html>
