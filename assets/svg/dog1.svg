@@ -1,0 +1,44 @@
+<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 1. 身体（微微歪，更可爱）-->
+  <path d="M200,320 Q140,380 160,450 Q200,480 240,450 Q260,380 200,320 Z" 
+        fill="#f4a261" stroke="#e76f51" stroke-width="6"/>
+
+  <!-- 2. 头部 -->
+  <ellipse cx="200" cy="180" rx="100" ry="95" fill="#f4a261" stroke="#e76f51" stroke-width="6"/>
+
+  <!-- 3. 两只大耳朵（关键可爱点）-->
+  <path d="M120,140 Q80,50 130,80" fill="#e76f51" stroke="#e76f51" stroke-width="6"/>
+  <path d="M280,140 Q320,50 270,80" fill="#e76f51" stroke="#e76f51" stroke-width="6"/>
+  <path d="M120,140 Q100,100 130,120" fill="#f9c7b4"/> <!-- 内耳 -->
+  <path d="M280,140 Q300,100 270,120" fill="#f9c7b4"/>
+
+  <!-- 4. 眼睛（带高光，超有神）-->
+  <circle cx="160" cy="160" r="18" fill="#000"/>
+  <circle cx="240" cy="160" r="18" fill="#000"/>
+  <circle cx="165" cy="155" r="8" fill="#fff"/>
+  <circle cx="245" cy="155" r="8" fill="#fff"/>
+
+  <!-- 5. 鼻子 + 嘴 -->
+  <ellipse cx="200" cy="210" rx="22" ry="18" fill="#2a9d8f"/>
+  <path d="M200,210 Q180,240 160,235 Q200,260 240,235 Q220,240 200,210" 
+        fill="none" stroke="#264653" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- 6. 前腿（胖胖的）-->
+  <ellipse cx="150" cy="420" rx="35" ry="70" fill="#f4a261" stroke="#e76f51" stroke-width="6"/>
+  <ellipse cx="250" cy="420" rx="35" ry="70" fill="#f4a261" stroke="#e76f51" stroke-width="6"/>
+
+  <!-- 7. 后腿（藏在身体后面一点）-->
+  <ellipse cx="170" cy="450" rx="38" ry="55" fill="#e76f51" stroke="#e76f51" stroke-width="6"/>
+  <ellipse cx="230" cy="450" rx="38" ry="55" fill="#e76f51" stroke="#e76f51" stroke-width="6"/>
+
+  <!-- 8. 尾巴（翘起来最可爱！）-->
+  <path d="M240,320 Q300,280 280,360 Q260,400 230,380" 
+        fill="#f4a261" stroke="#e76f51" stroke-width="8"/>
+
+  <!-- 9. 胸口白毛（增加真实感）-->
+  <path d="M200,280 Q170,340 200,360 Q230,340 200,280 Z" fill="#fff" opacity="0.9"/>
+
+  <!-- 10. 小肉垫（细节拉满）-->
+  <ellipse cx="150" cy="480" rx="20" ry="12" fill="#e76f51"/>
+  <ellipse cx="250" cy="480" rx="20" ry="12" fill="#e76f51"/>
+</svg>
