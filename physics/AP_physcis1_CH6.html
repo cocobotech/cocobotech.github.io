@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO AP Physics 1 - Rotational Energy & Momentum</title>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
+body { font-family:'Inter','Noto Sans SC',sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; margin:0; padding:0; }
+.container-app { max-width: 1200px; margin:10px auto; padding:10px; background-color:rgba(244, 244, 247, 0.863); border-radius:24px; box-shadow:0 10px 30px rgba(26, 122, 177, 0.384); }
+.container-header { background: white; border-radius: 25px; padding: 10px; margin-bottom: 5px; box-shadow: 0 15px 10px rgba(0,0,0,0.3); text-align: center; position: relative; overflow: hidden; }
+h1 { font-size: 2.5rem; color: var(--primary-color); font-weight:700; text-align:center; margin: 0; }
+h2 { font-size:1.5rem; font-weight:600; color:var(--text-dark); border-left:5px solid var(--primary-color); padding-left:10px; margin-bottom:20px; }
+.text2xl { color: var(--primary-color); font-weight:900; text-align:left; padding-bottom:10px; }
+
+.concept-card { background:rgb(242, 247, 248); border-radius:16px; padding:20px; box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+.concept-card_adv { background:rgb(221, 223, 223); border-radius:16px; padding:20px; box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+
+.concept-card:hover { transform: translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.15); }
+.formula { font-family:'Times New Roman', serif; font-size:1.2rem; font-weight:bold; color: var(--secondary-color); padding:10px 0; text-align:center; border-top:1px solid #e5e7eb; margin-top:15px; }
+.grid-1 { display: grid; grid-template-columns: repeat(1,1fr); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.my-8 { margin: 2rem 0; }
+.mb-4 { margin-bottom: 1rem; }
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-gray-500 { color: #6b7280; }
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+th, td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f1f3f5;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+canvas {
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    display: block;
+    margin: 20px auto;
+    background: white;
+}
+
+.control-group {
+    margin: 15px 0;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+}
+
+.btn-reset {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin: 5px;
+}
+
+.btn-reset:hover {
+    background: #6366f1;
+}
+
+.legend {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.legend h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.info-display {
+    background: #e8f5e9;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    font-weight: 600;
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+</head>
+
+<body>
+<div class="container-app">
+    <div class="container-header">
+        <h1>COCOBO-TECH AP Physics 1</h1>
+        <p style="text-align: center;text-decoration: underline; font-weight: 600; color: #4f46e5;">
+            Unit 6 – Energy and Momentum of Rotating Systems
+        </p>
+    </div>
+
+    <!-- ================ 核心概念与公式 ================ -->
+    <div class="my-8">
+        <h2>🔑 转动能量 (Rotational Energy)</h2>
+
+        <div class="grid-2 mb-4">
+            <!-- 1. 转动动能 -->
+            <div class="concept-card">
+                <h3 class="text2xl">1. Rotational Kinetic Energy</h3>
+                <p>Energy associated with rotational motion.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>I = moment of inertia (kg·m²)</li>
+                    <li>ω = angular velocity (rad/s)</li>
+                    <li>Analogous to linear KE = ½mv²</li>
+                    <li>Depends on mass distribution</li>
+                </ul>
+                <div class="formula">\( K_{rot} = \frac{1}{2} I \omega^2 \)</div>
+            </div>
+
+            <!-- 2. 总机械能 -->
+            <div class="concept-card">
+                <h3 class="text2xl">2. Total Mechanical Energy</h3>
+                <p>For rolling objects, combine translational and rotational energy.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>v_cm = velocity of center of mass</li>
+                    <li>For rolling: v_cm = ωr (no slipping)</li>
+                    <li>Both types of KE must be considered</li>
+                    <li>PE unchanged by rotation</li>
+                </ul>
+                <div class="formula">\( E_{total} = \frac{1}{2}mv_{cm}^2 + \frac{1}{2}I\omega^2 + PE \)</div>
+            </div>
+        </div>
+
+        <h2>🎯 角动量 (Angular Momentum)</h2>
+        <div class="grid-3 mb-4">
+            <!-- 3. 角动量定义 -->
+            <div class="concept-card">
+                <h3 class="text2xl">3. Angular Momentum (L)</h3>
+                <p>Rotational analog of linear momentum.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Unit: kg·m²/s</li>
+                    <li>Vector quantity (direction: right-hand rule)</li>
+                    <li>L ∝ ω (if I is constant)</li>
+                    <li>For point mass: L = mvr (when v ⊥ r)</li>
+                </ul>
+                <div class="formula">\( L = I \omega \)</div>
+            </div>
+
+            <!-- 4. 角动量守恒 -->
+            <div class="concept-card">
+                <h3 class="text2xl">4. Conservation of Angular Momentum</h3>
+                <p>When net external torque is zero, L is conserved.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>τ_ext = 0 → L = constant</li>
+                    <li>If I decreases → ω increases</li>
+                    <li>Examples: ice skater, diver, planets</li>
+                    <li>Internal forces don't change L</li>
+                </ul>
+                <div class="formula">\( I_1 \omega_1 = I_2 \omega_2 \)</div>
+            </div>
+
+            <!-- 5. 角冲量 -->
+            <div class="concept-card">
+                <h3 class="text2xl">5. Angular Impulse</h3>
+                <p>Change in angular momentum equals angular impulse.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>τ = net torque</li>
+                    <li>Δt = time interval</li>
+                    <li>Analogous to J = FΔt</li>
+                    <li>Used in collision problems</li>
+                </ul>
+                <div class="formula">\( \Delta L = \tau \Delta t \)</div>
+
+                <div class="formula">\( \tau = \frac{\Delta L}{\Delta t} = \frac{I \Delta \omega}{\Delta t} = I \alpha \)</div>
+
+            </div>
+        </div>
+
+        <h2>⚡ 功和功率 (Work and Power)</h2>
+        <div class="grid-2 mb-4">
+            <!-- 6. 转动功 -->
+            <div class="concept-card">
+                <h3 class="text2xl">6. Rotational Work</h3>
+                <p>Work done by torque causes change in rotational KE.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>θ = angular displacement (radians)</li>
+                    <li>Work-Energy theorem for rotation</li>
+                    <li>Analogous to W = Fd</li>
+                    <li>Can be positive or negative</li>
+                </ul>
+                <div class="formula">\( W = \tau \Delta \theta = \Delta K_{rot} \)</div>
+            </div>
+
+            <!-- 7. 转动功率 -->
+            <div class="concept-card">
+                <h3 class="text2xl">7. Rotational Power</h3>
+                <p>Rate of doing rotational work.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Unit: Watts (W)</li>
+                    <li>ω must be in rad/s</li>
+                    <li>Analogous to P = Fv</li>
+                    <li>Important for engines, motors</li>
+                </ul>
+                <div class="formula">\( P = \tau \omega \)</div>
+            </div>
+        </div>
+
+
+        <h2>🎳 滚动运动 (Rolling Motion)</h2>
+        <div class="grid-3 mb-4">
+            <!-- Rolling without slipping -->
+            <div class="concept-card">
+                <h3 class="text2xl">8. Rolling Without Slipping</h3>
+                <p>Constraint condition for pure rolling motion.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>v_cm = linear velocity of center of mass</li>
+                    <li>ω = angular velocity</li>
+                    <li>r = radius of rolling object</li>
+                    <li>Bottom point momentarily at rest</li>
+                </ul>
+                <div class="formula">\( v_{cm} = \omega r \)</div>
+            </div>
+
+            <!-- Center of mass motion -->
+            <div class="concept-card">
+                <h3 class="text2xl">9. Center of Mass Position</h3>
+                <p>The CM moves as if all mass is concentrated there.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Δx_cm = displacement of center of mass</li>
+                    <li>Same as for point particle</li>
+                    <li>Kinematics: v² = v₀² + 2a·Δx</li>
+                    <li>For rolling: Δx_cm = rΔθ</li>
+                </ul>
+                <div class="formula">\( \Delta x_{cm} = r \Delta \theta \)</div>
+                <!--<div class="formula">\( \Delta x_{cm} = v_{cm}t + \frac{1}{2}a_{cm}t^2 \)</div>-->
+            </div>
+
+            <!-- Angular and linear acceleration -->
+            <div class="concept-card">
+                <h3 class="text2xl">10. Acceleration Relationship</h3>
+                <p>For rolling without slipping, linear and angular accelerations are related.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>a_cm = linear acceleration of CM</li>
+                    <li>α = angular acceleration</li>
+                    <li>Taking derivative of v_cm = ωr</li>
+                    <li>Both measured about same axis</li>
+                </ul>
+                <div class="formula">\( a_{cm} = \alpha r \)</div>
+            </div>
+        </div>
+
+        <h2>🛰️ 卫星轨道运动 (Motion of Orbiting Satellites)</h2>
+
+        <div class="grid-3 mb-4">
+
+            <!-- Gravitational Force -->
+            <div class="concept-card">
+                <h3 class="text2xl">11. Universal Gravitation Force</h3>
+                <p>Gravitational force between two masses.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>G = 6.674 × 10⁻¹¹ N·m²/kg²</li>
+                    <li>m₁, m₂ = masses of two objects</li>
+                    <li>r = distance between centers</li>
+                    <li>Always attractive (negative sign)</li>
+                </ul>
+                <div class="formula">\( F_g = -\frac{Gm_1m_2}{r^2} \)</div>
+            </div>
+
+            <!-- Gravitational Potential Energy -->
+            <div class="concept-card">
+                <h3 class="text2xl">12. Gravitational Potential Energy</h3>
+                <p>Potential energy in gravitational field (general form).</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Zero reference at r = ∞</li>
+                    <li>Always negative (bound system)</li>
+                    <li>Near Earth surface: PE ≈ mgh (approximation)</li>
+                    <li>Used for satellites and planetary motion</li>
+                </ul>
+                <div class="formula">\( U_g = -\frac{Gm_1m_2}{r} \)</div>
+            </div>
+
+
+            <!-- Orbital velocity -->
+            <div class="concept-card">
+                <h3 class="text2xl">11. Orbital Velocity</h3>
+                <p>For circular orbit, gravitational force provides centripetal force.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>M = mass of central body (e.g., Earth)</li>
+                    <li>r = orbital radius from center</li>
+                    <li>v decreases as r increases</li>
+                    <li>Independent of satellite mass</li>
+                </ul>
+                <div class="formula">\( v = \sqrt{\frac{GM}{r}} \)</div>
+            </div>
+
+            
+
+
+        </div>
+
+
+
+
+        <h2>🛰️ 卫星轨道运动 (Motion of Orbiting Satellites) ADV-AP考试应该不考吧，不想知道就算了</h2>
+        <div class="grid-3 mb-4">
+            
+            
+            <!-- Orbital period -->
+            <div class="concept-card_adv">
+                <h3 class="text2xl">12. Orbital Period (Kepler's 3rd Law)</h3>
+                <p>Period squared is proportional to radius cubed.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>T = orbital period (time for one orbit)</li>
+                    <li>T² ∝ r³ (Kepler's Third Law)</li>
+                    <li>Larger orbit → longer period</li>
+                    <li>For Earth orbit: r includes Earth's radius</li>
+                </ul>
+                <div class="formula">\( T = 2\pi\sqrt{\frac{r^3}{GM}} \)</div>
+            </div>
+
+
+
+            <!-- Orbital energy -->
+            <div class="concept-card_adv">
+                <h3 class="text2xl">13. Total Orbital Energy</h3>
+                <p>Total mechanical energy of orbiting satellite.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>m = satellite mass</li>
+                    <li>E is negative (bound orbit)</li>
+                    <li>KE = ½mv² = GMm/(2r)</li>
+                    <li>PE = -GMm/r (gravitational)</li>
+                </ul>
+                <div class="formula">\( E = -\frac{GMm}{2r} = \frac{1}{2}KE + PE \)</div>
+            </div>
+
+            <!-- Angular momentum of orbit -->
+            <div class="concept-card_adv">
+                <h3 class="text2xl">14. Orbital Angular Momentum</h3>
+                <p>Satellite has angular momentum about central body.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>For circular orbit: L = mvr</li>
+                    <li>Conserved (no external torque)</li>
+                    <li>Direction: perpendicular to orbital plane</li>
+                    <li>Explains why orbits are planar</li>
+                </ul>
+                <div class="formula">\( L = mvr = m\sqrt{GMr} \)</div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <!-- ================ 互动演示：滚动下坡 ================ -->
+    <div class="my-8">
+        <h2>🎢 互动演示：滚动下坡 (Rolling Down Incline)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); font-weight: 600; margin-bottom: 15px;">参数设置</h3>
+                
+                <div class="control-group">
+                    <label>物体类型：</label>
+                    <select id="objectType" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                        <option value="solid_sphere">实心球 (I = 2/5 mr²)</option>
+                        <option value="hollow_sphere">空心球 (I = 2/3 mr²)</option>
+                        <!--<option value="solid_cylinder">实心圆柱 (I = 1/2 mr²)</option>-->
+                        <!--<option value="hollow_cylinder">空心圆柱 (I = mr²)</option>-->
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>斜坡角度: <span id="inclineAngleValue">30</span>°</label>
+                    <input type="range" id="inclineAngleSlider" min="10" max="60" step="5" value="30">
+                </div>
+                
+                <div class="control-group">
+                    <label>质量 (m): <span id="massValue">2.0</span> kg</label>
+                    <input type="range" id="massSlider" min="0.5" max="5" step="0.5" value="2">
+                </div>
+                
+                <div class="control-group">
+                    <label>半径 (r): <span id="radiusValue">0.2</span> m</label>
+                    <input type="range" id="radiusSlider" min="0.1" max="0.5" step="0.05" value="0.2">
+                </div>
+                
+                <div class="control-group">
+                    <label>斜坡高度 (h): <span id="heightValue">3.0</span> m</label>
+                    <input type="range" id="heightSlider" min="1" max="5" step="0.5" value="3">
+                </div>
+                
+                <div class="info-display">
+                    <div style="margin-bottom: 8px;">
+                        <strong>转动惯量 (I):</strong> <span id="momentInertia">0</span> kg·m²
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>初始势能 (PE):</strong> <span id="initialPE">0</span> J
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>平动动能:</strong> <span id="translationalKE">0</span> J
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>转动动能:</strong> <span id="rotationalKE">0</span> J
+                    </div>
+                    <div style="font-size: 1.2rem; color: var(--primary-color); margin-top: 10px;">
+                        <strong>底部速度:</strong> <span id="finalVelocity">0</span> m/s
+                    </div>
+                </div>
+                
+                <button class="btn-reset" id="startRolling">▶️ 开始滚动</button>
+                <button class="btn-reset" id="resetRolling">🔄 重置</button>
+            </div>
+            
+            <div>
+                <canvas id="rollingCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 10px;">能量守恒分析</h3>
+            <p>从高度h滚下时，初始势能转化为平动动能和转动动能：</p>
+            <div style="text-align: center; font-size: 1.1rem; margin: 15px 0; color: var(--secondary-color);">
+                \( mgh = \frac{1}{2}mv^2 + \frac{1}{2}I\omega^2 \)
+            </div>
+            <p>由于无滑动条件 \(v = \omega r\)，可以解出底部速度：</p>
+            <div style="text-align: center; font-size: 1.1rem; margin: 15px 0; color: var(--secondary-color);">
+                \( v = \sqrt{\frac{2gh}{1 + \frac{I}{mr^2}}} \)
+            </div>
+            <p><strong>关键发现：</strong>到达底部的速度与质量无关，只与形状（I/mr²的比值）有关！</p>
+        </div>
+    </div>
+
+    <!-- ================ 互动演示：角动量守恒 ================ -->
+    <div class="my-8">
+        <h2>⭐ 互动演示：角动量守恒 - 旋转的溜冰者 (Conservation Demo)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); font-weight: 600; margin-bottom: 15px;">溜冰者参数</h3>
+                
+                <div class="control-group">
+                    <label>初始转动惯量 (I₁): <span id="inertia1Value">5.0</span> kg·m²</label>
+                    <input type="range" id="inertia1Slider" min="1" max="10" step="0.5" value="5">
+                </div>
+                
+                <div class="control-group">
+                    <label>初始角速度 (ω₁): <span id="omega1Value">2.0</span> rad/s</label>
+                    <input type="range" id="omega1Slider" min="0.5" max="5" step="0.5" value="2">
+                </div>
+                
+                <div class="control-group">
+                    <label>最终转动惯量 (I₂): <span id="inertia2Value">1.0</span> kg·m²</label>
+                    <input type="range" id="inertia2Slider" min="0.5" max="10" step="0.5" value="1">
+                </div>
+                
+                <div class="info-display">
+                    <div style="margin-bottom: 8px;">
+                        <strong>初始角动量 (L₁):</strong> <span id="angularMomentum1">0</span> kg·m²/s
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>最终角动量 (L₂):</strong> <span id="angularMomentum2">0</span> kg·m²/s
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>最终角速度 (ω₂):</strong> <span id="omega2Calculated">0</span> rad/s
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>初始转动动能:</strong> <span id="initialRotKE">0</span> J
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <strong>最终转动动能:</strong> <span id="finalRotKE">0</span> J
+                    </div>
+                    <div style="font-size: 1.1rem; color: var(--secondary-color); margin-top: 10px;">
+                        <strong>能量变化:</strong> <span id="energyChange">0</span> J
+                    </div>
+                </div>
+                
+                <button class="btn-reset" id="animateConservation">🎬 播放动画</button>
+                
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 0.9rem;">
+                    <strong>物理解释：</strong><br>
+                    • 角动量守恒：L₁ = L₂<br>
+                    • 收紧手臂 → I减小 → ω增大<br>
+                    • 能量增加来自肌肉做功！
+                </div>
+            </div>
+            
+            <div>
+                <canvas id="conservationCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================ 对比表格 ================ -->
+    <div class="my-8">
+        <h2>📊 线性运动 vs 转动运动对比 (Linear vs Rotational)</h2>
+        <div class="card">
+            <table>
+                <thead style="background: var(--primary-color); color: white;">
+                    <tr>
+                        <th>物理量</th>
+                        <th>线性运动</th>
+                        <th>转动运动</th>
+                        <th>关系</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>惯性</strong></td>
+                        <td>质量 (m)</td>
+                        <td>转动惯量 (I)</td>
+                        <td>I = Σmr²</td>
+                    </tr>
+                    <tr>
+                        <td><strong>运动量</strong></td>
+                        <td>动量 p = mv</td>
+                        <td>角动量 L = Iω</td>
+                        <td>L = rp (点质量)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>动能</strong></td>
+                        <td>KE = ½mv²</td>
+                        <td>KE_rot = ½Iω²</td>
+                        <td>v = ωr</td>
+                    </tr>
+                    <tr>
+                        <td><strong>力/力矩</strong></td>
+                        <td>力 (F)</td>
+                        <td>力矩 (τ)</td>
+                        <td>τ = rF</td>
+                    </tr>
+                    <tr>
+                        <td><strong>牛顿第二定律</strong></td>
+                        <td>F = ma</td>
+                        <td>τ = Iα</td>
+                        <td>α = a/r</td>
+                    </tr>
+                    <tr>
+                        <td><strong>功</strong></td>
+                        <td>W = Fd</td>
+                        <td>W = τθ</td>
+                        <td>d = rθ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>功率</strong></td>
+                        <td>P = Fv</td>
+                        <td>P = τω</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>守恒定律</strong></td>
+                        <td>p守恒 (F_ext=0)</td>
+                        <td>L守恒 (τ_ext=0)</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================ 常见转动惯量 ================ -->
+    <div class="my-8">
+        <h2>📐 常见物体的转动惯量 (Common Moments of Inertia)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">绕质心轴</h3>
+                <table>
+                    <tr><td>点质量</td><td>\(I = mr^2\)</td></tr>
+                    <tr><td>实心球</td><td>\(I = \frac{2}{5}mr^2\)</td></tr>
+                    <tr><td>空心球（薄壳）</td><td>\(I = \frac{2}{3}mr^2\)</td></tr>
+                    <tr><td>实心圆柱/圆盘</td><td>\(I = \frac{1}{2}mr^2\)</td></tr>
+                    <tr><td>空心圆柱</td><td>\(I = mr^2\)</td></tr>
+                    <tr><td>细杆（中心）</td><td>\(I = \frac{1}{12}mL^2\)</td></tr>
+                    <tr><td>细杆（端点）</td><td>\(I = \frac{1}{3}mL^2\)</td></tr>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">滚动物体的 k 因子</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">
+                    对于滚动物体：\(v = \sqrt{\frac{2gh}{1+k}}\)，其中 \(k = \frac{I}{mr^2}\)
+                </p>
+                <table>
+                    <tr><td>实心球</td><td>k = 2/5</td><td>最快 ⚡</td></tr>
+                    <tr><td>实心圆柱</td><td>k = 1/2</td><td>较快</td></tr>
+                    <tr><td>空心球</td><td>k = 2/3</td><td>较慢</td></tr>
+                    <tr><td>空心圆柱</td><td>k = 1</td><td>最慢 🐌</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">
+                    注意：所有物体的速度都与质量和半径无关，只与形状有关！
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ========== 滚动下坡演示 ==========
+const rollingCanvas = document.getElementById('rollingCanvas');
+const rCtx = rollingCanvas.getContext('2d');
+
+let objectType = 'solid_sphere';
+let inclineAngle = 30;
+let mass = 2.0;
+let radius = 0.2;
+let height = 3.0;
+let isRolling = false;
+let rollProgress = 0;
+const g = 9.8;
+
+// Moment of inertia factors
+const inertiaFactors = {
+    'solid_sphere': 0.4,        // 2/5
+    'hollow_sphere': 0.667,     // 2/3
+    'solid_cylinder': 0.5,      // 1/2
+    'hollow_cylinder': 1.0      // 1
+};
+
+document.getElementById('objectType').addEventListener('change', (e) => {
+    objectType = e.target.value;
+    updateRollingCalculations();
+});
+
+document.getElementById('inclineAngleSlider').addEventListener('input', (e) => {
+    inclineAngle = parseInt(e.target.value);
+    document.getElementById('inclineAngleValue').textContent = inclineAngle;
+    updateRollingCalculations();
+});
+
+document.getElementById('massSlider').addEventListener('input', (e) => {
+    mass = parseFloat(e.target.value);
+    document.getElementById('massValue').textContent = mass.toFixed(1);
+    updateRollingCalculations();
+});
+
+document.getElementById('radiusSlider').addEventListener('input', (e) => {
+    radius = parseFloat(e.target.value);
+    document.getElementById('radiusValue').textContent = radius.toFixed(2);
+    updateRollingCalculations();
+});
+
+document.getElementById('heightSlider').addEventListener('input', (e) => {
+    height = parseFloat(e.target.value);
+    document.getElementById('heightValue').textContent = height.toFixed(1);
+    updateRollingCalculations();
+});
+
+document.getElementById('startRolling').addEventListener('click', () => {
+    isRolling = true;
+    rollProgress = 0;
+});
+
+document.getElementById('resetRolling').addEventListener('click', () => {
+    isRolling = false;
+    rollProgress = 0;
+    drawRollingDiagram();
+});
+
+function updateRollingCalculations() {
+    const k = inertiaFactors[objectType];
+    const I = k * mass * radius * radius;
+    const PE = mass * g * height;
+    
+    // Final velocity using energy conservation
+    const vFinal = Math.sqrt((2 * g * height) / (1 + k));
+    const omega = vFinal / radius;
+    
+    const translationalKE = 0.5 * mass * vFinal * vFinal;
+    const rotationalKE = 0.5 * I * omega * omega;
+    
+    // Update display
+    document.getElementById('momentInertia').textContent = I.toFixed(4);
+    document.getElementById('initialPE').textContent = PE.toFixed(2);
+    document.getElementById('translationalKE').textContent = translationalKE.toFixed(2);
+    document.getElementById('rotationalKE').textContent = rotationalKE.toFixed(2);
+    document.getElementById('finalVelocity').textContent = vFinal.toFixed(2);
+    
+    if (!isRolling) {
+        drawRollingDiagram();
+    }
+}
+
+function drawRollingDiagram() {
+    rCtx.clearRect(0, 0, rollingCanvas.width, rollingCanvas.height);
+    
+    const angleRad = (inclineAngle * Math.PI) / 180;
+    const inclineLength = 350;
+    const inclineStartX = 50;
+    const inclineStartY = 100;
+    const inclineEndX = inclineStartX + inclineLength * Math.cos(angleRad);
+    const inclineEndY = inclineStartY + inclineLength * Math.sin(angleRad);
+    
+    // Draw incline
+    rCtx.strokeStyle = '#8B6914';
+    rCtx.fillStyle = '#D4A574';
+    rCtx.lineWidth = 2;
+    rCtx.beginPath();
+    rCtx.moveTo(inclineStartX, inclineStartY);
+    rCtx.lineTo(inclineEndX, inclineEndY);
+    rCtx.lineTo(inclineEndX, inclineStartY + inclineLength * Math.sin(angleRad) + 50);
+    rCtx.lineTo(inclineStartX, inclineStartY + inclineLength * Math.sin(angleRad) + 50);
+    rCtx.closePath();
+    rCtx.fill();
+    rCtx.stroke();
+    
+    // Draw ground
+    rCtx.strokeStyle = '#333';
+    rCtx.lineWidth = 3;
+    rCtx.beginPath();
+    rCtx.moveTo(inclineEndX - 50, inclineEndY);
+    rCtx.lineTo(inclineEndX + 100, inclineEndY);
+    rCtx.stroke();
+    
+    // Calculate object position
+    const progress = isRolling ? rollProgress : 0;
+    const displayRadius = radius * 100; // Scale for display
+    
+    // Contact point on the incline surface
+    const contactX = inclineStartX + progress * inclineLength * Math.cos(angleRad);
+    const contactY = inclineStartY + progress * inclineLength * Math.sin(angleRad);
+    
+    // Object center should be perpendicular to incline, ABOVE the surface
+    // Perpendicular to incline means: rotate 90 degrees counterclockwise from incline direction
+    // If incline direction is (cos(θ), sin(θ)), perpendicular UP is (-sin(θ), -cos(θ))
+    const objX = contactX + displayRadius * Math.sin(angleRad);
+    const objY = contactY - displayRadius * Math.cos(angleRad);
+    
+    // Draw contact point
+    if (progress >= 0 && progress < 1) {
+        rCtx.fillStyle = '#f44336';
+        rCtx.beginPath();
+        rCtx.arc(contactX, contactY, 4, 0, 2 * Math.PI);
+        rCtx.fill();
+    }
+    
+    // Draw object
+    rCtx.save();
+    rCtx.translate(objX, objY);
+    
+    // Different shapes for different objects
+    if (objectType.includes('sphere')) {
+        // Draw sphere
+        rCtx.beginPath();
+        rCtx.arc(0, 0, displayRadius, 0, 2 * Math.PI);
+        rCtx.fillStyle = objectType === 'solid_sphere' ? '#4CAF50' : '#eeeeee';
+        rCtx.fill();
+        rCtx.strokeStyle = '#333';
+        rCtx.lineWidth = 2;
+        rCtx.stroke();
+        
+        // Draw rotation indicator line from center to edge
+        const rotationAngle = -progress * inclineLength / radius; // negative for clockwise rotation
+        rCtx.strokeStyle = '#fff';
+        rCtx.lineWidth = 3;
+        rCtx.beginPath();
+        rCtx.moveTo(0, 0);
+        rCtx.lineTo(displayRadius * Math.cos(rotationAngle), displayRadius * Math.sin(rotationAngle));
+        rCtx.stroke();
+        
+        // Draw a small circle at the end of rotation indicator
+        rCtx.fillStyle = '#fff';
+        rCtx.beginPath();
+        rCtx.arc(displayRadius * Math.cos(rotationAngle), displayRadius * Math.sin(rotationAngle), 3, 0, 2 * Math.PI);
+        rCtx.fill();
+        
+    } else {
+        // Draw cylinder (side view - rectangle with circles)
+        rCtx.save();
+        rCtx.rotate(-angleRad); // Align with incline
+        
+        rCtx.fillStyle = objectType === 'solid_cylinder' ? '#FF9800' : '#9C27B0';
+        rCtx.fillRect(-displayRadius, -displayRadius * 0.3, displayRadius * 2, displayRadius * 0.6);
+        rCtx.strokeStyle = '#333';
+        rCtx.lineWidth = 2;
+        rCtx.strokeRect(-displayRadius, -displayRadius * 0.3, displayRadius * 2, displayRadius * 0.6);
+        
+        // Draw circles on ends
+        rCtx.beginPath();
+        rCtx.arc(-displayRadius, 0, displayRadius * 0.3, 0, 2 * Math.PI);
+        rCtx.stroke();
+        rCtx.beginPath();
+        rCtx.arc(displayRadius, 0, displayRadius * 0.3, 0, 2 * Math.PI);
+        rCtx.stroke();
+        
+        // Draw rotation indicator
+        const rotationAngle = -progress * inclineLength / radius;
+        rCtx.strokeStyle = '#fff';
+        rCtx.lineWidth = 3;
+        rCtx.beginPath();
+        rCtx.moveTo(0, 0);
+        rCtx.lineTo(displayRadius * 0.8 * Math.cos(rotationAngle), displayRadius * 0.8 * Math.sin(rotationAngle));
+        rCtx.stroke();
+        
+        rCtx.restore();
+    }
+    
+    rCtx.restore();
+    
+    // Draw height indicator at start
+    if (progress === 0) {
+        const heightPixels = inclineLength * Math.sin(angleRad);
+        rCtx.strokeStyle = '#f44336';
+        rCtx.lineWidth = 2;
+        rCtx.setLineDash([5, 5]);
+        rCtx.beginPath();
+        rCtx.moveTo(inclineStartX - 30, inclineStartY);
+        rCtx.lineTo(inclineStartX - 30, inclineEndY);
+        rCtx.stroke();
+        rCtx.setLineDash([]);
+        
+        // Arrow heads
+        rCtx.fillStyle = '#f44336';
+        rCtx.beginPath();
+        rCtx.moveTo(inclineStartX - 30, inclineStartY);
+        rCtx.lineTo(inclineStartX - 35, inclineStartY + 10);
+        rCtx.lineTo(inclineStartX - 25, inclineStartY + 10);
+        rCtx.closePath();
+        rCtx.fill();
+        
+        rCtx.beginPath();
+        rCtx.moveTo(inclineStartX - 30, inclineEndY);
+        rCtx.lineTo(inclineStartX - 35, inclineEndY - 10);
+        rCtx.lineTo(inclineStartX - 25, inclineEndY - 10);
+        rCtx.closePath();
+        rCtx.fill();
+        
+        rCtx.fillStyle = '#f44336';
+        rCtx.font = 'bold 14px Arial';
+        rCtx.fillText(`h = ${height} m`, inclineStartX - 70, (inclineStartY + inclineEndY) / 2);
+    }
+    
+    // Draw velocity arrow if rolling
+    if (progress > 0 && progress < 1) {
+        const k = inertiaFactors[objectType];
+        const currentHeight = height * (1 - progress);
+        const currentV = Math.sqrt((2 * g * (height - currentHeight)) / (1 + k));
+        const arrowLength = currentV * 15;
+        
+        // Arrow starts from object center, points along incline
+        rCtx.strokeStyle = '#2196F3';
+        rCtx.fillStyle = '#2196F3';
+        rCtx.lineWidth = 3;
+        rCtx.beginPath();
+        rCtx.moveTo(objX, objY);
+        rCtx.lineTo(objX + arrowLength * Math.cos(angleRad), objY + arrowLength * Math.sin(angleRad));
+        rCtx.stroke();
+        
+        // Arrow head
+        const arrowAngle = angleRad;
+        const arrowHeadX = objX + arrowLength * Math.cos(angleRad);
+        const arrowHeadY = objY + arrowLength * Math.sin(angleRad);
+        
+        rCtx.beginPath();
+        rCtx.moveTo(arrowHeadX, arrowHeadY);
+        rCtx.lineTo(
+            arrowHeadX - 10 * Math.cos(arrowAngle - Math.PI / 6),
+            arrowHeadY - 10 * Math.sin(arrowAngle - Math.PI / 6)
+        );
+        rCtx.lineTo(
+            arrowHeadX - 10 * Math.cos(arrowAngle + Math.PI / 6),
+            arrowHeadY - 10 * Math.sin(arrowAngle + Math.PI / 6)
+        );
+        rCtx.closePath();
+        rCtx.fill();
+        
+        rCtx.font = 'bold 14px Arial';
+        rCtx.fillText(`v = ${currentV.toFixed(2)} m/s`, arrowHeadX + 10, arrowHeadY - 10);
+    }
+    
+    // Labels
+    rCtx.fillStyle = '#333';
+    rCtx.font = 'bold 16px Arial';
+    const objectNames = {
+        'solid_sphere': '实心球',
+        'hollow_sphere': '空心球',
+        'solid_cylinder': '实心圆柱',
+        'hollow_cylinder': '空心圆柱'
+    };
+    rCtx.fillText(objectNames[objectType], 20, 30);
+    rCtx.fillText(`θ = ${inclineAngle}°`, inclineStartX + 50, inclineStartY + 30);
+}
+
+function animateRolling() {
+    if (isRolling) {
+        rollProgress += 0.005;
+        if (rollProgress >= 1) {
+            rollProgress = 1;
+            isRolling = false;
+        }
+        drawRollingDiagram();
+    }
+    requestAnimationFrame(animateRolling);
+}
+
+// ========== 角动量守恒演示 ==========
+const conservationCanvas = document.getElementById('conservationCanvas');
+const cCtx = conservationCanvas.getContext('2d');
+
+let inertia1 = 5.0;
+let omega1 = 2.0;
+let inertia2 = 1.0;
+let isAnimating = false;
+let animationProgress = 0;
+
+document.getElementById('inertia1Slider').addEventListener('input', (e) => {
+    inertia1 = parseFloat(e.target.value);
+    document.getElementById('inertia1Value').textContent = inertia1.toFixed(1);
+    updateConservationCalculations();
+});
+
+document.getElementById('omega1Slider').addEventListener('input', (e) => {
+    omega1 = parseFloat(e.target.value);
+    document.getElementById('omega1Value').textContent = omega1.toFixed(1);
+    updateConservationCalculations();
+});
+
+document.getElementById('inertia2Slider').addEventListener('input', (e) => {
+    inertia2 = parseFloat(e.target.value);
+    document.getElementById('inertia2Value').textContent = inertia2.toFixed(1);
+    updateConservationCalculations();
+});
+
+document.getElementById('animateConservation').addEventListener('click', () => {
+    isAnimating = true;
+    animationProgress = 0;
+});
+
+function updateConservationCalculations() {
+    const L1 = inertia1 * omega1;
+    const omega2 = L1 / inertia2;
+    const L2 = inertia2 * omega2;
+    
+    const KE1 = 0.5 * inertia1 * omega1 * omega1;
+    const KE2 = 0.5 * inertia2 * omega2 * omega2;
+    const deltaE = KE2 - KE1;
+    
+    document.getElementById('angularMomentum1').textContent = L1.toFixed(2);
+    document.getElementById('angularMomentum2').textContent = L2.toFixed(2);
+    document.getElementById('omega2Calculated').textContent = omega2.toFixed(2);
+    document.getElementById('initialRotKE').textContent = KE1.toFixed(2);
+    document.getElementById('finalRotKE').textContent = KE2.toFixed(2);
+    document.getElementById('energyChange').textContent = deltaE.toFixed(2) + (deltaE > 0 ? ' (增加)' : ' (减少)');
+    
+    if (!isAnimating) {
+        drawConservationDiagram();
+    }
+}
+
+function drawConservationDiagram() {
+    cCtx.clearRect(0, 0, conservationCanvas.width, conservationCanvas.height);
+    
+    const centerX = 250;
+    const centerY = 250;
+    
+    // Interpolate between initial and final states
+    const t = animationProgress;
+    const currentI = inertia1 + (inertia2 - inertia1) * t;
+    const L = inertia1 * omega1; // Conserved
+    const currentOmega = L / currentI;
+    
+    // Draw skater (simplified stick figure)
+    const armLength = Math.sqrt(currentI / 0.5) * 30; // Arms length proportional to I
+    
+    // Body
+    cCtx.fillStyle = '#333';
+    cCtx.beginPath();
+    cCtx.arc(centerX, centerY - 40, 20, 0, 2 * Math.PI);
+    cCtx.fill();
+    
+    cCtx.strokeStyle = '#333';
+    cCtx.lineWidth = 8;
+    cCtx.beginPath();
+    cCtx.moveTo(centerX, centerY - 20);
+    cCtx.lineTo(centerX, centerY + 30);
+    cCtx.stroke();
+    
+    // Arms (rotating)
+    const rotationAngle = currentOmega * 2 * Math.PI * (Date.now() % 10000) / 10000;
+    
+    cCtx.strokeStyle = '#2196F3';
+    cCtx.lineWidth = 6;
+    
+    // Left arm
+    cCtx.beginPath();
+    cCtx.moveTo(centerX, centerY);
+    cCtx.lineTo(
+        centerX + armLength * Math.cos(rotationAngle),
+        centerY + armLength * Math.sin(rotationAngle)
+    );
+    cCtx.stroke();
+    
+    // Right arm
+    cCtx.beginPath();
+    cCtx.moveTo(centerX, centerY);
+    cCtx.lineTo(
+        centerX - armLength * Math.cos(rotationAngle),
+        centerY - armLength * Math.sin(rotationAngle)
+    );
+    cCtx.stroke();
+    
+    // Hands
+    cCtx.fillStyle = '#FF9800';
+    cCtx.beginPath();
+    cCtx.arc(
+        centerX + armLength * Math.cos(rotationAngle),
+        centerY + armLength * Math.sin(rotationAngle),
+        10, 0, 2 * Math.PI
+    );
+    cCtx.fill();
+    
+    cCtx.beginPath();
+    cCtx.arc(
+        centerX - armLength * Math.cos(rotationAngle),
+        centerY - armLength * Math.sin(rotationAngle),
+        10, 0, 2 * Math.PI
+    );
+    cCtx.fill();
+    
+    // Legs
+    cCtx.strokeStyle = '#333';
+    cCtx.lineWidth = 6;
+    cCtx.beginPath();
+    cCtx.moveTo(centerX, centerY + 30);
+    cCtx.lineTo(centerX - 20, centerY + 70);
+    cCtx.moveTo(centerX, centerY + 30);
+    cCtx.lineTo(centerX + 20, centerY + 70);
+    cCtx.stroke();
+    
+    // Draw rotation indicators (circular arrows)
+    const numArrows = Math.ceil(currentOmega * 3);
+    for (let i = 0; i < numArrows; i++) {
+        const angle = (i / numArrows) * 2 * Math.PI + rotationAngle;
+        const arrowRadius = armLength + 40;
+        const x = centerX + arrowRadius * Math.cos(angle);
+        const y = centerY + arrowRadius * Math.sin(angle);
+        
+        drawRotationArrow(x, y, angle, '#4CAF50');
+    }
+    
+    // Display current values
+    cCtx.fillStyle = '#333';
+    cCtx.font = 'bold 18px Arial';
+    cCtx.fillText(`I = ${currentI.toFixed(2)} kg·m²`, 20, 40);
+    cCtx.fillText(`ω = ${currentOmega.toFixed(2)} rad/s`, 20, 65);
+    cCtx.fillText(`L = ${L.toFixed(2)} kg·m²/s`, 20, 90);
+    
+    // State label
+    if (t < 0.1) {
+        cCtx.fillStyle = '#2196F3';
+        cCtx.font = 'bold 24px Arial';
+        cCtx.fillText('初始状态', centerX - 60, 450);
+        cCtx.fillText('(手臂展开)', centerX - 60, 475);
+    } else if (t > 0.9) {
+        cCtx.fillStyle = '#4CAF50';
+        cCtx.font = 'bold 24px Arial';
+        cCtx.fillText('最终状态', centerX - 60, 450);
+        cCtx.fillText('(手臂收紧)', centerX - 60, 475);
+    } else {
+        cCtx.fillStyle = '#FF9800';
+        cCtx.font = 'bold 24px Arial';
+        cCtx.fillText('转换中...', centerX - 50, 460);
+    }
+}
+
+function drawRotationArrow(x, y, angle, color) {
+    cCtx.strokeStyle = color;
+    cCtx.fillStyle = color;
+    cCtx.lineWidth = 2;
+    
+    const arrowSize = 8;
+    
+    // Arrow head (tangent to circle)
+    cCtx.beginPath();
+    cCtx.moveTo(x, y);
+    cCtx.lineTo(
+        x - arrowSize * Math.cos(angle - Math.PI / 2 - Math.PI / 6),
+        y - arrowSize * Math.sin(angle - Math.PI / 2 - Math.PI / 6)
+    );
+    cCtx.lineTo(
+        x - arrowSize * Math.cos(angle - Math.PI / 2 + Math.PI / 6),
+        y - arrowSize * Math.sin(angle - Math.PI / 2 + Math.PI / 6)
+    );
+    cCtx.closePath();
+    cCtx.fill();
+}
+
+function animateConservation() {
+    if (isAnimating) {
+        animationProgress += 0.01;
+        if (animationProgress >= 1) {
+            animationProgress = 1;
+            setTimeout(() => {
+                isAnimating = false;
+                animationProgress = 0;
+            }, 5000);
+        }
+    }
+    drawConservationDiagram();
+    requestAnimationFrame(animateConservation);
+}
+
+// Initialize
+window.onload = function() {
+    updateRollingCalculations();
+    updateConservationCalculations();
+    animateRolling();
+    animateConservation();
+};
+</script>
+
+</body>
+</html>
