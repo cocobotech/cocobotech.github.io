@@ -297,7 +297,7 @@
         for (let i = 0; i < meteorCount; i++) {
           const meteor = new Meteor();
           // 让流星初始位置分散
-          meteor.x = canvas.width + Math.random() * canvas.width;
+          meteor.x = Math.random() * canvas.width; //canvas.width + Math.random() * canvas.width;
           meteor.y = -Math.random() * canvas.height * 0.5;
           meteors.push(meteor);
         }
