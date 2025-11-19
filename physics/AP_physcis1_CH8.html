@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO AP Physics 1 - Fluids</title>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
+body { font-family:'Inter','Noto Sans SC',sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; margin:0; padding:0; }
+.container-app { max-width: 1200px; margin:10px auto; padding:10px; background-color:rgba(244, 244, 247, 0.863); border-radius:24px; box-shadow:0 10px 30px rgba(26, 122, 177, 0.384); }
+.container-header { background: white; border-radius: 25px; padding: 10px; margin-bottom: 5px; box-shadow: 0 15px 10px rgba(0,0,0,0.3); text-align: center; position: relative; overflow: hidden; }
+h1 { font-size: 2.5rem; color: var(--primary-color); font-weight:700; text-align:center; margin: 0; }
+h2 { font-size:1.5rem; font-weight:600; color:var(--text-dark); border-left:5px solid var(--primary-color); padding-left:10px; margin-bottom:20px; }
+.text2xl { color: var(--primary-color); font-weight:900; text-align:left; padding-bottom:10px; }
+.concept-card { background:rgb(242, 247, 248); border-radius:16px; padding:20px; box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); transition:transform 0.3s ease, box-shadow 0.3s ease; }
+.concept-card:hover { transform: translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.15); }
+.formula { font-family:'Times New Roman', serif; font-size:1.2rem; font-weight:bold; color: var(--secondary-color); padding:10px 0; text-align:center; border-top:1px solid #e5e7eb; margin-top:15px; }
+.grid-1 { display: grid; grid-template-columns: repeat(1,1fr); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.my-8 { margin: 2rem 0; }
+.mb-4 { margin-bottom: 1rem; }
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-gray-500 { color: #6b7280; }
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+th, td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f1f3f5;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+canvas {
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    display: block;
+    margin: 20px auto;
+    background: white;
+}
+
+.control-group {
+    margin: 15px 0;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+}
+
+.btn-reset {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-reset:hover {
+    background: #6366f1;
+}
+
+.legend {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.legend h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.info-display {
+    background: #e8f5e9;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    font-weight: 600;
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+</head>
+
+<body>
+<div class="container-app">
+    <div class="container-header">
+        <h1>COCOBO-TECH AP Physics 1</h1>
+        <p style="text-align: center;text-decoration: underline; font-weight: 600; color: #4f46e5;">
+            Unit 8 – Fluids
+        </p>
+    </div>
+
+    <!-- ================ 核心概念与公式 ================ -->
+    <div class="my-8">
+        <h2>🔑 流体基本概念 (Fundamental Concepts)</h2>
+
+        <div class="grid-3 mb-4">
+            <!-- 1. 密度 -->
+            <div class="concept-card">
+                <h3 class="text2xl">1. Density (ρ)</h3>
+                <p>Mass per unit volume of a substance.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Scalar quantity</li>
+                    <li>Unit: kg/m³</li>
+                    <li>Determines whether objects float or sink</li>
+                    <li>Water: ρ = 1000 kg/m³</li>
+                </ul>
+                <div class="formula">\( \rho = \frac{m}{V} \)</div>
+            </div>
+
+            
+
+            <!-- 3. 流体压强与深度 -->
+            <div class="concept-card">
+                <h3 class="text2xl">3. Pressure & Depth</h3>
+                <p>Pressure in a fluid increases linearly with depth.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>P₀ = atmospheric pressure at surface</li>
+                    <li>h = depth below surface</li>
+                    <li>Pressure same at equal depths (Pascal's Principle)</li>
+                    <li>Independent of container shape</li>
+                </ul>
+                <div class="formula">\( P = P_0 + \rho g h \)</div>
+            </div>
+
+
+            <div class="concept-card">
+                <h3 class="text2xl"> 常见单位换算</h3>
+                <p>（必背）</p>
+                <ul class="list-disc list-inside text-sm text-gray-500">
+                    <li>1 atm = 101,325 Pa = 760 mmHg </li>
+                    <li>水密度 ρ = 1000 kg/m³</li>
+                    <li>1 Pa = 1 N/m²</li>
+                    <li>血压计用 mmHg，潜水用 atm</li>
+                </ul>
+                <div class="formula">\( 1 \, \text{atm} \approx 1.01 \times 10^5 \, \text{Pa}= 760 mmHg \)</div>
+            </div>
+
+
+        </div>
+
+        <h2>⚖️ 浮力原理 (Buoyancy Principles)</h2>
+        <div class="grid-2 mb-4">
+            <!-- 4. 阿基米德原理 -->
+            <div class="concept-card">
+                <h3 class="text2xl">4. Archimedes' Principle</h3>
+                <p>Buoyant force equals weight of displaced fluid.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>F_b always acts upward</li>
+                    <li>V_displaced = volume of fluid pushed aside</li>
+                    <li>ρ_fluid = density of the fluid (not object)</li>
+                    <li>Works for both liquids and gases</li>
+                </ul>
+                <div class="formula">\( F_b = \rho_{\text{fluid}} V_{\text{displaced}} g \)</div>
+            </div>
+
+            <!-- 5. 浮沉条件 -->
+            <div class="concept-card">
+                <h3 class="text2xl">5. Floating & Sinking</h3>
+                <p>Compare object density to fluid density.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li><strong>Float:</strong> ρ_object &lt; ρ_fluid → F_b &gt; Weight</li>
+                    <li><strong>Sink:</strong> ρ_object &gt; ρ_fluid → F_b &lt; Weight</li>
+                    <li><strong>Neutral:</strong> ρ_object = ρ_fluid → F_b = Weight</li>
+                    <li>Partially submerged: F_b = Weight exactly</li>
+                </ul>
+                <div class="formula">\( \text{Net Force} = F_b - mg \)</div>
+            </div>
+        </div>
+
+
+        <h2>💧 🧪 Pressure & Pascal’s Principle </h2>
+        <div class="grid-2 mb-4">
+            <!-- 2. 压强 -->
+            <div class="concept-card">
+                <h3 class="text2xl">2. Pressure (P)</h3>
+                <p>Force per unit area acting perpendicular to a surface.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Scalar quantity (no direction)</li>
+                    <li>Unit: Pa (Pascal) = N/m²</li>
+                    <li>Atmospheric pressure: P₀ ≈ 101,325 Pa</li>
+                    <li>Pressure acts equally in all directions in a fluid</li>
+                </ul>
+                <div class="formula">\( P = \frac{F}{A} \)</div>
+            </div>
+
+            <!-- 5. Pascal’s Principle -->
+            <div class="concept-card">
+            <h3 class="text2xl">5. Pascal’s Principle </h3>
+            <p>In a <span style="background-color: yellow;">confined</span> fluid, pressure is transmitted <span style="background-color: yellow;">equally</span>  in all directions.</p>
+            <div class="formula">
+                \( P_{\text{in}} = P_{\text{out}} \)
+            </div>
+            <div class="formula">
+                \( \frac{F_1}{A_1} = \frac{F_2}{A_2} \)
+            </div>
+            <p>→ A hydraulic lift can multiply force</p>
+            </div>
+        </div>
+
+
+        <h2>🌊 流体流动 (Fluid Flow)</h2>
+        <div class="grid-2 mb-4">
+            <!-- 6. 连续性方程 -->
+            <div class="concept-card">
+                <h3 class="text2xl">6. Continuity Equation</h3>
+                <p>Mass flow rate is constant in a pipe (incompressible fluid).</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>A = cross-sectional area</li>
+                    <li>v = fluid speed</li>
+                    <li>Narrow pipe → faster flow</li>
+                    <li>Wide pipe → slower flow</li>
+                </ul>
+                <div class="formula">\( A_1 v_1 = A_2 v_2 \)</div>
+            </div>
+
+            <!-- 7. 伯努利方程 -->
+            <div class="concept-card">
+                <h3 class="text2xl">7. Bernoulli's Equation</h3>
+                <p>Energy conservation for ideal fluid flow.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Assumes: incompressible, non-viscous, steady flow</li>
+                    <li>Higher speed → lower pressure</li>
+                    <li>Explains airplane lift, curve balls</li>
+                    <li>Each term has units of pressure (Pa)</li>
+                </ul>
+                <div class="formula">\( P + \frac{1}{2}\rho v^2 + \rho g h = \text{constant} \)</div>
+            </div>
+        </div>
+
+
+
+        <h2>🌊 Bernoulli's Equation</h2>
+        <div class="grid-2 mb-4">
+            <!-- 7. 伯努利方程 -->
+            <div class="concept-card">
+                <h3 class="text2xl">7. Bernoulli's Equation</h3>
+                <p>Energy conservation for ideal fluid flow.</p>
+                <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                    <li>Assumes: incompressible, non-viscous, steady flow</li>
+                    <li>Higher speed → lower pressure</li>
+                    <li>Explains airplane lift, curve balls</li>
+                    <li>Each term has units of pressure (Pa)</li>
+                </ul>
+                <div class="formula">\( P + \frac{1}{2}\rho v^2 + \rho g h = \text{constant} \)</div>
+            </div>
+
+
+            <div class="concept-card">
+                <h3 class="text2xl">伯努利原理 - 飞机升力, 视觉炸裂 (By COCOBO Tech Studio)</h3>
+                <canvas id="bernoulliCanvas" width="500" height="300"></canvas>
+                <div class="control-panel">
+                    <label class="slider-label">飞行速度: <span id="speedVal">50</span> m/s</label>
+                    <input type="range" min="10" max="100" value="50" id="speedSlider">
+                    <p style="margin:10px 0; color:#16a34a; font-weight:bold;">
+                        上方流速快 → 压强小 → 产生升力
+                    </p>
+                </div>
+            </div>
+
+            
+        </div>
+
+
+
+    </div>
+
+    <!-- ================ 互动演示：压强与深度 ================ -->
+    <div class="my-8">
+        <h2>📊 互动演示：水中压强 (Pressure vs Depth)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); font-weight: 600; margin-bottom: 15px;">控制面板</h3>
+                
+                <div class="control-group">
+                    <label>深度 (h): <span id="depthValue">5.0</span> m</label>
+                    <input type="range" id="depthSlider" min="0" max="20" step="0.5" value="5">
+                </div>
+                
+                <div class="control-group">
+                    <label>流体密度 (ρ): <span id="densityValue">1000</span> kg/m³</label>
+                    <input type="range" id="densitySlider" min="500" max="2000" step="50" value="1000">
+                </div>
+                
+                <div class="info-display">
+                    <div style="font-size: 1.2rem; color: var(--primary-color);">
+                        压强 = <span id="pressureDisplay">0</span> Pa
+                    </div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                        = <span id="pressureAtm">0</span> atm
+                    </div>
+                </div>
+                
+                <table style="margin-top: 15px;">
+                    <tr>
+                        <td>大气压强 (P₀):</td>
+                        <td><span id="atmPressure">101325</span> Pa</td>
+                    </tr>
+                    <tr>
+                        <td>流体压强 (ρgh):</td>
+                        <td><span id="fluidPressure">0</span> Pa</td>
+                    </tr>
+                    <tr>
+                        <td>总压强:</td>
+                        <td><span id="totalPressure">0</span> Pa</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div>
+                <canvas id="pressureCanvas" width="400" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================ 互动演示：浮力 ================ -->
+    <div class="my-8">
+        <h2>🎈 互动演示：阿基米德原理 (Archimedes' Principle)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); font-weight: 600; margin-bottom: 15px;">物体设置</h3>
+                
+                <div class="control-group">
+                    <label>物体密度 (ρ_obj): <span id="objDensityValue">800</span> kg/m³</label>
+                    <input type="range" id="objDensitySlider" min="200" max="2000" step="50" value="800">
+                </div>
+                
+                <div class="control-group">
+                    <label>物体体积 (V): <span id="volumeValue">0.10</span> m³</label>
+                    <input type="range" id="volumeSlider" min="0.01" max="0.5" step="0.01" value="0.1">
+                </div>
+                
+                <div class="control-group">
+                    <label>流体密度 (ρ_fluid): <span id="fluidDensityValue">1000</span> kg/m³</label>
+                    <input type="range" id="fluidDensitySlider" min="200" max="2000" step="50" value="1000">
+                </div>
+                
+                <div class="info-display">
+                    <div style="margin-bottom: 10px;">
+                        <strong>物体质量:</strong> <span id="objectMass">0</span> kg
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>重力 (mg):</strong> <span id="weightForce">0</span> N
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>浮力 (F_b):</strong> <span id="buoyantForce">0</span> N
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>净力:</strong> <span id="netForce">0</span> N
+                    </div>
+                    <div style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin-top: 10px;">
+                        状态: <span id="floatStatus">漂浮</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <canvas id="buoyancyCanvas" width="400" height="500"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================ 互动演示：连续性方程 ================ -->
+    <div class="my-8">
+        <h2>🚰 互动演示：连续性方程 (Continuity Equation)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); font-weight: 600; margin-bottom: 15px;">管道设置</h3>
+                
+                <div class="control-group">
+                    <label>左侧面积 (A₁): <span id="area1Value">0.04</span> m²</label>
+                    <input type="range" id="area1Slider" min="0.01" max="0.1" step="0.01" value="0.04">
+                </div>
+                
+                <div class="control-group">
+                    <label>右侧面积 (A₂): <span id="area2Value">0.01</span> m²</label>
+                    <input type="range" id="area2Slider" min="0.01" max="0.1" step="0.01" value="0.01">
+                </div>
+                
+                <div class="control-group">
+                    <label>左侧速度 (v₁): <span id="velocity1Value">2.0</span> m/s</label>
+                    <input type="range" id="velocity1Slider" min="0.5" max="5" step="0.1" value="2">
+                </div>
+                
+                <div class="info-display">
+                    <div style="margin-bottom: 10px;">
+                        <strong>流量 (A₁v₁):</strong> <span id="flowRate1">0</span> m³/s
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>右侧速度 (v₂):</strong> <span id="velocity2">0</span> m/s
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>流量 (A₂v₂):</strong> <span id="flowRate2">0</span> m³/s
+                    </div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                        面积减小 → 速度增大<br>
+                        保持流量恒定: A₁v₁ = A₂v₂
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <canvas id="continuityCanvas" width="500" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================ 常用数值 ================ -->
+    <div class="my-8">
+        <h2>📋 常用数值参考 (Common Values)</h2>
+        <div class="grid-2 mb-4">
+            <div class="card">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">密度 (Density)</h3>
+                <table>
+                    <tr><td>空气</td><td>≈ 1.2 kg/m³</td></tr>
+                    <tr><td>冰</td><td>≈ 917 kg/m³</td></tr>
+                    <tr><td>水</td><td>1000 kg/m³</td></tr>
+                    <tr><td>海水</td><td>≈ 1025 kg/m³</td></tr>
+                    <tr><td>铝</td><td>≈ 2700 kg/m³</td></tr>
+                    <tr><td>铁</td><td>≈ 7870 kg/m³</td></tr>
+                    <tr><td>铅</td><td>≈ 11340 kg/m³</td></tr>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">压强单位换算</h3>
+                <table>
+                    <tr><td>1 atm</td><td>= 101,325 Pa</td></tr>
+                    <tr><td>1 atm</td><td>≈ 10⁵ Pa</td></tr>
+                    <tr><td>1 bar</td><td>= 10⁵ Pa</td></tr>
+                    <tr><td>1 psi</td><td>≈ 6895 Pa</td></tr>
+                    <tr><td>1 torr</td><td>≈ 133.3 Pa</td></tr>
+                    <tr><td colspan="2"><strong>水下10米深度增加约1 atm</strong></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ========== 压强与深度演示 ==========
+const pressureCanvas = document.getElementById('pressureCanvas');
+const pCtx = pressureCanvas.getContext('2d');
+
+let depth = 5.0;
+let fluidDensity = 1000;
+const g = 9.8;
+const P0 = 101325;
+
+document.getElementById('depthSlider').addEventListener('input', (e) => {
+    depth = parseFloat(e.target.value);
+    document.getElementById('depthValue').textContent = depth.toFixed(1);
+    drawPressureDiagram();
+});
+
+document.getElementById('densitySlider').addEventListener('input', (e) => {
+    fluidDensity = parseInt(e.target.value);
+    document.getElementById('densityValue').textContent = fluidDensity;
+    drawPressureDiagram();
+});
+
+function drawPressureDiagram() {
+    pCtx.clearRect(0, 0, pressureCanvas.width, pressureCanvas.height);
+    
+    const fluidPressure = fluidDensity * g * depth;
+    const totalPressure = P0 + fluidPressure;
+    
+    // Update display
+    document.getElementById('atmPressure').textContent = P0.toFixed(0);
+    document.getElementById('fluidPressure').textContent = fluidPressure.toFixed(0);
+    document.getElementById('totalPressure').textContent = totalPressure.toFixed(0);
+    document.getElementById('pressureDisplay').textContent = totalPressure.toFixed(0);
+    document.getElementById('pressureAtm').textContent = (totalPressure / P0).toFixed(2);
+    
+    // Draw water container
+    const waterTop = 50;
+    const waterHeight = 400;
+    const containerWidth = 300;
+    const containerX = 50;
+    
+    // Draw surface
+    pCtx.strokeStyle = '#2196F3';
+    pCtx.lineWidth = 3;
+    pCtx.beginPath();
+    pCtx.moveTo(containerX, waterTop);
+    pCtx.lineTo(containerX + containerWidth, waterTop);
+    pCtx.stroke();
+    
+    // Draw water gradient
+    const gradient = pCtx.createLinearGradient(0, waterTop, 0, waterTop + waterHeight);
+    gradient.addColorStop(0, 'rgba(33, 150, 243, 0.3)');
+    gradient.addColorStop(1, 'rgba(33, 150, 243, 0.8)');
+    pCtx.fillStyle = gradient;
+    pCtx.fillRect(containerX, waterTop, containerWidth, waterHeight);
+    
+    // Draw container walls
+    pCtx.strokeStyle = '#333';
+    pCtx.lineWidth = 3;
+    pCtx.strokeRect(containerX, waterTop, containerWidth, waterHeight);
+    
+    // Draw depth indicator
+    const depthPixels = Math.min(depth / 20 * waterHeight, waterHeight);
+    const depthY = waterTop + depthPixels;
+    
+    pCtx.strokeStyle = '#ff0000';
+    pCtx.lineWidth = 2;
+    pCtx.setLineDash([5, 5]);
+    pCtx.beginPath();
+    pCtx.moveTo(containerX, depthY);
+    pCtx.lineTo(containerX + containerWidth, depthY);
+    pCtx.stroke();
+    pCtx.setLineDash([]);
+    
+    // Draw depth arrow
+    pCtx.strokeStyle = '#ff0000';
+    pCtx.fillStyle = '#ff0000';
+    pCtx.lineWidth = 2;
+    pCtx.beginPath();
+    pCtx.moveTo(containerX - 20, waterTop);
+    pCtx.lineTo(containerX - 20, depthY);
+    pCtx.stroke();
+    
+    // Arrow heads
+    pCtx.beginPath();
+    pCtx.moveTo(containerX - 20, depthY);
+    pCtx.lineTo(containerX - 25, depthY - 10);
+    pCtx.lineTo(containerX - 15, depthY - 10);
+    pCtx.closePath();
+    pCtx.fill();
+    
+    // Label
+    pCtx.fillStyle = '#ff0000';
+    pCtx.font = 'bold 14px Arial';
+    pCtx.fillText(`h = ${depth.toFixed(1)} m`, containerX - 20, (waterTop + depthY) / 2);
+    
+    // Draw pressure indicator at depth
+    const pressureBarWidth = 150;
+    const pressureX = containerX + containerWidth + 20;
+    const maxPressure = P0 + fluidDensity * g * 20;
+    const pressureBarHeight = (totalPressure / maxPressure) * 300;
+    
+    pCtx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+    pCtx.fillRect(pressureX, waterTop + 300 - pressureBarHeight, 30, pressureBarHeight);
+    pCtx.strokeStyle = '#4CAF50';
+    pCtx.lineWidth = 2;
+    pCtx.strokeRect(pressureX, waterTop, 30, 300);
+    
+    pCtx.fillStyle = '#333';
+    pCtx.font = '12px Arial';
+    pCtx.fillText('P', pressureX + 5, waterTop - 5);
+}
+
+// ========== 浮力演示 ==========
+const buoyancyCanvas = document.getElementById('buoyancyCanvas');
+const bCtx = buoyancyCanvas.getContext('2d');
+
+let objDensity = 800;
+let volume = 0.1;
+let fluidDensityBuoy = 1000;
+
+document.getElementById('objDensitySlider').addEventListener('input', (e) => {
+    objDensity = parseInt(e.target.value);
+    document.getElementById('objDensityValue').textContent = objDensity;
+    drawBuoyancyDiagram();
+});
+
+document.getElementById('volumeSlider').addEventListener('input', (e) => {
+    volume = parseFloat(e.target.value);
+    document.getElementById('volumeValue').textContent = volume.toFixed(2);
+    drawBuoyancyDiagram();
+});
+
+document.getElementById('fluidDensitySlider').addEventListener('input', (e) => {
+    fluidDensityBuoy = parseInt(e.target.value);
+    document.getElementById('fluidDensityValue').textContent = fluidDensityBuoy;
+    drawBuoyancyDiagram();
+});
+
+function drawBuoyancyDiagram() {
+    bCtx.clearRect(0, 0, buoyancyCanvas.width, buoyancyCanvas.height);
+    
+    const mass = objDensity * volume;
+    const weight = mass * g;
+    const buoyantForce = fluidDensityBuoy * volume * g;
+    const netForce = buoyantForce - weight;
+    
+    // Update display
+    document.getElementById('objectMass').textContent = mass.toFixed(2);
+    document.getElementById('weightForce').textContent = weight.toFixed(2);
+    document.getElementById('buoyantForce').textContent = buoyantForce.toFixed(2);
+    document.getElementById('netForce').textContent = netForce.toFixed(2);
+    
+    let status, statusColor;
+    if (netForce > 0.1) {
+        status = '上浮 ↑';
+        statusColor = '#2196F3';
+    } else if (netForce < -0.1) {
+        status = '下沉 ↓';
+        statusColor = '#f44336';
+    } else {
+        status = '悬浮 ⇄';
+        statusColor = '#4CAF50';
+    }
+    
+    document.getElementById('floatStatus').textContent = status;
+    document.getElementById('floatStatus').style.color = statusColor;
+    
+    // Draw water container
+    const waterTop = 100;
+    const waterHeight = 350;
+    const containerWidth = 350;
+    const containerX = 25;
+    
+    // Draw water
+    const gradient = bCtx.createLinearGradient(0, waterTop, 0, waterTop + waterHeight);
+    gradient.addColorStop(0, 'rgba(33, 150, 243, 0.2)');
+    gradient.addColorStop(1, 'rgba(33, 150, 243, 0.6)');
+    bCtx.fillStyle = gradient;
+    bCtx.fillRect(containerX, waterTop, containerWidth, waterHeight);
+    
+    // Draw container
+    bCtx.strokeStyle = '#333';
+    bCtx.lineWidth = 3;
+    bCtx.strokeRect(containerX, waterTop, containerWidth, waterHeight);
+    
+    // Draw water surface
+    bCtx.strokeStyle = '#2196F3';
+    bCtx.lineWidth = 3;
+    bCtx.beginPath();
+    bCtx.moveTo(containerX, waterTop);
+    bCtx.lineTo(containerX + containerWidth, waterTop);
+    bCtx.stroke();
+    
+    // Draw object
+    const objSize = Math.sqrt(volume) * 150; // Visual size
+    let objY;
+    
+    if (netForce > 0.1) {
+        objY = waterTop - objSize / 2; // Floating
+    } else if (netForce < -0.1) {
+        objY = waterTop + waterHeight - objSize; // Sinking
+    } else {
+        objY = waterTop + waterHeight / 2 - objSize / 2; // Suspended
+    }
+    
+    const objX = containerX + containerWidth / 2 - objSize / 2;
+    
+    // Object color based on density
+    let objColor;
+    if (objDensity < fluidDensityBuoy) {
+        objColor = '#FFB74D'; // Light (floats)
+    } else if (objDensity > fluidDensityBuoy) {
+        objColor = '#EF5350'; // Heavy (sinks)
+    } else {
+        objColor = '#66BB6A'; // Neutral
+    }
+    
+    bCtx.fillStyle = objColor;
+    bCtx.fillRect(objX, objY, objSize, objSize);
+    bCtx.strokeStyle = '#333';
+    bCtx.lineWidth = 2;
+    bCtx.strokeRect(objX, objY, objSize, objSize);
+    
+    // Draw forces
+    const forceScale = 0.5;
+    const objCenterX = objX + objSize / 2;
+    const objCenterY = objY + objSize / 2;
+    
+    // Weight (downward, red)
+    drawArrowBuoy(
+        objCenterX,
+        objCenterY,
+        objCenterX,
+        objCenterY + weight * forceScale,
+        '#f44336',
+        3,
+        `W = ${weight.toFixed(1)} N`
+    );
+    
+    // Buoyant force (upward, blue)
+    drawArrowBuoy(
+        objCenterX,
+        objCenterY,
+        objCenterX,
+        objCenterY - buoyantForce * forceScale,
+        '#2196F3',
+        3,
+        `F_b = ${buoyantForce.toFixed(1)} N`
+    );
+    
+    // Labels
+    bCtx.fillStyle = '#333';
+    bCtx.font = 'bold 14px Arial';
+    bCtx.fillText(`ρ_obj = ${objDensity} kg/m³`, objX, objY - 10);
+    bCtx.fillText(`ρ_fluid = ${fluidDensityBuoy} kg/m³`, containerX + 10, waterTop + 20);
+}
+
+function drawArrowBuoy(x1, y1, x2, y2, color, width, label) {
+    bCtx.strokeStyle = color;
+    bCtx.fillStyle = color;
+    bCtx.lineWidth = width;
+    
+    // Draw line
+    bCtx.beginPath();
+    bCtx.moveTo(x1, y1);
+    bCtx.lineTo(x2, y2);
+    bCtx.stroke();
+    
+    // Draw arrowhead
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const arrowSize = 10;
+    
+    bCtx.beginPath();
+    bCtx.moveTo(x2, y2);
+    bCtx.lineTo(
+        x2 - arrowSize * Math.cos(angle - Math.PI / 6),
+        y2 - arrowSize * Math.sin(angle - Math.PI / 6)
+    );
+    bCtx.lineTo(
+        x2 - arrowSize * Math.cos(angle + Math.PI / 6),
+        y2 - arrowSize * Math.sin(angle + Math.PI / 6)
+    );
+    bCtx.closePath();
+    bCtx.fill();
+    
+    // Draw label
+    bCtx.font = 'bold 12px Arial';
+    bCtx.fillText(label, x2 + 10, (y1 + y2) / 2);
+}
+
+// ========== 连续性方程演示 ==========
+const continuityCanvas = document.getElementById('continuityCanvas');
+const cCtx = continuityCanvas.getContext('2d');
+
+let area1 = 0.04;
+let area2 = 0.01;
+let velocity1 = 2.0;
+
+document.getElementById('area1Slider').addEventListener('input', (e) => {
+    area1 = parseFloat(e.target.value);
+    document.getElementById('area1Value').textContent = area1.toFixed(2);
+    drawContinuityDiagram();
+});
+
+document.getElementById('area2Slider').addEventListener('input', (e) => {
+    area2 = parseFloat(e.target.value);
+    document.getElementById('area2Value').textContent = area2.toFixed(2);
+    drawContinuityDiagram();
+});
+
+document.getElementById('velocity1Slider').addEventListener('input', (e) => {
+    velocity1 = parseFloat(e.target.value);
+    document.getElementById('velocity1Value').textContent = velocity1.toFixed(1);
+    drawContinuityDiagram();
+});
+
+function drawContinuityDiagram() {
+    cCtx.clearRect(0, 0, continuityCanvas.width, continuityCanvas.height);
+    
+    const flowRate1 = area1 * velocity1;
+    const velocity2 = flowRate1 / area2;
+    const flowRate2 = area2 * velocity2;
+    
+    // Update display
+    document.getElementById('flowRate1').textContent = flowRate1.toFixed(3);
+    document.getElementById('velocity2').textContent = velocity2.toFixed(2);
+    document.getElementById('flowRate2').textContent = flowRate2.toFixed(3);
+    
+    // Draw pipe
+    const pipeY = 150;
+    const pipe1Height = area1 * 500; // Visual height
+    const pipe2Height = area2 * 500;
+    const pipe1X = 50;
+    const pipe2X = 350;
+    const transitionX = 200;
+    
+    // Left pipe
+    cCtx.fillStyle = '#BBDEFB';
+    cCtx.fillRect(pipe1X, pipeY - pipe1Height / 2, transitionX - pipe1X, pipe1Height);
+    cCtx.strokeStyle = '#1976D2';
+    cCtx.lineWidth = 3;
+    cCtx.strokeRect(pipe1X, pipeY - pipe1Height / 2, transitionX - pipe1X, pipe1Height);
+    
+    // Right pipe
+    cCtx.fillStyle = '#BBDEFB';
+    cCtx.fillRect(transitionX, pipeY - pipe2Height / 2, pipe2X - transitionX, pipe2Height);
+    cCtx.strokeStyle = '#1976D2';
+    cCtx.lineWidth = 3;
+    cCtx.strokeRect(transitionX, pipeY - pipe2Height / 2, pipe2X - transitionX, pipe2Height);
+    
+    // Transition
+    cCtx.beginPath();
+    cCtx.moveTo(transitionX, pipeY - pipe1Height / 2);
+    cCtx.lineTo(transitionX, pipeY - pipe2Height / 2);
+    cCtx.lineTo(transitionX, pipeY + pipe2Height / 2);
+    cCtx.lineTo(transitionX, pipeY + pipe1Height / 2);
+    cCtx.closePath();
+    cCtx.fillStyle = '#90CAF9';
+    cCtx.fill();
+    cCtx.strokeStyle = '#1976D2';
+    cCtx.stroke();
+    
+    // Draw flow arrows
+    const numArrows1 = Math.ceil(velocity1);
+    const numArrows2 = Math.ceil(velocity2);
+    
+    // Left side arrows
+    for (let i = 0; i < numArrows1; i++) {
+        const x = pipe1X + 30 + (i * 40) % (transitionX - pipe1X - 60);
+        drawFlowArrow(x, pipeY, '#1976D2');
+    }
+    
+    // Right side arrows
+    for (let i = 0; i < numArrows2; i++) {
+        const x = transitionX + 30 + (i * 30) % (pipe2X - transitionX - 60);
+        drawFlowArrow(x, pipeY, '#D32F2F');
+    }
+    
+    // Labels
+    cCtx.fillStyle = '#333';
+    cCtx.font = 'bold 14px Arial';
+    
+    // Area labels
+    cCtx.fillText(`A₁ = ${area1.toFixed(2)} m²`, pipe1X + 20, pipeY - pipe1Height / 2 - 10);
+    cCtx.fillText(`A₂ = ${area2.toFixed(2)} m²`, transitionX + 20, pipeY - pipe2Height / 2 - 10);
+    
+    // Velocity labels
+    cCtx.fillText(`v₁ = ${velocity1.toFixed(1)} m/s`, pipe1X + 20, pipeY + pipe1Height / 2 + 20);
+    cCtx.fillText(`v₂ = ${velocity2.toFixed(1)} m/s`, transitionX + 20, pipeY + pipe2Height / 2 + 20);
+    
+    // Height indicators
+    drawDimension(pipe1X - 20, pipeY - pipe1Height / 2, pipe1X - 20, pipeY + pipe1Height / 2, '#666');
+    drawDimension(pipe2X + 20, pipeY - pipe2Height / 2, pipe2X + 20, pipeY + pipe2Height / 2, '#666');
+}
+
+function drawFlowArrow(x, y, color) {
+    cCtx.strokeStyle = color;
+    cCtx.fillStyle = color;
+    cCtx.lineWidth = 2;
+    
+    cCtx.beginPath();
+    cCtx.moveTo(x, y);
+    cCtx.lineTo(x + 20, y);
+    cCtx.stroke();
+    
+    // Arrowhead
+    cCtx.beginPath();
+    cCtx.moveTo(x + 20, y);
+    cCtx.lineTo(x + 15, y - 5);
+    cCtx.lineTo(x + 15, y + 5);
+    cCtx.closePath();
+    cCtx.fill();
+}
+
+function drawDimension(x1, y1, x2, y2, color) {
+    cCtx.strokeStyle = color;
+    cCtx.lineWidth = 1;
+    
+    // Vertical line
+    cCtx.beginPath();
+    cCtx.moveTo(x1, y1);
+    cCtx.lineTo(x2, y2);
+    cCtx.stroke();
+    
+    // End marks
+    cCtx.beginPath();
+    cCtx.moveTo(x1 - 5, y1);
+    cCtx.lineTo(x1 + 5, y1);
+    cCtx.moveTo(x2 - 5, y2);
+    cCtx.lineTo(x2 + 5, y2);
+    cCtx.stroke();
+}
+
+
+
+// 伯努利
+const canvases = {
+   
+    bernoulli: document.getElementById('bernoulliCanvas').getContext('2d'),
+
+};
+let speed = 50;
+document.getElementById('speedSlider').oninput = function() {
+    speed = this.value;
+    document.getElementById('speedVal').textContent = this.value;
+};
+// ========= 终极版：快慢字精准同步在粒子内 + 随速度变化 =========
+// 伯努利机翼动画：粒子完美贴合机翼上下表面流动 + 首尾汇合
+// 终极物理正确版：上下气流同向 + 完美贴合机翼轮廓
+function drawBernoulli() {
+    const ctx = canvases.bernoulli;
+    ctx.clearRect(0, 0, 500, 300);
+
+    const time = Date.now() / 15;
+    const speedFactor = speed / 50;   // 50 m/s 为基准
+
+    // ===================== 1. 机翼 =====================
+    ctx.fillStyle = '#dae3e6';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(100, 160);
+    ctx.quadraticCurveTo(250, 80, 400, 160);   // 上表面凸起
+    ctx.lineTo(400, 170);
+    ctx.quadraticCurveTo(250, 185, 100, 170); // 下表面微凹
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // ===================== 2. 上表面气流（快）=====================
+    for (let i = 0; i < 11; i++) {
+        let t = (time * speedFactor * 1.1 + i * 42) % 520 / 520;
+
+        // 上表面二次贝塞尔参数方程（从左到右）
+        const x = (1-t)*(1-t)*100 + 2*(1-t)*t*250 + t*t*400;
+        const y = (1-t)*(1-t)*160 + 2*(1-t)*t*80  + t*t*160;
+
+        const finalY = y - 15;  // 向上偏移一点点，避免被机翼盖住
+
+        // 颜色随速度变红
+        const r = Math.min(255, 80 + speed * 3.2);
+        const g = Math.max(0, 140 - speed * 2);
+        const b = Math.max(0, 180 - speed * 4);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.beginPath();
+        ctx.arc(x, finalY, 11, 0, Math.PI*2);
+        ctx.fill();
+
+        // “快”字
+        const fontSize = 12; //10 + speed / 4.5;
+        const opacity = Math.min(1, speed / 65);
+        ctx.font = `bold ${fontSize}px Arial`;
+        ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('快', x, finalY);
+    }
+
+    // ===================== 3. 下表面气流（慢）——方向正确！=====================
+    for (let i = 0; i < 9; i++) {
+        let t = (time * speedFactor * 0.58 + i * 58) % 540 / 540;
+
+        // 下表面贝塞尔（同向：从左到右）
+        const x = (1-t)*(1-t)*100 + 2*(1-t)*t*250 + t*t*400;
+        const y = (1-t)*(1-t)*170 + 2*(1-t)*t*185 + t*t*170;
+
+        const finalY = y + 18;  // 向下偏移
+
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(x, finalY, 12, 0, Math.PI*2);
+        ctx.fill();
+
+        // “慢”字
+        const slowSize = 12; //Math.max(9, 19 - speed / 6.5);
+        const slowOpacity = Math.max(0.35, 1 - speed / 110);
+        ctx.font = `bold ${slowSize}px Arial`;
+        ctx.fillStyle = `rgba(255,255,255,${slowOpacity})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('慢', x, finalY);
+    }
+
+    // ===================== 4. 升力箭头 =====================
+    const lift = speed * 1.5;
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 5; // 2 + speed / 21;
+    ctx.beginPath();
+    ctx.moveTo(250, 165);
+    ctx.lineTo(250, 165 - lift);
+    ctx.stroke();
+
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.moveTo(250, 135 - lift);
+    ctx.lineTo(240, 135 - lift + 30);
+    ctx.lineTo(260, 135 - lift + 30);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.font = `bold ${28 + speed/5}px Arial`;
+    ctx.fillStyle = '#10b981';
+    ctx.fillText('升力', 298, 165 - lift / 2);
+
+    requestAnimationFrame(drawBernoulli);
+}
+
+
+// Initialize all diagrams
+window.onload = function() {
+    drawPressureDiagram();
+    drawBuoyancyDiagram();
+    drawContinuityDiagram();
+    drawBernoulli();
+    
+};
+</script>
+
+</body>
+</html>
