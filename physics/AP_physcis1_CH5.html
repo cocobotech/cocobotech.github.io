@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COCOBO AP Physics 1 </title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
+
+body { 
+  font-family:'Inter','Noto Sans SC','Inter',sans-serif; 
+  background-color: var(--bg-light); 
+  color: var(--text-dark); 
+  line-height: 1.6;
+  margin:0; padding:0;
+}
+.container-app { 
+  max-width: 1200px; 
+  margin:10px auto; 
+  padding:10px; 
+  background-color:rgba(244, 244, 247, 0.863); 
+  border-radius:24px; 
+  box-shadow:0 10px 30px rgba(26, 122, 177, 0.384);
+}
+
+.container-header {
+  background: white;
+  border-radius: 25px;
+  padding: 10px;
+  margin-bottom: 5px;
+  box-shadow: 0 15px 10px rgba(0,0,0,0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+        
+h1 { 
+  font-size: 2.5rem;
+  color: var(--primary-color); 
+  font-weight:700; 
+  text-align:center; 
+  margin: 0;
+}
+h2 { 
+  font-size:1.5rem; 
+  font-weight:600; 
+  color:var(--text-dark); 
+  border-left:5px solid var(--primary-color); 
+  padding-left:10px; 
+  margin-bottom:20px;
+}
+
+.text2xl { 
+  color: var(--primary-color); 
+  font-weight:900; 
+  text-align:left; 
+  padding-bottom:10px;
+}
+.concept-card { 
+  background:rgb(242, 247, 248); 
+  border-radius:16px; 
+  padding:20px; 
+  box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); 
+  transition:transform 0.3s ease, box-shadow 0.3s ease;
+ 
+}
+.concept-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+.formula { 
+  font-family:'Times New Roman', serif; 
+  font-size:1.2rem; 
+  font-weight:bold; 
+  color: var(--secondary-color); 
+  padding:10px 0; 
+  text-align:center; 
+  border-top:1px solid #e5e7eb; 
+  margin-top:15px;
+}
+.katex { color: var(--secondary-color) !important; }
+
+#simulationCanvas { 
+  border:2px solid var(--primary-color); 
+  background-color:#eef2ff; 
+  border-radius:12px; 
+  cursor:pointer;
+}
+
+.control-group label { font-weight:500; color:var(--text-dark);}
+.control-group input[type="range"] { width:100%; }
+.btn-simulate { 
+  background-color: var(--primary-color); 
+  color:white; 
+  padding:10px 20px; 
+  border-radius:12px; 
+  font-weight:600; 
+  transition: background-color 0.3s;
+  border:none;
+  cursor:pointer;
+}
+.btn-simulate:hover:not(:disabled) { background-color:#6366f1; }
+.btn-simulate:disabled { background-color:#9ca3af; cursor:not-allowed; }
+
+.results-box { 
+  background-color:#f0fdf4; 
+  border:1px solid var(--secondary-color); 
+  border-radius:12px; 
+  padding:15px;
+  text-align:center;
+}
+.results-box strong { color: var(--secondary-color); }
+
+.grid-1 { display: grid; grid-template-columns: repeat(1,1fr); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.grid-2a { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
+
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+.my-10 { margin-top: 2.5rem; margin-bottom: 2.5rem; }
+.p-4 { padding: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.w-full { width: 100%; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.text-center { text-align: center; }
+.text-gray-500 { color: #6b7280; }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+</head>
+<body>
+<div class="container-app">
+    <div class="container-header">
+        <h1>COCOBO-TECH AP Physics 1</h1>
+        <p style="text-align: center;text-decoration: underline;">CH5: Torque and Rotational Dynamics</p>
+    </div>
+
+<!-- Core Concept Cards -->
+<div class="my-8">
+    <h2>Core Concepts and Formulas</h2>
+    
+    <!-- Torque & Angular Kinematics -->
+    <div class="grid-2 mb-4">
+        <!-- Torque -->
+        <div class="concept-card">
+            <h3 class="text2xl">1. Torque (τ)</h3>
+            <p>Torque is the rotational equivalent of force, measuring the tendency to cause rotation.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: N·m (Newton-meters)</li>
+                <li>r = perpendicular distance from axis to force line</li>
+                <li>Direction: Use right-hand rule (+ counterclockwise, - clockwise)</li>
+            </ul>
+            <div class="formula">\( \tau = r F \sin\theta = r_\perp F \)</div>
+        </div>
+
+        <!-- Angular Kinematics -->
+        <div class="concept-card">
+            <h3 class="text2xl">2. Angular Kinematics</h3>
+            <p>Describes rotational motion using angular displacement, velocity, and acceleration.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>\( \Delta \theta \): angular displacement (rad)</li>
+                <li>\( \omega \): angular velocity (rad/s)</li>
+                <li>\( \alpha \): angular acceleration (rad/s²)</li>
+            </ul>
+            <div class="formula">\( \omega_f = \omega_i + \alpha t \)</div>
+            <div class="formula">\( \Delta \theta = \omega_i t + \frac{1}{2}\alpha t^2 \)  </div>
+        </div>
+    </div>
+
+    <!-- Moment of Inertia & Rotational KE & Newton's 2nd Law -->
+    <div class="grid-3 mb-4">
+        <!-- Moment of Inertia -->
+        <div class="concept-card">
+            <h3 class="text2xl">3. Moment of Inertia (I)</h3>
+            <p>Resistance to rotational acceleration, depends on mass distribution.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: kg·m²</li>
+                <li>Point mass: I = mr²</li>
+                <li>Larger I = harder to rotate</li>
+            </ul>
+            <div class="formula">\( I = \sum m_i r_i^2 \)</div>
+        </div>
+
+        <!-- Newton's 2nd for Rotation -->
+        <div class="concept-card">
+            <h3 class="text2xl">4. Newton's 2nd Law (Rotation)</h3>
+            <p>Net torque causes angular acceleration.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Analogous to F = ma</li>
+                <li>Larger I requires more torque for same α</li>
+            </ul>
+            <div class="formula">\( \tau_\text{net} = I\alpha \)</div>
+        </div>
+
+        <!-- Rotational KE -->
+        <div class="concept-card">
+            <h3 class="text2xl">5. Rotational Kinetic Energy</h3>
+            <p>Energy due to rotation.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>\(K_t\ = \frac{1}{2}mv^2\)</li>
+                
+				<li>Objects rolling without slipping have both Translational (\(K_t\)) and Rotational (\(K_r\)) kinetic energy.</li>
+            </ul>
+            <div class="formula">\( K_{total} = K_{t} +K_{r}=\frac{1}{2}mv^2 + \frac{1}{2}I\omega^2 \)</div>
+        </div>
+    </div>
+
+    <!-- Angular Momentum & Conservation -->
+    <div class="grid-2 mb-4">
+        <!-- Angular Momentum -->
+        <div class="concept-card">
+            <h3 class="text2xl">6. Angular Momentum (L)</h3>
+            <p>Rotational analog of linear momentum.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: kg·m²/s</li>
+                <li>For point mass: L = mvr (tangential)</li>
+                <li>Direction: right-hand rule</li>
+            </ul>
+            <div class="formula">\( L = I\omega \)</div>
+        </div>
+
+        <!-- Conservation -->
+        <div class="concept-card">
+            <h3 class="text2xl">7. Conservation of Angular Momentum</h3>
+            <p>If net external torque is zero, angular momentum is conserved.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Figure skater spinning faster when arms pulled in</li>
+                <li>I↓ → ω↑ (to keep L constant)</li>
+            </ul>
+            <div class="formula">\( I_i\omega_i = I_f\omega_f \)</div>
+        </div>
+    </div>
+
+    <!-- Relationship between linear and angular -->
+    <div class="grid-1 mb-4">
+        <div class="concept-card">
+            <h3 class="text2xl">8. Linear-Angular Relationships</h3>
+            <p>Connect linear motion at the edge of a rotating object to its angular motion.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>v: tangential velocity, a: tangential acceleration</li>
+                <li>r: radius from axis of rotation</li>
+            </ul>
+            <div class="formula">\( v = r\omega \quad \quad a_t = r\alpha \quad \quad a_c = \frac{v^2}{r} = r\omega^2 \)</div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Simulation Section -->
+<div class="my-8">
+    <h2>Interactive Torque Simulation</h2>
+    
+    <div class="grid-2a">
+        <!-- Controls -->
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Controls</h3>
+            
+            <div class="control-group mb-3">
+                <label>Force (N): <span id="forceValue">50</span></label>
+                <input type="range" id="forceSlider" min="10" max="100" value="50" step="5">
+            </div>
+            
+            <div class="control-group mb-3">
+                <label>Distance from axis (m): <span id="distanceValue">2.0</span></label>
+                <input type="range" id="distanceSlider" min="0.5" max="4" value="2" step="0.1">
+            </div>
+            
+            <div class="control-group mb-3">
+                <label>Angle (degrees): <span id="angleValue">90</span></label>
+                <input type="range" id="angleSlider" min="0" max="180" value="90" step="5">
+            </div>
+            
+            <div class="control-group mb-3">
+                <label>Mass (kg): <span id="massValue">5</span></label>
+                <input type="range" id="massSlider" min="1" max="10" value="5" step="0.5">
+            </div>
+            
+            <button class="btn-simulate w-full" onclick="startRotation()">Start Rotation</button>
+            <button class="btn-simulate w-full mt-2" onclick="resetSimulation()">Reset</button>
+            
+            <div class="results-box mt-2">
+                <div><strong>Torque (τ):</strong> <span id="torqueResult">100.0</span> N·m</div>
+                <div><strong>Moment of Inertia (I):</strong> <span id="inertiaResult">20.0</span> kg·m²</div>
+                <div><strong>Angular Acceleration (α):</strong> <span id="alphaResult">5.0</span> rad/s²</div>
+                <div><strong>Angular Velocity (ω):</strong> <span id="omegaResult">0.0</span> rad/s</div>
+            </div>
+        </div>
+        
+        <!-- Canvas -->
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Visualization</h3>
+            <canvas id="simulationCanvas" width="550" height="550"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Common Moments of Inertia -->
+<div class="my-8">
+    <h2>Common Moments of Inertia</h2>
+    <div class="grid-3">
+
+		<div class="concept-card">
+            <h3 class="text2xl text-center">Point Mass</h3>
+            <canvas id="pointMass" width="200" height="200"></canvas>
+            <div class="formula">\( I = mr^2 \)</div>
+        </div>
+
+		<div class="concept-card">
+            <h3 class="text2xl text-center">Solid Disk/Cylinder</h3>
+            <canvas id="disk" width="200" height="200"></canvas>
+            <div class="formula">\( I = \frac{1}{2}mR^2 \)</div>
+        </div>
+
+        <div class="concept-card">
+            <h3 class="text2xl text-center">Thin Rod (center)</h3>
+            <canvas id="rod" width="200" height="200"></canvas>
+            <div class="formula">\( I = \frac{1}{12}mL^2 \)</div>
+        </div>
+
+
+		<div class="concept-card">
+            <h3 class="text2xl text-center">Hoop/Ring</h3>
+            <canvas id="hoop" width="200" height="200"></canvas>
+            <div class="formula">\( I = mR^2 \)</div>
+        </div>
+
+        
+        <div class="concept-card">
+            <h3 class="text2xl">Solid Sphere</h3>
+             <canvas id="solidSphere" width="200" height="200"></canvas>
+            <div class="formula">\( I = \frac{2}{5}MR^2 \)</div>
+        </div>
+        
+        <div class="concept-card">
+            <h3 class="text2xl">Thin Rod(End）</h3>
+            <canvas id="rodEnd" width="200" height="200"></canvas>
+            <div class="formula">\( I = \frac{1}{3}ML^2 \)</div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Relationships -->
+<div class="my-8">
+    <h2>Linear vs Rotational Motion Analogies</h2>
+    <div class="concept-card">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: var(--primary-color); color: white;">
+                <tr>
+                    <th style="padding: 12px; text-align: left;">Linear Motion</th>
+                    <th style="padding: 12px; text-align: left;">Rotational Motion</th>
+                    <th style="padding: 12px; text-align: left;">Relationship</th>
+                </tr>
+            </thead>
+            <tbody style="background: white;">
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">Position (x)</td>
+                    <td style="padding: 10px;">Angle (θ)</td>
+                    <td style="padding: 10px;">\(s = r\theta\)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">Velocity (v)</td>
+                    <td style="padding: 10px;">Angular velocity (ω)</td>
+                    <td style="padding: 10px;">\(v = r\omega\)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">Acceleration (a)</td>
+                    <td style="padding: 10px;">Angular acceleration (α)</td>
+                    <td style="padding: 10px;">\(a = r\alpha\)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">Mass (m)</td>
+                    <td style="padding: 10px;">Rotational inertia (I)</td>
+                    <td style="padding: 10px;">\(I = mr^2\) (point mass)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">Force (F)</td>
+                    <td style="padding: 10px;">Torque (τ)</td>
+                    <td style="padding: 10px;">\(\tau = rF\sin\theta\)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 10px;">\(F = ma\)</td>
+                    <td style="padding: 10px;">\(\tau = I\alpha\)</td>
+                    <td style="padding: 10px;">Newton's 2nd Law</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;">Momentum (p = mv)</td>
+                    <td style="padding: 10px;">Angular momentum (L = Iω)</td>
+                    <td style="padding: 10px;">Both conserved</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+// Draw moment of inertia diagrams
+function drawPointMass() {
+    const canvas = document.getElementById('pointMass');
+    const ctx = canvas.getContext('2d');
+    const cx = 100, cy = 100;
+    
+    // Axis
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = '#333';
+    ctx.fill();
+    
+    // Rod
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 60, cy);
+    ctx.stroke();
+    
+    // Mass
+    ctx.fillStyle = '#4f46e5';
+    ctx.beginPath();
+    ctx.arc(cx + 60, cy, 15, 0, 2*Math.PI);
+    ctx.fill();
+    
+    // Label
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('m', cx + 55, cy - 20);
+    ctx.fillText('r', cx + 30, cy - 10);
+}
+
+
+
+function drawDisk() {
+    const canvas = document.getElementById('disk');
+    const ctx = canvas.getContext('2d');
+    const cx = 100, cy = 100;
+    
+    // Disk
+    ctx.fillStyle = '#4f46e5';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 50, 0, 2*Math.PI);
+    ctx.fill();
+    
+    // Axis
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    
+    // Radius line
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 50, cy);
+    ctx.stroke();
+    
+    // Label
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('R', cx + 25, cy - 5);
+}
+
+function drawRod() {
+    const canvas = document.getElementById('rod');
+    const ctx = canvas.getContext('2d');
+    const cx = 100, cy = 100;
+    
+    // Rod
+    ctx.fillStyle = '#4f46e5';
+    ctx.fillRect(cx - 70, cy - 8, 140, 16);
+    
+    // Axis
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    
+    // Label
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('L', cx - 10, cy - 20);
+    
+    // Arrows
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 70, cy - 25);
+    ctx.lineTo(cx + 70, cy - 25);
+    ctx.stroke();
+    
+    // Arrow heads
+    ctx.beginPath();
+    ctx.moveTo(cx - 70, cy - 25);
+    ctx.lineTo(cx - 65, cy - 30);
+    ctx.moveTo(cx - 70, cy - 25);
+    ctx.lineTo(cx - 65, cy - 20);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(cx + 70, cy - 25);
+    ctx.lineTo(cx + 65, cy - 30);
+    ctx.moveTo(cx + 70, cy - 25);
+    ctx.lineTo(cx + 65, cy - 20);
+    ctx.stroke();
+}
+
+
+// 1. Hoop/Ring (Axis through center) - I = MR^2
+function drawHoop() {
+    const canvas = document.getElementById('hoop');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = 40; // Radius
+
+    // Clear canvas just in case
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // The Hoop (Thick circle)
+    ctx.strokeStyle = '#4f46e5'; // Blue theme
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // Axis (Center dot)
+    ctx.fillStyle = '#333';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Radius Line (Dotted)
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r, cy);
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset dash
+
+    // Labels
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('R', cx + r / 2 - 5, cy - 5);
+    ctx.fillText('M', cx - r - 15, cy - r + 5);
+}
+
+
+// 2. Solid Sphere (Axis through center) - I = 2/5 MR^2
+// 2. Draw Solid Sphere
+function drawSolidSphere() {
+    const canvas = document.getElementById('solidSphere');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cx = 100, cy = 100;
+    const radius = 50;
+
+    // Clear
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // The Sphere (Filled)
+    ctx.fillStyle = '#4f46e5';
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // 3D Effect (Visual curve)
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, radius, radius * 0.4, 0, 0, Math.PI);
+    ctx.stroke();
+
+    // Radius Line
+    ctx.strokeStyle = 'white'; // White line since background is dark
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + radius * 0.7, cy - radius * 0.7);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('M', cx - radius - 20, cy); 
+    ctx.fillStyle = 'white'; // Contrast on the sphere
+    ctx.fillText('R', cx + 10, cy - 20);
+}
+// 3. Thin Rod (Axis at End) - I = 1/3 ML^2
+function drawRodEnd() {
+    const canvas = document.getElementById('rodEnd');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cx = 40; // Start a bit to the left
+    const cy = canvas.height / 2;
+    const L = 100; // Length of rod
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // The Rod (Rectangle)
+    ctx.fillStyle = '#4f46e5';
+    ctx.fillRect(cx, cy - 6, L, 12);
+
+    // Axis (Pivot at Left End)
+    ctx.fillStyle = '#333';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Axis Line (Vertical line to emphasize pivot)
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 20);
+    ctx.lineTo(cx, cy + 20);
+    ctx.stroke();
+
+    // Length Bracket
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + 20);
+    ctx.lineTo(cx + L, cy + 20); // Main line
+    ctx.moveTo(cx, cy + 15);
+    ctx.lineTo(cx, cy + 25); // Left tick
+    ctx.moveTo(cx + L, cy + 15);
+    ctx.lineTo(cx + L, cy + 25); // Right tick
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('L', cx + L / 2 - 5, cy + 35);
+    ctx.fillText('Axis', cx - 15, cy - 25);
+}
+
+
+const canvas = document.getElementById('simulationCanvas');
+const ctx = canvas.getContext('2d');
+
+let force = 50;
+let distance = 2.0;
+let angle = 90;
+let mass = 5;
+let omega = 0;
+let theta = 0;
+let isRotating = false;
+let animationId = null;
+
+function updateValues() {
+    force = parseFloat(document.getElementById('forceSlider').value);
+    distance = parseFloat(document.getElementById('distanceSlider').value);
+    angle = parseFloat(document.getElementById('angleSlider').value);
+    mass = parseFloat(document.getElementById('massSlider').value);
+    
+    document.getElementById('forceValue').textContent = force;
+    document.getElementById('distanceValue').textContent = distance.toFixed(1);
+    document.getElementById('angleValue').textContent = angle;
+    document.getElementById('massValue').textContent = mass.toFixed(1);
+    
+    calculateAndDisplay();
+}
+
+function calculateAndDisplay() {
+    const angleRad = angle * Math.PI / 180;
+    const torque = distance * force * Math.sin(angleRad);
+    const inertia = mass * distance * distance;
+    const alpha = torque / inertia;
+    
+    document.getElementById('torqueResult').textContent = torque.toFixed(2);
+    document.getElementById('inertiaResult').textContent = inertia.toFixed(2);
+    document.getElementById('alphaResult').textContent = alpha.toFixed(3);
+    document.getElementById('omegaResult').textContent = omega.toFixed(3);
+    
+    drawScene();
+}
+
+function drawScene() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const scale = 60;
+    const radius = distance * scale;
+    
+    // Draw axis (center point)
+    ctx.fillStyle = '#4f46e5';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Draw rotating arm
+    const armEndX = centerX + radius * Math.cos(theta);
+    const armEndY = centerY + radius * Math.sin(theta);
+    
+    ctx.strokeStyle = '#1f2937';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(armEndX, armEndY);
+    ctx.stroke();
+    
+    // Draw mass at end
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(armEndX, armEndY, 12, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Draw force vector
+    const forceAngleRad = theta + (angle * Math.PI / 180);
+    const forceLength = force * 1.5;
+    const forceEndX = armEndX + forceLength * Math.cos(forceAngleRad);
+    const forceEndY = armEndY + forceLength * Math.sin(forceAngleRad);
+    
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(armEndX, armEndY);
+    ctx.lineTo(forceEndX, forceEndY);
+    ctx.stroke();
+    
+    // Draw arrowhead
+    const arrowSize = 10;
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.moveTo(forceEndX, forceEndY);
+    ctx.lineTo(
+        forceEndX - arrowSize * Math.cos(forceAngleRad - Math.PI / 6),
+        forceEndY - arrowSize * Math.sin(forceAngleRad - Math.PI / 6)
+    );
+    ctx.lineTo(
+        forceEndX - arrowSize * Math.cos(forceAngleRad + Math.PI / 6),
+        forceEndY - arrowSize * Math.sin(forceAngleRad + Math.PI / 6)
+    );
+    ctx.closePath();
+    ctx.fill();
+    
+    // Labels
+    ctx.fillStyle = '#1f2937';
+    ctx.font = '14px Inter';
+    ctx.fillText(`r = ${distance.toFixed(1)}m`, centerX + radius/2 - 30, centerY - 10);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillText(`F = ${force}N`, forceEndX + 10, forceEndY - 10);
+    
+    // Draw angle arc
+    ctx.strokeStyle = '#6b7280';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(armEndX, armEndY, 30, theta, forceAngleRad, false);
+    ctx.stroke();
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '12px Inter';
+    ctx.fillText(`${angle}°`, armEndX + 35, armEndY + 5);
+}
+
+function startRotation() {
+    if (isRotating) return;
+    isRotating = true;
+    animate();
+}
+
+function animate() {
+    if (!isRotating) return;
+    
+    const angleRad = angle * Math.PI / 180;
+    const torque = distance * force * Math.sin(angleRad);
+    const inertia = mass * distance * distance;
+    const alpha = torque / inertia;
+    
+    omega += alpha * 0.016;
+    theta += omega * 0.016;
+    
+    document.getElementById('omegaResult').textContent = omega.toFixed(3);
+    
+    drawScene();
+    animationId = requestAnimationFrame(animate);
+}
+
+function resetSimulation() {
+    isRotating = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+    omega = 0;
+    theta = 0;
+    document.getElementById('omegaResult').textContent = '0.0';
+    drawScene();
+}
+
+// Event listeners
+document.getElementById('forceSlider').addEventListener('input', updateValues);
+document.getElementById('distanceSlider').addEventListener('input', updateValues);
+document.getElementById('angleSlider').addEventListener('input', updateValues);
+document.getElementById('massSlider').addEventListener('input', updateValues);
+
+// Initialize
+window.onload = function() {
+
+	drawPointMass();
+	drawDisk();
+	drawRod();
+	drawHoop();
+	drawSolidSphere();
+	drawRodEnd();
+	
+    updateValues();
+	
+};
+</script>
+
+</body>
+</html>
