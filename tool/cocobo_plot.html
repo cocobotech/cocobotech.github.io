@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>COCOBO-PLOT v6.1 · 终极参数可视化引擎</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --text: #cdd0d9;
+    --text-dim: #8b949e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    margin:0; height:100vh; background:#0d1117; color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif; overflow:hidden;
+  }
+  .header {
+    height:64px; background:#161b22; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 28px; box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  }
+  .logo {
+    font-size:2.3rem; font-weight:800; letter-spacing:3px;
+    background:linear-gradient(90deg,#58a6ff,#79c0ff);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .main { display:flex; height:calc(100vh - 64px); }
+  .sidebar {
+    width:460px; background:var(--panel); border-right:1px solid var(--border);
+    padding:20px; display:flex; flex-direction:column; gap:16px;
+  }
+  .card {
+    background:#1c252b; border:1px solid var(--border); border-radius:10px;
+    padding:16px; box-shadow:0 3px 12px rgba(0,0,0,0.3);
+  }
+  .card h3 { margin-bottom:12px; color:var(--accent); font-size:1.1rem; font-weight:600; }
+  select {
+    width:100%; padding:10px 14px; background:#0d1117; border:1px solid var(--border);
+    border-radius:8px; color:var(--text); font-size:0.95rem;
+  }
+  .param-row { display:flex; align-items:center; gap:12px; margin:10px 0; }
+  .param-label {
+    width:70px; color:var(--text-dim); font-size:0.95rem; font-family:monospace;
+    text-align:right; flex-shrink:0;
+  }
+  .param-input {
+    flex:1; padding:10px 12px; background:#0d1117; border:1px solid var(--border);
+    border-radius:8px; color:var(--text); font-size:0.95rem; font-family:monospace;
+  }
+  .param-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(88,166,255,0.15); }
+  .row { display:flex; gap:10px; }
+  .row input {
+    flex:1; padding:10px 12px; background:#0d1117; border:1px solid var(--border);
+    border-radius:8px; color:var(--text); font-size:0.95rem;
+  }
+  .btn {
+    padding:14px; border:none; border-radius:10px; font-weight:600; cursor:pointer;
+    transition:all 0.3s; font-size:1rem;
+  }
+  .btn-primary {
+    background:linear-gradient(135deg,#58a6ff,#1f6feb); color:white;
+    box-shadow:0 4px 15px rgba(88,166,255,0.3);
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(88,166,255,0.4); }
+  .btn-secondary { background:#30363d; color:var(--text); font-size:0.9rem; padding:10px; }
+  .btn-secondary:hover { background:#404852; }
+  .view { flex:1; position:relative; background:#0a0e17; }
+  #canvas2d, #container3d { position:absolute; top:0; left:0; width:100%; height:100%; }
+  #canvas2d { display:none; }
+  .status {
+    position:absolute; bottom:16px; left:16px; padding:8px 16px;
+    background:rgba(0,0,0,0.7); border:1px solid var(--border); border-radius:8px;
+    font-size:0.9rem; color:var(--text-dim); backdrop-filter:blur(8px);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">COCOBO-PLOT</div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="card">
+      <h3>经典库</h3>
+      <select id="preset">
+        <option value="">— 选择预设 —</option>
+        <option value="0">玫瑰线（6瓣）</option>
+        <option value="1">心形线</option>
+        <option value="2">莫比乌斯环（真·曲面）</option>
+        <option value="3">托洛伊德</option>
+        <option value="4">球面</option>
+        <option value="5">螺旋曲面</option>
+        <option value="6">星形线</option>
+        <option value="7">三叶结</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3>渲染模式</h3>
+      <select id="mode">
+        <option value="2d">2D 曲线（炫酷生长）</option>
+        <option value="3d" selected>3D 曲面/曲线</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3>参数方程</h3>
+      <div class="param-row">
+        <div class="param-label">x(t,u) =</div>
+        <input type="text" id="fx" class="param-input" value="cos(t)*(3+0.6*cos(7*t))">
+      </div>
+      <div class="param-row">
+        <div class="param-label">y(t,u) =</div>
+        <input type="text" id="fy" class="param-input" value="sin(t)*(3+0.6*sin(8*t))">
+      </div>
+      <div class="param-row">
+        <div class="param-label">z(t,u) =</div>
+        <input type="text" id="fz" class="param-input" value="sin(5*t)*0.4">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>参数范围</h3>
+      <div class="row">
+        <input id="t1" value="0" placeholder="t min">
+        <input id="t2" value="6.2832" placeholder="t max">
+      </div>
+      <div class="row">
+        <input id="u1" value="0" placeholder="u min">
+        <input id="u2" value="6.2832" placeholder="u max">
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn btn-primary" id="draw">立即渲染</button>
+      <div class="row">
+        <button class="btn btn-secondary" onclick="randomPreset()">随机</button>
+        <button class="btn btn-secondary" onclick="exportImage()">导出</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="view">
+    <canvas id="canvas2d"></canvas>
+    <div id="container3d"></div>
+    <div class="status">COCOBO-PLOT v6.1 · 就绪</div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas2d = document.getElementById('canvas2d');
+const ctx = canvas2d.getContext('2d');
+const container3d = document.getElementById('container3d');
+const status = document.querySelector('.status');
+
+let scene, camera, renderer, controls, mesh3d, line3d;
+let points2D = [];
+let animFrame = null;
+let lights = [];
+
+// 3D 初始化 + 专业光照
+function init3D() {
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+  container3d.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0e17);
+
+  camera = new THREE.PerspectiveCamera(60, container3d.clientWidth/container3d.clientHeight, 0.1, 1000);
+  camera.position.set(15, 12, 20);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.5;
+
+  scene.add(new THREE.GridHelper(30, 30, 0x303040, 0x202030));
+  setupLighting();
+  addAxes();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container3d.clientWidth / container3d.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container3d.clientWidth, container3d.clientHeight);
+  });
+}
+
+function setupLighting() {
+  lights.forEach(l => scene.remove(l));
+  lights = [];
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.position.set(10, 15, 10);
+  scene.add(key); lights.push(key);
+
+  const fill = new THREE.DirectionalLight(0xa0c0ff, 0.7);
+  fill.position.set(-12, 6, -8);
+  scene.add(fill); lights.push(fill);
+
+  const rim = new THREE.DirectionalLight(0x6080ff, 1.0);
+  rim.position.set(0, -8, 12);
+  scene.add(rim); lights.push(rim);
+
+  const ambient = new THREE.AmbientLight(0x404070, 0.8);
+  scene.add(ambient); lights.push(ambient);
+}
+
+function addAxes() {
+  ['X','Y','Z'].forEach((l,i) => {
+    const dir = [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)][i];
+    const color = [0xff4444, 0x44ff44, 0x4444ff][i];
+    const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(), 12, color, 1.5, 0.8);
+    scene.add(arrow);
+  });
+}
+
+init3D();
+
+// 2D 炫酷生长动画
+function render2DAnimation() {
+  if(animFrame) cancelAnimationFrame(animFrame);
+  canvas2d.style.display = 'block';
+  container3d.style.display = 'none';
+
+  canvas2d.width = canvas2d.clientWidth * devicePixelRatio;
+  canvas2d.height = canvas2d.clientHeight * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas2d.width, canvas2d.height);
+
+  const pad = 100;
+  const xs = points2D.map(p => p.x), ys = points2D.map(p => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const rangeX = maxX - minX || 1;
+  const rangeY = maxY - minY || 1;
+  const scale = Math.min(
+    (canvas2d.clientWidth - pad*2) / rangeX,
+    (canvas2d.clientHeight - pad*2) / rangeY
+  ) * 0.88;
+
+  const cx = canvas2d.clientWidth / 2;
+  const cy = canvas2d.clientHeight / 2;
+  const offsetX = (minX + maxX) / 2;
+  const offsetY = (minY + maxY) / 2;
+
+  let i = 0;
+  function step() {
+    if(i >= points2D.length) {
+      status.textContent = "2D 生长动画完成！";
+      return;
+    }
+    if(i >= 2) {
+      ctx.strokeStyle = `hsl(${(i/points2D.length)*360},100%,65%)`;
+      ctx.lineWidth = 4;
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = ctx.strokeStyle;
+      ctx.beginPath();
+      ctx.moveTo(cx + (points2D[0].x - offsetX) * scale, cy - (points2D[0].y - offsetY) * scale);
+      for(let j = 1; j < i; j++) {
+        const p = points2D[j];
+        ctx.lineTo(cx + (p.x - offsetX) * scale, cy - (p.y - offsetY) * scale);
+      }
+      ctx.stroke();
+    }
+    i += 160;
+    animFrame = requestAnimationFrame(step);
+  }
+  step();
+}
+
+// 计算函数
+function calc(expr, t, u = 0) {
+  try {
+    const code = expr.replace(/\^/g, '**');
+    return Function('t','u', `with(Math){return ${code}}`)(t, u);
+  } catch(e) { return 0; }
+}
+
+// 预设库
+const presets = [
+  {fx: "cos(t)*(3+0.6*cos(7*t))", fy: "sin(t)*(3+0.6*sin(8*t))", fz: "0", t1:0, t2:"6.2832"},
+  {fx: "cos(t)*(2+0.6*cos(8*t))", fy: "sin(t)*(2+0.6*cos(8*t))", fz: "0", t1:0, t2:"6.2832"},
+  {fx: "(2+cos(t))*cos(u)", fy: "(2+cos(t))*sin(u)", fz: "sin(t)", t1:0, t2:"6.2832", u1:0, u2:"6.2832"},
+  {fx: "(5+cos(t))*cos(u)", fy: "(5+cos(t))*sin(u)", fz: "sin(t)", t1:0, t2:"12.566", u1:0, u2:"6.2832"},
+  {fx: "sin(u)*cos(t)", fy: "sin(u)*sin(t)", fz: "cos(u)", t1:0, t2:"6.2832", u1:0, u2:"3.1416"},
+  {fx: "t*cos(u)", fy: "t*sin(u)", fz: "t", t1:0, t2:"20", u1:0, u2:"12.566"},
+  {fx: "cos(t)^3", fy: "sin(t)^3", fz: "0", t1:0, t2:"6.2832"},
+  {fx: "(3+cos(3*t))*cos(u)", fy: "(3+cos(3*t))*sin(u)", fz: "sin(3*t)", t1:0, t2:"6.2832", u1:0, u2:"6.2832"}
+];
+
+// 主渲染函数
+function render() {
+  status.textContent = "计算中...";
+  const mode = document.getElementById('mode').value;
+  const fx = document.getElementById('fx').value;
+  const fy = document.getElementById('fy').value;
+  const fz = document.getElementById('fz').value;
+  const hasU = /u/i.test(fx + fy + fz);
+
+  const t1 = parseFloat(document.getElementById('t1').value) || 0;
+  const t2 = parseFloat(document.getElementById('t2').value) || 6.2832;
+  const u1 = parseFloat(document.getElementById('u1').value) || 0;
+  const u2 = parseFloat(document.getElementById('u2').value) || 6.2832;
+
+  points2D = [];
+
+  if(hasU && mode === '3d') {
+    renderSurface(fx,fy,fz,t1,t2,u1,u2);
+  } else {
+    const steps = 25000;
+    for(let i = 0; i <= steps; i++) {
+      const t = t1 + (t2-t1) * i / steps;
+      const x = calc(fx, t);
+      const y = calc(fy, t);
+      const z = calc(fz, t);
+      if(!isNaN(x+y+z)) points2D.push({x, y, z});
+    }
+
+    if(mode === '2d') {
+      render2DAnimation();
+    } else {
+      draw3DLine(points2D.map(p => new THREE.Vector3(p.x, p.y, p.z)));
+      status.textContent = `3D 曲线 · ${points2D.length} 点`;
+    }
+  }
+}
+
+function renderSurface(fx,fy,fz,t1,t2,u1,u2) {
+  if(mesh3d) scene.remove(mesh3d);
+  const tSteps = 100, uSteps = 100;
+  const geometry = new THREE.BufferGeometry();
+  const vertices = [], colors = [], indices = [];
+
+  for(let i = 0; i <= tSteps; i++) {
+    const t = t1 + (t2-t1) * i / tSteps;
+    for(let j = 0; j <= uSteps; j++) {
+      const u = u1 + (u2-u1) * j / uSteps;
+      const x = calc(fx,t,u);
+      const y = calc(fy,t,u);
+      const z = calc(fz,t,u);
+      if(!isNaN(x+y+z)) {
+        vertices.push(x,y,z);
+        const hue = (i/tSteps * 0.6 + j/uSteps * 0.4) * 360;
+        const color = new THREE.Color(`hsl(${hue},100%,70%)`);
+        colors.push(color.r, color.g, color.b);
+      }
+    }
+  }
+
+  for(let i = 0; i < tSteps; i++) {
+    for(let j = 0; j < uSteps; j++) {
+      const a = i*(uSteps+1) + j;
+      const b = a + 1;
+      const c = a + (uSteps+1) + 1;
+      const d = a + (uSteps+1);
+      indices.push(a,b,c, a,c,d);
+    }
+  }
+
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  const material = new THREE.MeshPhongMaterial({
+    vertexColors: true,
+    side: THREE.DoubleSide,
+    shininess: 80,
+    specular: 0x4080ff
+  });
+
+  mesh3d = new THREE.Mesh(geometry, material);
+  scene.add(mesh3d);
+  setupLighting();
+  status.textContent = `曲面完成 · ${vertices.length/3} 顶点`;
+}
+
+function draw3DLine(threePoints) {
+  if(line3d) scene.remove(line3d);
+  if(mesh3d) scene.remove(mesh3d);
+  const geometry = new THREE.BufferGeometry().setFromPoints(threePoints);
+  const material = new THREE.LineBasicMaterial({vertexColors: true});
+  const colors = [];
+  threePoints.forEach((p,i) => {
+    const hue = (i/threePoints.length)*360;
+    const c = new THREE.Color(`hsl(${hue},100%,70%)`);
+    colors.push(c.r,c.g,c.b);
+  });
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors,3));
+  line3d = new THREE.Line(geometry, material);
+  scene.add(line3d);
+  setupLighting();
+}
+
+// 事件绑定
+document.getElementById('draw').onclick = render;
+document.getElementById('mode').onchange = render;
+document.getElementById('preset').addEventListener('change', function() {
+  const i = this.value;
+  if(i === "") return;
+  const p = presets[i];
+  document.getElementById('fx').value = p.fx;
+  document.getElementById('fy').value = p.fy;
+  document.getElementById('fz').value = p.fz || "0";
+  document.getElementById('t1').value = p.t1;
+  document.getElementById('t2').value = p.t2;
+  if(p.u1 !== undefined) {
+    document.getElementById('u1').value = p.u1;
+    document.getElementById('u2').value = p.u2;
+  }
+  render();
+});
+
+function randomPreset() {
+  const i = Math.floor(Math.random() * presets.length);
+  document.getElementById('preset').value = i;
+  const p = presets[i];
+  document.getElementById('fx').value = p.fx;
+  document.getElementById('fy').value = p.fy;
+  document.getElementById('fz').value = p.fz || "0";
+  document.getElementById('t1').value = p.t1;
+  document.getElementById('t2').value = p.t2;
+  if(p.u1 !== undefined) {
+    document.getElementById('u1').value = p.u1;
+    document.getElementById('u2').value = p.u2;
+  }
+  render();
+}
+
+function exportImage() {
+  if(document.getElementById('mode').value === '2d') {
+    const a = document.createElement('a');
+    a.href = canvas2d.toDataURL();
+    a.download = 'COCOBO-2D.png';
+    a.click();
+  } else {
+    renderer.render(scene, camera);
+    renderer.domElement.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'COCOBO-3D.png';
+      a.click();
+    });
+  }
+}
+
+// 启动
+render();
+</script>
+</body>
+</html>
