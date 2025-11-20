@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO Silicon Crystal - Meteor Light</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            pointer-events: none; /* 让鼠标事件穿透到3D场景 */
+        }
+
+        #info-card, #controls-card {
+            background: rgba(15, 15, 20, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 20px;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            pointer-events: auto; /* 恢复卡片内的点击事件 */
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            width: 240px;
+        }
+
+        h3 { margin: 0 0 10px 0; color: #4facfe; font-weight: 600; letter-spacing: 0.5px; }
+        p { font-size: 13px; color: #aaa; line-height: 1.5; margin: 0; }
+        
+        .btn-group { display: flex; gap: 8px; margin-top: 15px; }
+        button {
+            flex: 1;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 12px;
+        }
+        button:hover { background: #4facfe; border-color: #4facfe; color: #000; font-weight: bold; }
+        
+        .slider-container { margin-top: 15px; display: flex; align-items: center; justify-content: space-between; }
+        input[type=range] { width: 60%; cursor: pointer; }
+        .value-label { font-family: monospace; font-size: 12px; color: #4facfe; }
+    </style>
+
+    <!-- 核心修复：使用 Import Map 加载模块，确保 OrbitControls 可用 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="ui-container">
+        <div id="info-card">
+            <h3>COCOBO HiTech Lab： Silicon Structure </h3>
+            <p>Diamond Cubic Lattice</p>
+            <div style="margin-top:10px; font-size:12px; color:#00ffaa;">
+                ● 观察流星光照效果
+            </div>
+        </div>
+
+        <div id="controls-card">
+            <div style="font-size:12px; color:#888; text-transform:uppercase; font-weight:bold;">View Planes</div>
+            <div class="btn-group">
+                <button id="btn100">(100)</button>
+                <button id="btn110">(110)</button>
+                <button id="btn111">(111)</button>
+            </div>
+            <div class="slider-container">
+                <span style="font-size:12px">Light</span>
+                <input id="lightSlider" type="range" min="0" max="2" step="0.1" value="0.5">
+                <span id="lightValue" class="value-label">0.5</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // 全局变量
+        let scene, camera, renderer, composer, controls;
+        let atomsGroup, bondsGroup, planeGroup;
+        let ambientLight;
+        const meteors = [];
+        
+        // 晶体参数
+        const UNIT_CELL_SIZE = 4;
+        const CENTER = new THREE.Vector3(6, 6, 6); // 3x3x3 晶胞的大致中心 (UNIT_CELL_SIZE * 1.5)
+
+        // --- 1. 初始化场景 ---
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050508); // 微蓝的黑色背景
+            scene.fog = new THREE.FogExp2(0x050508, 0.02); // 雾气
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(25, 20, 35); // 初始视角
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.toneMapping = THREE.ReinhardToneMapping; // 更好的曝光处理
+            document.body.appendChild(renderer.domElement);
+
+            // --- 核心修复：灯光设置 ---
+            // 之前太黑是因为金属度高且没环境光。这里给足基础光。
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.5); 
+            scene.add(ambientLight);
+
+            // 辅助平行光 (模拟恒星/主光源)
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(10, 20, 10);
+            scene.add(dirLight);
+
+            // 控制器
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.target.copy(CENTER);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.8;
+
+            // --- 后处理 (Bloom/辉光) ---
+            const renderScene = new RenderPass(scene, camera);
+            const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+            bloomPass.strength = 1.2;  // 辉光强度
+            bloomPass.radius = 0.5;
+            bloomPass.threshold = 0.2; // 只有亮的物体才发光
+
+            composer = new EffectComposer(renderer);
+            composer.addPass(renderScene);
+            composer.addPass(bloomPass);
+
+            // 生成内容
+            createSiliconStructure();
+            setupEvents();
+            
+            animate();
+        }
+
+        // --- 2. 生成晶体结构 ---
+        function createSiliconStructure() {
+            atomsGroup = new THREE.Group();
+            bondsGroup = new THREE.Group();
+            scene.add(atomsGroup);
+            scene.add(bondsGroup);
+
+            const atoms = [];
+            // 硅原子 FCC 晶格逻辑
+            const fractionalCoords = [
+                [0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5],
+                [0.25, 0.25, 0.25], [0.75, 0.75, 0.25], [0.75, 0.25, 0.75], [0.25, 0.75, 0.75]
+            ];
+
+            const N = 3; // 重复次数 3x3x3
+            for (let x = 0; x < N; x++) {
+                for (let y = 0; y < N; y++) {
+                    for (let z = 0; z < N; z++) {
+                        fractionalCoords.forEach(f => {
+                            const pos = new THREE.Vector3(
+                                (f[0] + x) * UNIT_CELL_SIZE,
+                                (f[1] + y) * UNIT_CELL_SIZE,
+                                (f[2] + z) * UNIT_CELL_SIZE
+                            );
+                            atoms.push(pos);
+                        });
+                    }
+                }
+            }
+
+            // 材质：降低 metalness，确保在没有环境贴图时也能看到颜色
+            const atomGeo = new THREE.SphereGeometry(0.4, 32, 32);
+            const atomMat = new THREE.MeshStandardMaterial({
+                color: 0x8899aa,   // 蓝灰色
+                roughness: 0.3,    // 稍微粗糙一点，接受光照更好看
+                metalness: 0.5     // 降低金属度，防止全黑
+            });
+
+            // 批量创建原子
+            atoms.forEach(pos => {
+                const mesh = new THREE.Mesh(atomGeo, atomMat);
+                mesh.position.copy(pos);
+                atomsGroup.add(mesh);
+            });
+
+            // 创建键 (基于距离判断)
+            const bondGeo = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
+            // 将圆柱体几何中心调整到底部，方便缩放和旋转
+            bondGeo.translate(0, 0.5, 0); 
+            // 注意：Three.js cylinder 默认朝 Y，我们需要稍微处理一下旋转逻辑
+            // 这里为了简便，我们还是用标准的 lookAt 方式生成
+
+            const bondMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.15,
+                depthWrite: false // 优化透明渲染
+            });
+
+            const bondThreshold = (Math.sqrt(3)/4 * UNIT_CELL_SIZE) * 1.1; // 稍微放宽一点容差
+
+            for (let i = 0; i < atoms.length; i++) {
+                for (let j = i + 1; j < atoms.length; j++) {
+                    const dist = atoms[i].distanceTo(atoms[j]);
+                    // 标准硅键长是 sqrt(3)/4 * a
+                    // 我们判断距离是否在这个范围内
+                    if (dist > 0.1 && dist < bondThreshold) {
+                        const start = atoms[i];
+                        const end = atoms[j];
+                        
+                        const direction = new THREE.Vector3().subVectors(end, start);
+                        const len = direction.length();
+                        
+                        // 使用新的几何体实例，因为需要不同的变换
+                        const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, len, 8), bondMat);
+                        
+                        // 计算中点
+                        cylinder.position.copy(start).add(end).multiplyScalar(0.5);
+                        // 旋转对齐
+                        cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+                        
+                        bondsGroup.add(cylinder);
+                    }
+                }
+            }
+        }
+
+        // --- 3. 流星系统 ---
+        function spawnMeteor() {
+            const colors = [0x00ffff, 0xff0055, 0xffaa00, 0xaa00ff];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            // 几何：拉长的球体 = 光束
+            const geo = new THREE.SphereGeometry(0.2, 16, 16);
+            geo.applyMatrix4(new THREE.Matrix4().makeScale(1, 1, 8)); // Z轴拉长
+
+            const mat = new THREE.MeshBasicMaterial({ color: color });
+            const mesh = new THREE.Mesh(geo, mat);
+
+            // 光源：核心
+            const light = new THREE.PointLight(color, 10, 15); // 强度10，距离15
+            light.decay = 2;
+            mesh.add(light);
+
+            // 随机轨道
+            // 从远处飞向中心
+            const angleXY = Math.random() * Math.PI * 2;
+            const angleZ = (Math.random() - 0.5) * 2; // 倾角
+            const dist = 40;
+            
+            const startPos = new THREE.Vector3(
+                Math.cos(angleXY) * dist,
+                Math.sin(angleXY) * dist,
+                Math.sin(angleZ) * dist
+            ).add(CENTER); // 偏移到中心附近
+
+            // 目标点：中心附近的随机点
+            const targetPos = new THREE.Vector3(
+                (Math.random()-0.5)*10, 
+                (Math.random()-0.5)*10, 
+                (Math.random()-0.5)*10
+            ).add(CENTER);
+
+            const dir = new THREE.Vector3().subVectors(targetPos, startPos).normalize();
+            
+            mesh.position.copy(startPos);
+            mesh.lookAt(targetPos); // 让光束朝向飞行方向
+
+            scene.add(mesh);
+
+            meteors.push({
+                mesh: mesh,
+                velocity: dir.multiplyScalar(0.4 + Math.random() * 0.4), // 随机速度
+                life: 0
+            });
+        }
+
+        function updateMeteors() {
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                const m = meteors[i];
+                m.mesh.position.add(m.velocity);
+                m.life++;
+                
+                // 飞出一定距离后销毁
+                if (m.life > 200) {
+                    scene.remove(m.mesh);
+                    m.mesh.geometry.dispose();
+                    m.mesh.material.dispose();
+                    meteors.splice(i, 1);
+                }
+            }
+        }
+
+
+        // --- 4. 交互与动画 ---
+        function setupEvents() {
+            // 滑杆
+            const slider = document.getElementById('lightSlider');
+            const label = document.getElementById('lightValue');
+            slider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                ambientLight.intensity = val;
+                label.innerText = val.toFixed(1);
+            });
+
+            // 按钮：晶面视角
+            document.getElementById('btn100').onclick = () => setView(new THREE.Vector3(1, 0, 0));
+            document.getElementById('btn110').onclick = () => setView(new THREE.Vector3(1, 1, 0).normalize());
+            document.getElementById('btn111').onclick = () => setView(new THREE.Vector3(1, 1, 1).normalize());
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        // 辅助平面
+        planeGroup = new THREE.Group();
+        function showPlaneHelper(normal) {
+            scene.remove(planeGroup);
+            planeGroup = new THREE.Group();
+            
+            const size = 20;
+            const planeGeo = new THREE.PlaneGeometry(size, size);
+            const planeMat = new THREE.MeshBasicMaterial({
+                color: 0x4facfe, 
+                side: THREE.DoubleSide,
+                transparent: true, 
+                opacity: 0.1
+            });
+            const plane = new THREE.Mesh(planeGeo, planeMat);
+            
+            // 旋转平面使其法线对齐 normal
+            plane.lookAt(normal);
+            plane.position.copy(CENTER);
+
+            // 边框
+            const edges = new THREE.EdgesGeometry(planeGeo);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x4facfe, opacity: 0.5, transparent: true }));
+            line.lookAt(normal);
+            line.position.copy(CENTER);
+
+            planeGroup.add(plane);
+            planeGroup.add(line);
+            scene.add(planeGroup);
+        }
+
+        function setView(normal) {
+            controls.autoRotate = false;
+            showPlaneHelper(normal);
+
+            const targetPos = CENTER.clone().add(normal.multiplyScalar(30));
+            
+            // 简单的相机动画
+            const startPos = camera.position.clone();
+            let t = 0;
+            
+            function animateCam() {
+                t += 0.02;
+                if (t > 1) t = 1;
+                
+                // Ease out
+                const ease = 1 - Math.pow(1 - t, 3);
+                camera.position.lerpVectors(startPos, targetPos, ease);
+                camera.lookAt(CENTER);
+                
+                if (t < 1) requestAnimationFrame(animateCam);
+            }
+            animateCam();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 随机生成流星
+            if (Math.random() < 0.05) spawnMeteor();
+            updateMeteors();
+
+            controls.update();
+            
+            // 使用 composer (包含Bloom) 替代 renderer.render
+            composer.render();
+        }
+
+        // 启动
+        init();
+
+    </script>
+</body>
+</html>
