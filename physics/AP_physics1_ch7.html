@@ -1,1495 +1,902 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AP Physics 1 - Oscillations</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <style>
-        /* --- Fonts & Theme --- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Physics 1 - Oscillations</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC:wght@300;500;700&display=swap');
 
-        :root {
-        --primary-color: #130ca3;
-        --txtprimary-color:#2196F3;
-        --formula-color: #014730;
-        --bg-light: #f3f4f6;
-        --text-dark: #1f2937;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #10b981;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
+body { 
+  font-family:'Inter','Noto Sans SC','Inter',sans-serif; 
+  background-color: var(--bg-light); 
+  color: var(--text-dark); 
+  line-height: 1.6;
+  margin:0; padding:0;
+}
+.container-app { 
+  max-width: 1200px; 
+  margin:10px auto; 
+  padding:10px; 
+  background-color:rgba(244, 244, 247, 0.863); 
+  border-radius:24px; 
+  box-shadow:0 10px 30px rgba(26, 122, 177, 0.384);
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.container-header {
+  background: white;
+  border-radius: 25px;
+  padding: 10px;
+  margin-bottom: 5px;
+  box-shadow: 0 15px 10px rgba(0,0,0,0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+        
+h1 { 
+  font-size: 2.5rem;
+  color: var(--primary-color); 
+  font-weight:700; 
+  text-align:center; 
+  margin: 0;
+}
+h2 { 
+  font-size:1.5rem; 
+  font-weight:600; 
+  color:var(--text-dark); 
+  border-left:5px solid var(--primary-color); 
+  padding-left:10px; 
+  margin-bottom:20px;
+}
 
-        .header {
-            background: white;
-            border-radius: 25px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+.text2xl { 
+  color: var(--primary-color); 
+  font-weight:900; 
+  text-align:left; 
+  padding-bottom:10px;
+}
+.concept-card { 
+  background:rgb(242, 247, 248); 
+  border-radius:16px; 
+  padding:20px; 
+  box-shadow:0 4px 15px rgba(5, 126, 207, 0.658); 
+  transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.concept-card:hover { 
+  transform: translateY(-5px); 
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+.formula { 
+  font-family:'Times New Roman', serif; 
+  font-size:1.2rem; 
+  font-weight:bold; 
+  color: var(--secondary-color); 
+  padding:10px 0; 
+  text-align:center; 
+  border-top:1px solid #e5e7eb; 
+  margin-top:15px;
+}
+.katex { color: var(--secondary-color) !important; }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
+/* Canvas Styles */
+canvas { 
+  background-color:#eef2ff; 
+  border-radius:12px; 
+  cursor:pointer;
+  display: block;
+}
+#simulationCanvas, #energyCanvas, #pendulumCanvas, #phaseCanvas { 
+  border:2px solid var(--primary-color); 
+}
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+/* Layout for Spring Visuals (Side by Side) */
+.spring-visuals {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
 
-        .header h1 {
-            font-size: 2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-        }
+.control-group label { font-weight:500; color:var(--text-dark);}
+.control-group input[type="range"] { width:100%; }
+.btn-simulate { 
+  background-color: var(--primary-color); 
+  color:white; 
+  padding:10px 20px; 
+  border-radius:12px; 
+  font-weight:600; 
+  transition: background-color 0.3s;
+  border:none;
+  cursor:pointer;
+}
+.btn-simulate:hover:not(:disabled) { background-color:#6366f1; }
+.btn-simulate:disabled { background-color:#9ca3af; cursor:not-allowed; }
 
-        .header p {
-            color: var(--txtprimary-color);
-            font-size: 1em;
-            position: relative;
-            z-index: 1;
-        }
+.results-box { 
+  background-color:#f0fdf4; 
+  border:1px solid var(--secondary-color); 
+  border-radius:12px; 
+  padding:15px;
+  text-align:center;
+}
+.results-box strong { color: var(--secondary-color); }
 
-        .nav-tabs {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
+.grid-1 { display: grid; grid-template-columns: repeat(1,1fr); gap: 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+.grid-2a { display: grid; grid-template-columns: 250px 1fr; gap: 1rem; } /* Adjusted width for controls */
 
-        .tab-btn {
-            padding: 12px 30px;
-            background: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 1.05em;
-            font-weight: 600;
-            color: #1e38ad;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(77, 3, 161, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+.my-10 { margin-top: 2.5rem; margin-bottom: 2.5rem; }
+.p-4 { padding: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.w-full { width: 100%; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
 
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.4s, height 0.4s, top 0.4s, left 0.4s;
-            z-index: 0;
-        }
+.list-disc { list-style-type: disc; }
+.list-inside { list-style-position: inside; }
+.text-sm { font-size: 0.875rem; }
+.text-xl { font-size: 1.25rem; }
+.text-lg { font-size: 1.125rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.text-center { text-align: center; }
+.text-gray-500 { color: #6b7280; }
+</style>
 
-        .tab-btn:hover::before {
-            width: 300px;
-            height: 300px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
-        .tab-btn:hover {
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-        }
-
-        .tab-btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        /* --- Grid Layout --- */
-        .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
-        @media (max-width: 768px) {
-        .grid-2 { grid-template-columns: 1fr; }
-        .grid-3 { grid-template-columns: 1fr; }
-        }
-
-        .content-section {
-            background: white;
-            border-radius: 25px;
-            padding: 15px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.25);
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        .concept-title {
-            font-size: 2em;
-            color:  var(--primary-color); 
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .concept-icon {
-            font-size: 1.5em;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .formula-box {
-            background: linear-gradient(135deg, #2b2a2b 0%, #292828 100%);
-            padding: 30px;
-            border-radius: 20px;
-            margin: 30px 0;
-            color: white;
-            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
-        }
-
-        .formula {
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-            margin: 8px 0;
-            color: var(--txtprimary-color);
-            font-family: 'Courier New', monospace;
-            
-        }
-        .formula_adv {
-            background: linear-gradient(135deg, #2b2a2b 0%, #292828 100%);
-            border-radius: 20px;
-            margin: 30px 0;
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-            margin: 8px 0;
-            font-family: 'Courier New', monospace;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .formula-description {
-            font-size: 1.1em;
-            text-align: center;
-            margin-top: 15px;
-            opacity: 0.95;
-        }
-
-        .animation-canvas {
-            width: 100%;
-            height: 450px;
-            background: linear-gradient(135deg, #e0e7ff 0%, #f5f3ff 100%);
-            border-radius: 20px;
-            margin: 30px 0;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid #667eea;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-
-        .explanation {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 25px;
-            border-radius: 18px;
-            margin: 25px 0;
-            border-left: 6px solid #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .explanation h3 {
-            color: var(--txtprimary-color);
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-
-        .explanation p {
-            line-height: 1.8;
-            color: #555;
-        }
-
-        .key-points {
-            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
-            padding: 25px;
-            border-radius: 18px;
-            margin: 25px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .key-points h3 {
-            color: #f59e0b;
-            margin-bottom: 15px;
-        }
-
-        .key-points ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .key-points li {
-            padding: 12px 0;
-            padding-left: 35px;
-            position: relative;
-            line-height: 1.6;
-        }
-
-        .key-points li:before {
-            content: "▸";
-            position: absolute;
-            left: 8px;
-            color: #f5576c;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .control-btn {
-            padding: 14px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1.05em;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .control-btn:hover {
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .control-btn:active {
-            transform: scale(0.98);
-        }
-
-        .slider-container {
-            margin: 25px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-
-        .slider-label {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 12px;
-            display: block;
-            font-size: 1.1em;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 10px;
-            border-radius: 5px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            cursor: pointer;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-        }
-
-        .graph-container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .tab-btn {
-                padding: 12px 20px;
-                font-size: 0.95em;
-            }
-            
-            .content-section {
-                padding: 25px;
-            }
-
-            .concept-title {
-                font-size: 1.6em;
-            }
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌊 COCOBO AP Physics 1</h1>
-            <p>CH7: Oscillations and Simple Harmonic Motion</p>
+<div class="container-app">
+    <div class="container-header">
+        <h1>COCOBO-TECH AP Physics 1</h1>
+        <p style="text-align: center;text-decoration: underline;">CH7: Oscillations</p>
+    </div>
+
+<!-- Core Concept Cards (Unchanged) -->
+<div class="my-8">
+    <h2>Core Concepts and Formulas</h2>
+    
+    <!-- Simple Harmonic Motion & Restoring Force -->
+    <div class="grid-2 mb-4">
+        <!-- SHM Definition -->
+        <div class="concept-card">
+            <h3 class="text2xl">1. Simple Harmonic Motion (SHM)</h3>
+            <p>Periodic motion where restoring force is proportional to displacement from equilibrium.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Position: x(t) = A cos(ωt + φ)</li>
+                <li>A = amplitude, ω = angular frequency, φ = phase constant</li>
+                <li>Motion repeats with constant period T</li>
+            </ul>
+            <div class="formula">\( x(t) = A\cos(\omega t + \phi) \)</div>
         </div>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="showTab(0)"><span>Simple Harmonic Motion</span></button>
-            <button class="tab-btn" onclick="showTab(1)"><span>Mass-Spring System</span></button>
-            <button class="tab-btn" onclick="showTab(2)"><span>Pendulum</span></button>
-            <button class="tab-btn" onclick="showTab(3)"><span>Energy in SHM</span></button>
-            <button class="tab-btn" onclick="showTab(4)"><span>Graphs & Phase</span></button>
-        </div>
-
-        <!-- Simple Harmonic Motion -->
-        <div class="content-section active" id="tab0">
-            <div class="concept-title">
-                <span class="concept-icon">🎵</span>
-                <span>Simple Harmonic Motion (SHM)</span>
-            </div>
-
-            
-            <div class="grid-2" >
-
-                <div class="explanation">
-                <h3>What is Simple Harmonic Motion?</h3>
-                <p>SHM is periodic motion where the restoring force is proportional to the displacement from equilibrium (Hooke's Law: \( F = -kx \)).</p>
-                    <div class="formula">Angular Frequency(rad/s): \( \omega = 2\pi f = \frac{2\pi}{T} \)</div>
-                    <div class="formula">\( T = \frac{1}{f}  \)</div>
-                    <p>In a mass-spring system, the period depends on mass and spring constant.</p>
-                    <div class="formula">Period: \( T = 2\pi \sqrt{\frac{m}{k}} \)</div>
-                    <div class="formula">Frequency: \( f = \frac{1}{2\pi} \sqrt{\frac{k}{m}} \)</div>
-
-                    <div class="formula">Position: \( x = A \cos(\omega t + \phi) \)</div>
-                    <div class="formula">Velocity: \( v = -A \omega \sin(\omega t + \phi) \)</div>
-                    <div class="formula">Acceleration: \( a = -A \omega^2 \cos(\omega t + \phi) \)</div>
-                </div>
-
-                <div class="formula_adv">  
-                    <div class="formula">ADV formula...</div>
-  
-                </div>
-            </div>
-
-            <div >
-       
-
-                <div >
-                        <div class="grid-2" >
-                    <div class="slider-container">
-                    <label class="slider-label">Amplitude (A): <span id="ampValue">100</span> units</label>
-                    <input type="range" min="50" max="150" value="100" id="ampSlider" oninput="updateAmplitude(this.value)">
-                    </div>
-
-                    <div class="slider-container">
-                    <label class="slider-label">Frequency: <span id="freqValue">1.0</span> Hz</label>
-                    <input type="range" min="0.5" max="3" step="0.1" value="1" id="freqSlider" oninput="updateFrequency(this.value)">
-
-                    </div>
-
-                   
-
-                    </div>
-
-                    <div >
-                 <canvas class="animation-canvas" id="shmCanvas"></canvas>
-                </div>
-                </div>
-                
-
-                 
-                
-                
-
-            </div>
-
-            
-
-            
-
-           
-
-            <div class="controls">
-                <button class="control-btn" onclick="toggleSHM()">Play/Pause</button>
-                <button class="control-btn" onclick="resetSHM()">Reset</button>
-            </div>
-
-
-
-            <div class="key-points">
-                <h3>🎯 Key Characteristics of SHM:</h3>
-                <ul>
-                    <li><strong>Restoring Force:</strong> F = -kx (proportional to displacement, opposite direction)</li>
-                    <li><strong>Periodic Motion:</strong> Repeats in regular time intervals</li>
-                    <li><strong>Maximum Speed:</strong> Occurs at equilibrium position (x = 0)</li>
-                    <li><strong>Maximum Acceleration:</strong> Occurs at maximum displacement (x = ±A)</li>
-                    <li><strong>Sinusoidal:</strong> Position, velocity, and acceleration are sine/cosine functions</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Mass-Spring System -->
-        <div class="content-section" id="tab1">
-            <div class="concept-title">
-                <span class="concept-icon">🔧</span>
-                <span>Mass-Spring System</span>
-            </div>
-
-            <div class="explanation">
-                <h3>Hooke's Law and Spring Oscillations</h3>
-                <p>A mass attached to a spring undergoes SHM when displaced. The spring force provides the restoring force that creates the oscillation.</p>
-            </div>
-
-            <div class="formula-box">
-                <div class="formula">F = -kx</div>
-                <div class="formula">T = 2π√(m/k)</div>
-                <div class="formula">ω = √(k/m)</div>
-                <div class="formula-description">
-                    k = Spring constant (N/m)<br>
-                    m = Mass (kg)<br>
-                    Period is independent of amplitude!
-                </div>
-            </div>
-
-            <div class="slider-container">
-                <label class="slider-label">Spring Constant (k): <span id="springKValue">50</span> N/m</label>
-                <input type="range" min="20" max="100" value="50" id="springKSlider" oninput="updateSpringK(this.value)">
-            </div>
-
-            <div class="slider-container">
-                <label class="slider-label">Mass (m): <span id="springMValue">2</span> kg</label>
-                <input type="range" min="1" max="5" step="0.5" value="2" id="springMSlider" oninput="updateSpringM(this.value)">
-            </div>
-
-            <canvas class="animation-canvas" id="springCanvas"></canvas>
-
-            <div class="controls">
-                <button class="control-btn" onclick="toggleSpring()">Play/Pause</button>
-                <button class="control-btn" onclick="resetSpring()">Reset</button>
-                <button class="control-btn" onclick="pullSpring()">Pull Down</button>
-            </div>
-
-            <div class="key-points">
-                <h3>🎯 Key Points:</h3>
-                <ul>
-                    <li><strong>Period increases</strong> with more mass (heavier objects oscillate slower)</li>
-                    <li><strong>Period decreases</strong> with stiffer spring (larger k)</li>
-                    <li><strong>Period is independent</strong> of amplitude (small or large oscillations take same time)</li>
-                    <li><strong>At equilibrium:</strong> Spring force = Weight (for vertical spring)</li>
-                    <li><strong>Maximum force:</strong> Occurs at maximum displacement</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Pendulum -->
-        <div class="content-section" id="tab2">
-            <div class="concept-title">
-                <span class="concept-icon">⏱️</span>
-                <span>Simple Pendulum</span>
-            </div>
-
-            <div class="explanation">
-                <h3>Pendulum Motion (Small Angle Approximation)</h3>
-                <p>A pendulum undergoes SHM for small angles (θ < 15°). The restoring force comes from the component of gravity tangent to the arc.</p>
-            </div>
-
-            <div class="formula-box">
-                <div class="formula">T = 2π√(L/g)</div>
-                <div class="formula">ω = √(g/L)</div>
-                <div class="formula-description">
-                    L = Length of pendulum (m)<br>
-                    g = Acceleration due to gravity (9.8 m/s²)<br>
-                    Period is independent of mass and amplitude!
-                </div>
-            </div>
-
-            <div class="slider-container">
-                <label class="slider-label">Length (L): <span id="pendLValue">1.0</span> m</label>
-                <input type="range" min="0.5" max="2" step="0.1" value="1" id="pendLSlider" oninput="updatePendulumL(this.value)">
-            </div>
-
-            <div class="slider-container">
-                <label class="slider-label">Initial Angle: <span id="pendAngleValue">30</span>°</label>
-                <input type="range" min="10" max="45" value="30" id="pendAngleSlider" oninput="updatePendulumAngle(this.value)">
-            </div>
-
-            <canvas class="animation-canvas" id="pendulumCanvas"></canvas>
-
-            <div class="controls">
-                <button class="control-btn" onclick="togglePendulum()">Play/Pause</button>
-                <button class="control-btn" onclick="resetPendulum()">Reset</button>
-            </div>
-
-            <div class="explanation">
-                <h3>Small Angle Approximation</h3>
-                <p>For small angles (in radians): sin(θ) ≈ θ. This allows us to treat the pendulum as SHM. For larger angles, the motion is still periodic but not perfectly sinusoidal.</p>
-            </div>
-
-            <div class="key-points">
-                <h3>🎯 Key Points:</h3>
-                <ul>
-                    <li><strong>Period depends only on:</strong> Length and gravity (not mass!)</li>
-                    <li><strong>Longer pendulum:</strong> Slower oscillation (larger period)</li>
-                    <li><strong>On different planets:</strong> Higher g means faster oscillation</li>
-                    <li><strong>Small angle requirement:</strong> θ < 15° for accurate SHM</li>
-                    <li><strong>Restoring force:</strong> F = -mg sin(θ) ≈ -mgθ (for small θ)</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Energy in SHM -->
-        <div class="content-section" id="tab3">
-            <div class="concept-title">
-                <span class="concept-icon">⚡</span>
-                <span>Energy in Simple Harmonic Motion</span>
-            </div>
-
-            <div class="explanation">
-                <h3>Energy Conservation in Oscillations</h3>
-                <p>In SHM, energy continuously transforms between kinetic and potential energy. Total mechanical energy remains constant (in ideal systems with no friction).</p>
-            </div>
-
-            <div class="formula-box">
-                <div class="formula">E_total = ½kA² = constant</div>
-                <div class="formula">KE = ½mv² = ½kA²sin²(ωt)</div>
-                <div class="formula">PE = ½kx² = ½kA²cos²(ωt)</div>
-                <div class="formula-description">
-                    At equilibrium: All KE, PE = 0<br>
-                    At maximum displacement: All PE, KE = 0<br>
-                    Total energy proportional to A²
-                </div>
-            </div>
-
-            <canvas class="animation-canvas" id="energyCanvas"></canvas>
-
-            <div class="controls">
-                <button class="control-btn" onclick="toggleEnergy()">Play/Pause</button>
-                <button class="control-btn" onclick="resetEnergy()">Reset</button>
-            </div>
-
-            <div class="graph-container">
-                <canvas id="energyGraph" width="800" height="300"></canvas>
-            </div>
-
-            <div class="key-points">
-                <h3>🎯 Key Energy Relationships:</h3>
-                <ul>
-                    <li><strong>Maximum KE:</strong> At equilibrium position (v = vₘₐₓ = Aω)</li>
-                    <li><strong>Maximum PE:</strong> At turning points (x = ±A)</li>
-                    <li><strong>Energy is conserved:</strong> KE + PE = constant</li>
-                    <li><strong>Velocity at any point:</strong> v = ±ω√(A² - x²)</li>
-                    <li><strong>Doubling amplitude:</strong> Quadruples total energy</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Graphs & Phase -->
-        <div class="content-section" id="tab4">
-            <div class="concept-title">
-                <span class="concept-icon">📊</span>
-                <span>Position, Velocity, and Acceleration Graphs</span>
-            </div>
-
-            <div class="explanation">
-                <h3>Understanding Phase Relationships</h3>
-                <p>Position, velocity, and acceleration in SHM are related but shifted in phase. Velocity leads position by π/2, and acceleration leads velocity by π/2 (or acceleration is π ahead of position).</p>
-            </div>
-
-            <div class="formula-box">
-                <div class="formula">x = A cos(ωt)</div>
-                <div class="formula">v = -Aω sin(ωt) = Aω cos(ωt + π/2)</div>
-                <div class="formula">a = -Aω² cos(ωt) = Aω² cos(ωt + π)</div>
-                <div class="formula-description">
-                    Velocity and position are 90° out of phase<br>
-                    Acceleration and position are 180° out of phase<br>
-                    When x is max positive, a is max negative
-                </div>
-            </div>
-
-            <canvas class="animation-canvas" id="phaseCanvas"></canvas>
-
-            <div class="controls">
-                <button class="control-btn" onclick="togglePhase()">Play/Pause</button>
-                <button class="control-btn" onclick="resetPhase()">Reset</button>
-            </div>
-
-            <div class="graph-container">
-                <canvas id="multiGraph" width="800" height="400"></canvas>
-            </div>
-
-            <div class="key-points">
-                <h3>🎯 Key Phase Relationships:</h3>
-                <ul>
-                    <li><strong>When x = 0:</strong> velocity is maximum, acceleration is zero</li>
-                    <li><strong>When x = ±A:</strong> velocity is zero, acceleration is maximum</li>
-                    <li><strong>Velocity zero:</strong> At turning points (changing direction)</li>
-                    <li><strong>Acceleration always:</strong> Points toward equilibrium</li>
-                    <li><strong>Phase difference:</strong> v leads x by 90°, a leads v by 90°</li>
-                </ul>
-            </div>
+        <!-- Hooke's Law -->
+        <div class="concept-card">
+            <h3 class="text2xl">2. Hooke's Law & Restoring Force</h3>
+            <p>Spring force is proportional to displacement, always directed toward equilibrium.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>k = spring constant (N/m)</li>
+                <li>Negative sign: force opposes displacement</li>
+                <li>Larger k = stiffer spring</li>
+            </ul>
+            <div class="formula">\( F = -kx \)</div>
         </div>
     </div>
 
-    <script>
-        // Global variables
-        let animations = {};
-        let amplitude = 100;
-        let frequency = 1;
-        let omega = 2 * Math.PI * frequency;
-        let time = 0;
-        let shmRunning = false;
+    <!-- Period & Frequency -->
+    <div class="grid-3 mb-4">
+        <!-- Period -->
+        <div class="concept-card">
+            <h3 class="text2xl">3. Period (T)</h3>
+            <p>Time for one complete oscillation.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: seconds (s)</li>
+                <li>Independent of amplitude</li>
+                <li>Larger mass or smaller k → longer period</li>
+            </ul>
+            <div class="formula">\( T = 2\pi\sqrt{\frac{m}{k}} \)</div>
+        </div>
 
-        // Tab switching
-        function showTab(index) {
-            const tabs = document.querySelectorAll('.content-section');
-            const btns = document.querySelectorAll('.tab-btn');
+        <!-- Frequency -->
+        <div class="concept-card">
+            <h3 class="text2xl">4. Frequency (f)</h3>
+            <p>Number of oscillations per second.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: Hertz (Hz) = 1/s</li>
+                <li>f = 1/T</li>
+                <li>Higher frequency = faster oscillation</li>
+            </ul>
+            <div class="formula">\( f = \frac{1}{T} = \frac{1}{2\pi}\sqrt{\frac{k}{m}} \)</div>
+        </div>
+
+        <!-- Angular Frequency -->
+        <div class="concept-card">
+            <h3 class="text2xl">5. Angular Frequency (ω)</h3>
+            <p>Rate of change of phase angle.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Unit: rad/s</li>
+                <li>ω = 2πf</li>
+                <li>Determines oscillation speed</li>
+            </ul>
+            <div class="formula">\( \omega = 2\pi f = \sqrt{\frac{k}{m}} \)</div>
+        </div>
+    </div>
+
+    <!-- Velocity & Acceleration -->
+    <div class="grid-2 mb-4">
+        <div class="concept-card">
+            <h3 class="text2xl">6. Velocity in SHM</h3>
+            <p>Maximum at equilibrium (x=0), zero at maximum displacement.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>v(t) = derivative of position</li>
+                <li>v_max = Aω at equilibrium</li>
+                <li>90° out of phase with position</li>
+            </ul>
+            <div class="formula">\( v(t) = -A\omega\sin(\omega t + \phi) \)</div>
+            <div class="formula">\( v_\text{max} = A\omega \)</div>
+        </div>
+
+        <div class="concept-card">
+            <h3 class="text2xl">7. Acceleration in SHM</h3>
+            <p>Maximum at extremes, zero at equilibrium. Always toward center.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>a(t) = derivative of velocity</li>
+                <li>a = -ω²x (proportional to displacement)</li>
+                <li>180° out of phase with position</li>
+            </ul>
+            <div class="formula">\( a(t) = -A\omega^2\cos(\omega t + \phi) = -\omega^2 x \)</div>
+            <div class="formula">\( a_\text{max} = A\omega^2 = \frac{k}{m}A \)</div>
+        </div>
+    </div>
+
+    <!-- Energy in SHM -->
+    <div class="grid-3 mb-4">
+        <div class="concept-card">
+            <h3 class="text2xl">8. Elastic Potential Energy</h3>
+            <p>Energy stored in spring when compressed or stretched.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Maximum at extreme positions</li>
+                <li>Zero at equilibrium</li>
+                <li>Parabolic relationship with x</li>
+            </ul>
+            <div class="formula">\( U_s = \frac{1}{2}kx^2 \)</div>
+        </div>
+
+        <div class="concept-card">
+            <h3 class="text2xl">9. Kinetic Energy in SHM</h3>
+            <p>Energy of motion during oscillation.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Maximum at equilibrium</li>
+                <li>Zero at extreme positions</li>
+                <li>Converts to/from potential energy</li>
+            </ul>
+            <div class="formula">\( Ke = \frac{1}{2}mv^2 \)</div>
+        </div>
+
+        <div class="concept-card">
+            <h3 class="text2xl">10. Total Mechanical Energy</h3>
+            <p>Sum of kinetic and potential energy, conserved in ideal SHM.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>Constant throughout motion</li>
+                <li>E = ½kA² (depends on amplitude)</li>
+                <li>Energy oscillates between KE and PE</li>
+            </ul>
+
+            <svg width="180" height="80" viewBox="0 0 180 80">
+                <path d="M10,70 Q90,-30 170,70" stroke="#10b981" fill="none" stroke-width="2"/>
+                <path d="M10,70 Q90,170 170,70" stroke="transparent" fill="none"/>
+                <path d="M10,10 Q90,110 170,10" stroke="#4f46e5" fill="none" stroke-width="2" stroke-dasharray="4,2"/>
+                <text x="85" y="69" font-size="10" fill="#4f46e5">Us (max at A)</text>
+                <text x="85" y="18" font-size="10" fill="#10b981">K (max at eq)</text>
+            </svg>
+
+            <div class="formula">\( E = K_e + U_s = \frac{1}{2}kA^2= \frac{1}{2}mv_\text{max}^2 \)</div>
+        </div>
+    </div>
+
+    <!-- Simple Pendulum -->
+    <div class="grid-1 mb-4">
+        <div class="concept-card">
+            <h3 class="text2xl">11. Simple Pendulum <span style="background-color: #f0ec09;">(Small Angles)</span></h3>
+            <p>Mass on string undergoes SHM for small angular displacements <span style="background-color: #f0ec09;">(θ < 15°)</span>.</p>
+            <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
+                <li>L = length of pendulum, g = gravitational acceleration</li>
+                <li>Period <span style="background-color: #f0ec09;">independent of mass and amplitude (for small angles)</span></li>
+                <li>Restoring force:<span style="background-color: #7bd16a;">  F = -mg sinθ ≈ -mgθ (for small θ)</span></li>
+            </ul>
+            <div class="formula">\( T = 2\pi\sqrt{\frac{L}{g}} \)</div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Mass-Spring Simulation -->
+<div class="my-8">
+    <h2>Interactive Mass-Spring Oscillator</h2>
+    
+    <div class="grid-2a">
+        <!-- Controls -->
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Controls</h3>
             
-            tabs.forEach((tab, i) => {
-                tab.classList.remove('active');
-                btns[i].classList.remove('active');
-            });
+            <div class="control-group mb-3">
+                <label>Mass (kg): <span id="massValue">1.0</span></label>
+                <input type="range" id="massSlider" min="0.5" max="5" value="1" step="0.1">
+            </div>
             
-            tabs[index].classList.add('active');
-            btns[index].classList.add('active');
-        }
-
-        // SHM Animation
-        function updateAmplitude(value) {
-            amplitude = parseFloat(value);
-            document.getElementById('ampValue').textContent = amplitude;
-        }
-
-        function updateFrequency(value) {
-            frequency = parseFloat(value);
-            omega = 2 * Math.PI * frequency;
-            document.getElementById('freqValue').textContent = frequency.toFixed(1);
-        }
-
-        function toggleSHM() {
-            shmRunning = !shmRunning;
-        }
-
-        function resetSHM() {
-            time = 0;
-            shmRunning = false;
-        }
-
-        function drawSHM() {
-            const canvas = document.getElementById('shmCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            // Draw equilibrium line
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(canvas.width, centerY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Calculate position
-            const x = amplitude * Math.cos(omega * time);
-            const v = -amplitude * omega * Math.sin(omega * time);
-            const a = -amplitude * omega * omega * Math.cos(omega * time);
-
-            // Draw spring/path
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX - amplitude, centerY);
-            ctx.lineTo(centerX + amplitude, centerY);
-            ctx.stroke();
-
-            // Draw endpoints
-            ctx.fillStyle = '#f5576c';
-            ctx.beginPath();
-            ctx.arc(centerX - amplitude, centerY, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(centerX + amplitude, centerY, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Draw oscillating mass
-            ctx.beginPath();
-            ctx.arc(centerX + x, centerY, 25, 0, Math.PI * 2);
-            ctx.fillStyle = '#667eea';
-            ctx.fill();
-            ctx.strokeStyle = '#4c51bf';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Draw velocity vector
-            const vScale = 0.5;
-            if (Math.abs(v) > 0.1) {
-                ctx.beginPath();
-                ctx.moveTo(centerX + x, centerY);
-                ctx.lineTo(centerX + x + v * vScale, centerY);
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                // Arrow
-                const vLen = v * vScale;
-                const arrowDir = vLen > 0 ? 1 : -1;
-                ctx.beginPath();
-                ctx.moveTo(centerX + x + vLen, centerY);
-                ctx.lineTo(centerX + x + vLen - 10 * arrowDir, centerY - 6);
-                ctx.lineTo(centerX + x + vLen - 10 * arrowDir, centerY + 6);
-                ctx.closePath();
-                ctx.fillStyle = '#10b981';
-                ctx.fill();
-            }
-
-            // Draw acceleration vector
-            const aScale = 0.05;
-            if (Math.abs(a) > 0.1) {
-                ctx.beginPath();
-                ctx.moveTo(centerX + x, centerY + 40);
-                ctx.lineTo(centerX + x + a * aScale, centerY + 40);
-                ctx.strokeStyle = '#f59e0b';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                // Arrow
-                const aLen = a * aScale;
-                const arrowDir = aLen > 0 ? 1 : -1;
-                ctx.beginPath();
-                ctx.moveTo(centerX + x + aLen, centerY + 40);
-                ctx.lineTo(centerX + x + aLen - 10 * arrowDir, centerY + 34);
-                ctx.lineTo(centerX + x + aLen - 10 * arrowDir, centerY + 46);
-                ctx.closePath();
-                ctx.fillStyle = '#f59e0b';
-                ctx.fill();
-            }
-
-            // Labels
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'left';
-            ctx.fillText('Position: ' + x.toFixed(1), 20, 30);
-            ctx.fillStyle = '#10b981';
-            ctx.fillText('Velocity: ' + v.toFixed(1), 20, 55);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillText('Acceleration: ' + a.toFixed(1), 20, 80);
-
-            // Update time
-            if (shmRunning) {
-                time += 0.02;
-            }
-
-            animations.shm = requestAnimationFrame(drawSHM);
-        }
-
-        // Spring System
-        let springK = 50;
-        let springM = 2;
-        let springOmega = Math.sqrt(springK / springM);
-        let springTime = 0;
-        let springRunning = false;
-        let springAmp = 80;
-
-        function updateSpringK(value) {
-            springK = parseFloat(value);
-            springOmega = Math.sqrt(springK / springM);
-            document.getElementById('springKValue').textContent = springK;
-        }
-
-        function updateSpringM(value) {
-            springM = parseFloat(value);
-            springOmega = Math.sqrt(springK / springM);
-            document.getElementById('springMValue').textContent = springM;
-        }
-
-        function toggleSpring() {
-            springRunning = !springRunning;
-        }
-
-        function resetSpring() {
-            springTime = 0;
-            springRunning = false;
-        }
-
-        function pullSpring() {
-            springAmp = 120;
-            springTime = 0;
-            setTimeout(() => { springAmp = 80; }, 3000);
-        }
-
-        function drawSpring() {
-            const canvas = document.getElementById('springCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const topY = 50;
-            const equilibriumY = 200;
-
-            // Calculate position
-            const y = springAmp * Math.cos(springOmega * springTime);
-
-            // Draw ceiling
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(centerX - 100, topY - 20, 200, 20);
+            <div class="control-group mb-3">
+                <label>Spring Constant k (N/m): <span id="springValue">20</span></label>
+                <input type="range" id="springSlider" min="5" max="50" value="20" step="5">
+            </div>
             
-            // Ceiling pattern
-            for (let i = -100; i < 100; i += 20) {
-                ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(centerX + i, topY - 20);
-                ctx.lineTo(centerX + i + 10, topY);
-                ctx.stroke();
-            }
-
-            // Draw spring
-            const springSegments = 20;
-            const springWidth = 30;
-            const springLength = equilibriumY + y - topY;
+            <div class="control-group mb-3">
+                <label>Amplitude (m): <span id="amplitudeValue">2.0</span></label>
+                <input type="range" id="amplitudeSlider" min="0.5" max="3" value="2" step="0.1">
+            </div>
             
-            ctx.strokeStyle = '#667eea';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX, topY);
+            <button class="btn-simulate w-full" onclick="startOscillation()">Start Oscillation</button>
+            <button class="btn-simulate w-full mt-2" onclick="stopOscillation()">Stop</button>
+            <button class="btn-simulate w-full mt-2" onclick="resetOscillation()">Reset</button>
             
-            for (let i = 0; i <= springSegments; i++) {
-                const yPos = topY + (springLength * i) / springSegments;
-                const xOffset = (i % 2 === 0 ? -1 : 1) * springWidth;
-                ctx.lineTo(centerX + xOffset, yPos);
-            }
-            ctx.stroke();
-
-            // Draw mass
-            const massSize = 40 + springM * 10;
-            ctx.fillStyle = '#667eea';
-            ctx.fillRect(centerX - massSize/2, equilibriumY + y, massSize, massSize);
-            ctx.strokeStyle = '#4c51bf';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(centerX - massSize/2, equilibriumY + y, massSize, massSize);
-
-            // Mass label
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.fillText(springM + ' kg', centerX, equilibriumY + y + massSize/2 + 6);
-
-            // Draw equilibrium line
-            ctx.strokeStyle = '#f5576c';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(centerX - 150, equilibriumY);
-            ctx.lineTo(centerX + 150, equilibriumY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Info display
-            const period = 2 * Math.PI / springOmega;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'left';
-            ctx.fillText('k = ' + springK + ' N/m', 20, 30);
-            ctx.fillText('m = ' + springM + ' kg', 20, 55);
-            ctx.fillText('T = ' + period.toFixed(2) + ' s', 20, 80);
-            ctx.fillText('f = ' + (1/period).toFixed(2) + ' Hz', 20, 105);
-
-            if (springRunning) {
-                springTime += 0.02;
-            }
-
-            animations.spring = requestAnimationFrame(drawSpring);
-        }
-
-        // Pendulum
-        let pendulumL = 1.0;
-        let pendulumAngle = 30;
-        let pendulumTheta = 0;
-        let pendulumOmega = 0;
-        let pendulumTime = 0;
-        let pendulumRunning = false;
-
-        function updatePendulumL(value) {
-            pendulumL = parseFloat(value);
-            document.getElementById('pendLValue').textContent = pendulumL.toFixed(1);
-            resetPendulum();
-        }
-
-        function updatePendulumAngle(value) {
-            pendulumAngle = parseFloat(value);
-            document.getElementById('pendAngleValue').textContent = pendulumAngle;
-            resetPendulum();
-        }
-
-        function togglePendulum() {
-            pendulumRunning = !pendulumRunning;
-        }
-
-        function resetPendulum() {
-            pendulumTheta = pendulumAngle * Math.PI / 180;
-            pendulumOmega = 0;
-            pendulumTime = 0;
-            pendulumRunning = false;
-        }
-
-        function drawPendulum() {
-            const canvas = document.getElementById('pendulumCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const pivotX = canvas.width / 2;
-            const pivotY = 80;
-            const pixelsPerMeter = 150;
-            const length = pendulumL * pixelsPerMeter;
-
-            // Physics simulation
-            if (pendulumRunning) {
-                const g = 9.8;
-                const alpha = -(g / pendulumL) * Math.sin(pendulumTheta);
-                pendulumOmega += alpha * 0.016;
-                pendulumTheta += pendulumOmega * 0.016;
-                pendulumOmega *= 0.999; // Small damping
-            }
-
-            // Calculate bob position
-            const bobX = pivotX + length * Math.sin(pendulumTheta);
-            const bobY = pivotY + length * Math.cos(pendulumTheta);
-
-            // Draw ceiling mount
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(pivotX - 50, pivotY - 15, 100, 15);
-            
-            // Draw pivot point
-            ctx.beginPath();
-            ctx.arc(pivotX, pivotY, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#475569';
-            ctx.fill();
-
-            // Draw string
-            ctx.strokeStyle = '#64748b';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(pivotX, pivotY);
-            ctx.lineTo(bobX, bobY);
-            ctx.stroke();
-
-            // Draw arc showing amplitude
-            ctx.strokeStyle = '#f5576c44';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.arc(pivotX, pivotY, length, Math.PI/2 - pendulumAngle * Math.PI / 180, Math.PI/2 + pendulumAngle * Math.PI / 180);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Draw bob
-            ctx.beginPath();
-            ctx.arc(bobX, bobY, 20, 0, Math.PI * 2);
-            ctx.fillStyle = '#667eea';
-            ctx.fill();
-            ctx.strokeStyle = '#4c51bf';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Draw velocity vector
-            const vx = pendulumOmega * length * Math.cos(pendulumTheta);
-            const vy = -pendulumOmega * length * Math.sin(pendulumTheta);
-            const vMag = Math.sqrt(vx*vx + vy*vy);
-            
-            if (vMag > 0.5) {
-                const vScale = 0.5;
-                ctx.beginPath();
-                ctx.moveTo(bobX, bobY);
-                ctx.lineTo(bobX + vx * vScale, bobY + vy * vScale);
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-                ctx.font = 'bold 14px Arial';
-                ctx.fillStyle = '#10b981';
-                ctx.fillText('v', bobX + vx * vScale + 10, bobY + vy * vScale);
-            }
-
-            // Info display
-            const g = 9.8;
-            const period = 2 * Math.PI * Math.sqrt(pendulumL / g);
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'left';
-            ctx.fillText('Length: ' + pendulumL.toFixed(1) + ' m', 20, 30);
-            ctx.fillText('Period: ' + period.toFixed(2) + ' s', 20, 55);
-            ctx.fillText('Angle: ' + (pendulumTheta * 180 / Math.PI).toFixed(1) + '°', 20, 80);
-
-            animations.pendulum = requestAnimationFrame(drawPendulum);
-        }
-
-        // Energy Animation
-        let energyTime = 0;
-        let energyRunning = false;
-        let energyAmplitude = 100;
-        let energyK = 50;
-
-        function toggleEnergy() {
-            energyRunning = !energyRunning;
-        }
-
-        function resetEnergy() {
-            energyTime = 0;
-            energyRunning = false;
-        }
-
-        function drawEnergy() {
-            const canvas = document.getElementById('energyCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const omega = Math.sqrt(energyK / 2);
-
-            // Calculate position and energies
-            const x = energyAmplitude * Math.cos(omega * energyTime);
-            const v = -energyAmplitude * omega * Math.sin(omega * energyTime);
-            
-            const totalE = 0.5 * energyK * energyAmplitude * energyAmplitude;
-            const PE = 0.5 * energyK * x * x;
-            const KE = totalE - PE;
-
-            // Draw energy bars
-            const barWidth = 80;
-            const barX1 = centerX - 200;
-            const barX2 = centerX - 80;
-            const barX3 = centerX + 40;
-            const maxHeight = 200;
-
-            // PE bar
-            const peHeight = (PE / totalE) * maxHeight;
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillRect(barX1, centerY + 100 - peHeight, barWidth, peHeight);
-            ctx.strokeStyle = '#d97706';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(barX1, centerY + 100 - peHeight, barWidth, peHeight);
-            
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'center';
-            ctx.fillText('PE', barX1 + barWidth/2, centerY + 130);
-            ctx.fillText(PE.toFixed(0) + ' J', barX1 + barWidth/2, centerY + 155);
-
-            // KE bar
-            const keHeight = (KE / totalE) * maxHeight;
-            ctx.fillStyle = '#10b981';
-            ctx.fillRect(barX2, centerY + 100 - keHeight, barWidth, keHeight);
-            ctx.strokeStyle = '#059669';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(barX2, centerY + 100 - keHeight, barWidth, keHeight);
-            
-            ctx.fillStyle = '#333';
-            ctx.fillText('KE', barX2 + barWidth/2, centerY + 130);
-            ctx.fillText(KE.toFixed(0) + ' J', barX2 + barWidth/2, centerY + 155);
-
-            // Total E bar
-            ctx.fillStyle = '#667eea';
-            ctx.fillRect(barX3, centerY + 100 - maxHeight, barWidth, maxHeight);
-            ctx.strokeStyle = '#4c51bf';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(barX3, centerY + 100 - maxHeight, barWidth, maxHeight);
-            
-            ctx.fillStyle = '#333';
-            ctx.fillText('Total E', barX3 + barWidth/2, centerY + 130);
-            ctx.fillText(totalE.toFixed(0) + ' J', barX3 + barWidth/2, centerY + 155);
-
-            // Draw oscillating mass
-            const massY = centerY - 50;
-            ctx.beginPath();
-            ctx.arc(centerX + x * 1.5, massY, 20, 0, Math.PI * 2);
-            ctx.fillStyle = '#667eea';
-            ctx.fill();
-            ctx.strokeStyle = '#4c51bf';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Draw path
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(centerX - energyAmplitude * 1.5, massY);
-            ctx.lineTo(centerX + energyAmplitude * 1.5, massY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            if (energyRunning) {
-                energyTime += 0.02;
-            }
-
-            animations.energy = requestAnimationFrame(drawEnergy);
-        }
-
-        function drawEnergyGraph() {
-            const canvas = document.getElementById('energyGraph');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 50;
-
-            // Draw axes
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-
-            // Labels
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'center';
-            ctx.fillText('Time', width / 2, height - 10);
-            ctx.save();
-            ctx.translate(15, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Energy', 0, 0);
-            ctx.restore();
-
-            // Draw energy curves
-            const points = 200;
-            const omega = Math.sqrt(energyK / 2);
-            const totalE = 0.5 * energyK * energyAmplitude * energyAmplitude;
-
-            // Total Energy (constant)
-            ctx.strokeStyle = '#667eea';
-            ctx.lineWidth = 3;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(padding, padding + (height - 2*padding) * (1 - totalE/totalE));
-            ctx.lineTo(width - padding, padding + (height - 2*padding) * (1 - totalE/totalE));
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // PE curve
-            ctx.strokeStyle = '#f59e0b';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            for (let i = 0; i <= points; i++) {
-                const t = (i / points) * 4 * Math.PI / omega;
-                const x = energyAmplitude * Math.cos(omega * t);
-                const pe = 0.5 * energyK * x * x;
-                const xPos = padding + (i / points) * (width - 2*padding);
-                const yPos = padding + (height - 2*padding) * (1 - pe/totalE);
-                if (i === 0) ctx.moveTo(xPos, yPos);
-                else ctx.lineTo(xPos, yPos);
-            }
-            ctx.stroke();
-
-            // KE curve
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            for (let i = 0; i <= points; i++) {
-                const t = (i / points) * 4 * Math.PI / omega;
-                const x = energyAmplitude * Math.cos(omega * t);
-                const pe = 0.5 * energyK * x * x;
-                const ke = totalE - pe;
-                const xPos = padding + (i / points) * (width - 2*padding);
-                const yPos = padding + (height - 2*padding) * (1 - ke/totalE);
-                if (i === 0) ctx.moveTo(xPos, yPos);
-                else ctx.lineTo(xPos, yPos);
-            }
-            ctx.stroke();
-
-            // Legend
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = '#667eea';
-            ctx.fillText('Total E', width - 150, 30);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillText('PE', width - 150, 50);
-            ctx.fillStyle = '#10b981';
-            ctx.fillText('KE', width - 150, 70);
-        }
-
-        // Phase Animation
-        let phaseTime = 0;
-        let phaseRunning = false;
-        let phaseAmp = 80;
-        let phaseOmega = 2;
-
-        function togglePhase() {
-            phaseRunning = !phaseRunning;
-        }
-
-        function resetPhase() {
-            phaseTime = 0;
-            phaseRunning = false;
-        }
-
-        function drawPhase() {
-            const canvas = document.getElementById('phaseCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerY = canvas.height / 2;
-            const leftMargin = 100;
-
-            // Calculate values
-            const x = phaseAmp * Math.cos(phaseOmega * phaseTime);
-            const v = -phaseAmp * phaseOmega * Math.sin(phaseOmega * phaseTime);
-            const a = -phaseAmp * phaseOmega * phaseOmega * Math.cos(phaseOmega * phaseTime);
-
-            // Draw position oscillator
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#667eea';
-            ctx.textAlign = 'right';
-            ctx.fillText('Position', leftMargin - 10, centerY - 100);
-            
-            ctx.beginPath();
-            ctx.arc(leftMargin + x, centerY - 100, 15, 0, Math.PI * 2);
-            ctx.fillStyle = '#667eea';
-            ctx.fill();
-
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([3, 3]);
-            ctx.beginPath();
-            ctx.moveTo(leftMargin - phaseAmp, centerY - 100);
-            ctx.lineTo(leftMargin + phaseAmp, centerY - 100);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Draw velocity oscillator
-            ctx.fillStyle = '#10b981';
-            ctx.fillText('Velocity', leftMargin - 10, centerY);
-            
-            ctx.beginPath();
-            ctx.arc(leftMargin + v * 0.8, centerY, 15, 0, Math.PI * 2);
-            ctx.fillStyle = '#10b981';
-            ctx.fill();
-
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([3, 3]);
-            ctx.beginPath();
-            ctx.moveTo(leftMargin - phaseAmp, centerY);
-            ctx.lineTo(leftMargin + phaseAmp, centerY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Draw acceleration oscillator
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillText('Acceleration', leftMargin - 10, centerY + 100);
-            
-            ctx.beginPath();
-            ctx.arc(leftMargin + a * 0.1, centerY + 100, 15, 0, Math.PI * 2);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fill();
-
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([3, 3]);
-            ctx.beginPath();
-            ctx.moveTo(leftMargin - phaseAmp, centerY + 100);
-            ctx.lineTo(leftMargin + phaseAmp, centerY + 100);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Value displays
-            ctx.font = 'bold 14px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#667eea';
-            ctx.fillText('x = ' + x.toFixed(1), leftMargin + phaseAmp + 20, centerY - 100);
-            ctx.fillStyle = '#10b981';
-            ctx.fillText('v = ' + v.toFixed(1), leftMargin + phaseAmp + 20, centerY);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillText('a = ' + a.toFixed(1), leftMargin + phaseAmp + 20, centerY + 100);
-
-            if (phaseRunning) {
-                phaseTime += 0.02;
-            }
-
-            animations.phase = requestAnimationFrame(drawPhase);
-        }
-
-        function drawMultiGraph() {
-            const canvas = document.getElementById('multiGraph');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 50;
-            const graphHeight = (height - 4*padding) / 3;
-
-            // Draw three graphs stacked
-            for (let graph = 0; graph < 3; graph++) {
-                const yOffset = padding + graph * (graphHeight + padding);
+            <div class="results-box mt-2">
+                <div><strong>Period (T):</strong> <span id="periodResult">1.40</span> s</div>
+                <div><strong>Frequency (f):</strong> <span id="frequencyResult">0.71</span> Hz</div>
+                <div><strong>Angular Freq (ω):</strong> <span id="omegaResult">4.47</span> rad/s</div>
+                <div><strong>Position:</strong> <span id="positionResult">0.00</span> m</div>
+                <div><strong>Velocity:</strong> <span id="velocityResult">0.00</span> m/s</div>
+            </div>
+        </div>
+        
+        <!-- Visuals: Canvas + Phase Plot -->
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Spring-Mass System & Phase Plot</h3>
+            <div class="formula">\( E = K_e + U_s = \frac{1}{2}kx^2+ \frac{1}{2}mv^2=constant (椭圆图😄) \)</div>
+            <div class="spring-visuals">
+                <!-- Spring Canvas -->
+                <div style="position: relative;">
+                    <canvas id="simulationCanvas" width="360" height="400"></canvas>
+                    <div style="position: absolute; top: 10px; left: 10px; font-size: 12px; color: #6b7280; font-weight: bold; background:rgba(255,255,255,0.8); padding:2px 6px; border-radius:4px;">Physical View</div>
+                </div>
                 
-                // Axes
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(padding, yOffset);
-                ctx.lineTo(padding, yOffset + graphHeight);
-                ctx.lineTo(width - padding, yOffset + graphHeight);
-                ctx.stroke();
+                <!-- Phase Plot Canvas -->
+                <div style="position: relative;">
+                    <canvas id="phaseCanvas" width="280" height="400"></canvas>
+                    <div style="position: absolute; top: 10px; left: 10px; font-size: 12px; color: #6b7280; font-weight: bold; background:rgba(255,255,255,0.8); padding:2px 6px; border-radius:4px;">Phase (x vs v)</div>
+                    <!-- Legend -->
+                    <div style="position: absolute; top: 35px; right: 10px; font-size: 10px; text-align: right; background:rgba(255,255,255,0.9); padding:4px; border-radius:4px;">
+                        <div style="color: #f59e0b; font-weight: bold;">● Above Eq (x < 0)</div>
+                        <div style="color: #4f46e5; font-weight: bold;">● Below Eq (x > 0)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                // Zero line
-                ctx.strokeStyle = '#ddd';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(padding, yOffset + graphHeight/2);
-                ctx.lineTo(width - padding, yOffset + graphHeight/2);
-                ctx.stroke();
+<!-- Energy Visualization -->
+<div class="my-8">
+    <h2>Energy Distribution in SHM</h2>
+    <div class="concept-card">
+        <canvas id="energyCanvas" width="1100" height="250"></canvas>
+    </div>
+</div>
 
-                // Draw curve
-                const points = 200;
-                const colors = ['#667eea', '#10b981', '#f59e0b'];
-                const labels = ['Position', 'Velocity', 'Acceleration'];
-                
-                ctx.strokeStyle = colors[graph];
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                
-                for (let i = 0; i <= points; i++) {
-                    const t = (i / points) * 4 * Math.PI;
-                    let value;
-                    if (graph === 0) value = Math.cos(t);
-                    else if (graph === 1) value = -Math.sin(t);
-                    else value = -Math.cos(t);
-                    
-                    const xPos = padding + (i / points) * (width - 2*padding);
-                    const yPos = yOffset + graphHeight/2 - value * graphHeight * 0.4;
-                    
-                    if (i === 0) ctx.moveTo(xPos, yPos);
-                    else ctx.lineTo(xPos, yPos);
-                }
-                ctx.stroke();
+<!-- Simple Pendulum Simulation -->
+<div class="my-8">
+    <h2>Simple Pendulum</h2>
+    
+    <div class="grid-2a">
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Pendulum Controls</h3>
+            
+            <div class="control-group mb-3">
+                <label>Length (m): <span id="lengthValue">2.0</span></label>
+                <input type="range" id="lengthSlider" min="0.5" max="4" value="2" step="0.1">
+            </div>
+            
+            <div class="control-group mb-3">
+                <label>Initial Angle (degrees): <span id="angleValue">20</span></label>
+                <input type="range" id="angleSlider" min="5" max="30" value="20" step="5">
+            </div>
+            
+            <button class="btn-simulate w-full" onclick="startPendulum()">Start Pendulum</button>
+            <button class="btn-simulate w-full mt-2" onclick="stopPendulum()">Stop</button>
+            <button class="btn-simulate w-full mt-2" onclick="resetPendulum()">Reset</button>
+            
+            <div class="results-box mt-2">
+                <div><strong>Period (T):</strong> <span id="pendulumPeriod">2.84</span> s</div>
+                <div><strong>Current Angle:</strong> <span id="currentAngle">0.0</span>°</div>
+            </div>
+        </div>
+        
+        <div class="concept-card">
+            <h3 class="text2xl mb-3">Pendulum Motion</h3>
+            <canvas id="pendulumCanvas" width="550" height="400"></canvas>
+        </div>
+    </div>
+</div>
 
-                // Label
-                ctx.font = 'bold 14px Arial';
-                ctx.fillStyle = colors[graph];
-                ctx.textAlign = 'left';
-                ctx.fillText(labels[graph], padding + 10, yOffset + 20);
+</div>
+
+<script>
+// Colors for Phase Plot
+const COLOR_ABOVE = '#f59e0b'; // Amber for x < 0
+const COLOR_BELOW = '#4f46e5'; // Indigo for x > 0
+
+// === SPRING-MASS SIMULATION ===
+const canvas = document.getElementById('simulationCanvas');
+const ctx = canvas.getContext('2d');
+const phaseCanvas = document.getElementById('phaseCanvas');
+const phaseCtx = phaseCanvas.getContext('2d');
+const energyCanvas = document.getElementById('energyCanvas');
+const energyCtx = energyCanvas.getContext('2d');
+const pendulumCanvas = document.getElementById('pendulumCanvas');
+const pendulumCtx = pendulumCanvas.getContext('2d');
+
+let mass = 1.0;
+let k = 20;
+let amplitude = 2.0;
+let omega = 0;
+let time = 0;
+let isOscillating = false;
+let animationId = null;
+
+// Store trajectory for phase plot
+let phaseTrail = []; 
+const MAX_TRAIL_LENGTH = 400;
+
+function updateSpringValues() {
+    mass = parseFloat(document.getElementById('massSlider').value);
+    k = parseFloat(document.getElementById('springSlider').value);
+    amplitude = parseFloat(document.getElementById('amplitudeSlider').value);
+    
+    document.getElementById('massValue').textContent = mass.toFixed(1);
+    document.getElementById('springValue').textContent = k;
+    document.getElementById('amplitudeValue').textContent = amplitude.toFixed(1);
+    
+    calculateSpringProperties();
+}
+
+function calculateSpringProperties() {
+    omega = Math.sqrt(k / mass);
+    const period = 2 * Math.PI / omega;
+    const frequency = 1 / period;
+    
+    document.getElementById('periodResult').textContent = period.toFixed(2);
+    document.getElementById('frequencyResult').textContent = frequency.toFixed(2);
+    document.getElementById('omegaResult').textContent = omega.toFixed(2);
+    
+    if (!isOscillating) {
+        drawSpring(amplitude, 0);
+        drawPhasePlot(amplitude, 0);
+        drawEnergyGraph(amplitude, 0);
+    }
+}
+
+// === 优化的金属光泽3D弹簧绘制 ===
+function drawSpring(position, velocity) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const centerX = canvas.width / 2;
+    const wallY = 50;
+    const scale = 40;
+    const equilibriumY = 200;
+    const massY = equilibriumY + position * scale;
+    
+    // 1. 绘制固定底座 (Ceiling Mount)
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = '#374151';
+    roundRect(ctx, centerX - 60, wallY - 15, 120, 15, 4);
+    ctx.fill();
+    ctx.fillStyle = '#9ca3af';
+    ctx.beginPath();
+    ctx.arc(centerX, wallY, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 2. 绘制金属弹簧 (Metallic Spring)
+    ctx.save();
+    const coils = 12; 
+    const springRadius = 18; 
+    const springLength = massY - wallY - 20; 
+    const startY = wallY; 
+
+    // 金属渐变
+    const gradient = ctx.createLinearGradient(centerX - springRadius, 0, centerX + springRadius, 0);
+    gradient.addColorStop(0, '#4338ca');   
+    gradient.addColorStop(0.4, '#a5b4fc'); 
+    gradient.addColorStop(0.6, '#a5b4fc'); 
+    gradient.addColorStop(1, '#4338ca');   
+
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+
+    ctx.moveTo(centerX, startY);
+    ctx.lineTo(centerX, startY + 10);
+
+    const steps = 150; 
+    for (let i = 0; i <= steps; i++) {
+        const p = i / steps;
+        const y = startY + 10 + p * (springLength - 20);
+        // 正弦波模拟螺旋
+        const x = centerX + Math.sin(p * coils * Math.PI * 2) * springRadius;
+        ctx.lineTo(x, y);
+    }
+
+    ctx.lineTo(centerX, massY - 25); 
+    ctx.stroke();
+    ctx.restore();
+    
+    // 3. 绘制立体滑块 (The Mass)
+    const massSize = 50;
+    const boxX = centerX - massSize / 2;
+    const boxY = massY - massSize / 2;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetY = 5;
+
+    // 球体质感渐变
+    const massGrad = ctx.createRadialGradient(
+        centerX - 10, massY - 10, 5, 
+        centerX, massY, massSize
+    );
+    massGrad.addColorStop(0, '#34d399'); 
+    massGrad.addColorStop(1, '#047857'); 
+
+    ctx.fillStyle = massGrad;
+    roundRect(ctx, boxX, boxY, massSize, massSize, 8);
+    ctx.fill();
+
+    // 挂钩
+    ctx.shadowBlur = 0; 
+    ctx.fillStyle = '#6b7280';
+    ctx.fillRect(centerX - 3, boxY - 8, 6, 10);
+    
+    // 质量 M
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = 'bold 14px Inter';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('M', centerX, massY);
+    ctx.restore();
+    
+    // 4. 平衡线
+    ctx.save();
+    ctx.strokeStyle = '#ef4444';
+    ctx.setLineDash([4, 4]);
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(centerX - 120, equilibriumY);
+    ctx.lineTo(centerX + 120, equilibriumY);
+    ctx.stroke();
+    ctx.restore();
+}
+
+// === 新增：绘制相图 (Phase Plot) ===
+function drawPhasePlot(position, velocity) {
+    phaseCtx.clearRect(0, 0, phaseCanvas.width, phaseCanvas.height);
+    
+    const centerX = phaseCanvas.width / 2;
+    const centerY = 200; // 与左侧弹簧平衡位置高度一致
+    const posScale = 40; 
+    const velScale = 8; 
+    
+    // 坐标轴
+    phaseCtx.save();
+    phaseCtx.strokeStyle = '#e2e8f0';
+    phaseCtx.lineWidth = 1;
+    phaseCtx.beginPath(); phaseCtx.moveTo(centerX, 0); phaseCtx.lineTo(centerX, phaseCanvas.height); phaseCtx.stroke();
+    phaseCtx.beginPath(); phaseCtx.moveTo(0, centerY); phaseCtx.lineTo(phaseCanvas.width, centerY); phaseCtx.stroke();
+    
+    // 标签
+    phaseCtx.fillStyle = '#94a3b8'; phaseCtx.font = '11px Inter';
+    phaseCtx.textAlign = 'right'; phaseCtx.fillText('Velocity ->', phaseCanvas.width - 10, centerY - 5);
+    phaseCtx.textAlign = 'left'; phaseCtx.fillText('Position', centerX + 5, 20);
+    phaseCtx.restore();
+
+    // 更新轨迹
+    if (isOscillating) {
+        phaseTrail.push({x: velocity, y: position});
+        if (phaseTrail.length > MAX_TRAIL_LENGTH) phaseTrail.shift();
+    }
+
+    // 绘制双色轨迹
+    if (phaseTrail.length > 1) {
+        phaseCtx.save();
+        phaseCtx.lineWidth = 2;
+        phaseCtx.lineJoin = 'round';
+        phaseCtx.lineCap = 'round';
+
+        for (let i = 0; i < phaseTrail.length - 1; i++) {
+            const pt1 = phaseTrail[i];
+            const pt2 = phaseTrail[i+1];
+            
+            phaseCtx.beginPath();
+            // 核心逻辑：如果位置y小于0（在平衡线上方），用琥珀色；否则用蓝色
+            if (pt1.y < 0) {
+                phaseCtx.strokeStyle = COLOR_ABOVE;
+            } else {
+                phaseCtx.strokeStyle = COLOR_BELOW;
             }
-
-            // Time label
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'center';
-            ctx.fillText('Time (one complete cycle)', width / 2, height - 10);
+            
+            const x1 = centerX + pt1.x * velScale;
+            const y1 = centerY + pt1.y * posScale;
+            const x2 = centerX + pt2.x * velScale;
+            const y2 = centerY + pt2.y * posScale;
+            
+            phaseCtx.moveTo(x1, y1);
+            phaseCtx.lineTo(x2, y2);
+            phaseCtx.stroke();
         }
+        phaseCtx.restore();
+    }
 
-        // Initialize all animations
-        setTimeout(() => {
-            drawSHM();
-            drawSpring();
-            drawPendulum();
-            drawEnergy();
-            drawEnergyGraph();
-            drawPhase();
-            drawMultiGraph();
-            resetPendulum();
-        }, 100);
-    </script>
+    // 当前点 (Dot)
+    const currentX = centerX + velocity * velScale;
+    const currentY = centerY + position * posScale;
+
+    phaseCtx.save();
+    phaseCtx.fillStyle = (position < 0) ? COLOR_ABOVE : COLOR_BELOW;
+    phaseCtx.shadowColor = 'rgba(0,0,0,0.2)'; phaseCtx.shadowBlur = 5;
+    phaseCtx.beginPath();
+    phaseCtx.arc(currentX, currentY, 5, 0, Math.PI * 2);
+    phaseCtx.fill();
+    
+    // 虚线连接到左侧 (Visual alignment)
+    phaseCtx.strokeStyle = (position < 0) ? COLOR_ABOVE : COLOR_BELOW;
+    phaseCtx.setLineDash([2, 4]);
+    phaseCtx.lineWidth = 1;
+    phaseCtx.beginPath();
+    phaseCtx.moveTo(0, currentY);
+    phaseCtx.lineTo(currentX, currentY);
+    phaseCtx.stroke();
+    phaseCtx.restore();
+}
+
+// 辅助函数：绘制圆角矩形
+function roundRect(ctx, x, y, width, height, radius) {
+    if (height === 0) return;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+}
+
+function drawEnergyGraph(position, velocity) {
+    energyCtx.clearRect(0, 0, energyCanvas.width, energyCanvas.height);
+    
+    const totalEnergy = 0.5 * k * amplitude * amplitude;
+    const pe = 0.5 * k * position * position;
+    const ke = 0.5 * mass * velocity * velocity;
+    
+    const barWidth = 100; // Sligthly smaller to fit
+    const maxHeight = 180;
+    const w = energyCanvas.width;
+    const startX = w/2 - 200; // Center roughly
+    const baseY = 220;
+    
+    // Helper
+    const drawBar = (x, val, max, color, label) => {
+        const h = (val / max) * maxHeight;
+        energyCtx.fillStyle = color;
+        roundRect(energyCtx, x, baseY - h, barWidth, h, 4);
+        energyCtx.fill();
+        energyCtx.fillStyle = '#1f2937';
+        energyCtx.font = 'bold 14px Inter';
+        energyCtx.textAlign = 'center';
+        energyCtx.fillText(label, x + barWidth/2, baseY + 25);
+        if(h > 20) {
+            energyCtx.fillStyle = 'rgba(255,255,255,0.8)';
+            energyCtx.fillText(val.toFixed(1), x + barWidth/2, baseY - h + 20);
+        }
+    }
+    
+    drawBar(startX, totalEnergy, totalEnergy, '#6366f1', 'Total E');
+    drawBar(startX + 150, pe, totalEnergy, COLOR_ABOVE, 'Pot. (U)');
+    drawBar(startX + 300, ke, totalEnergy, '#10b981', 'Kin. (K)');
+}
+
+function startOscillation() {
+    if (isOscillating) return;
+    isOscillating = true;
+    time = 0;
+    animateSpring();
+}
+
+function stopOscillation() {
+    isOscillating = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+}
+
+function resetOscillation() {
+    stopOscillation();
+    time = 0;
+    phaseTrail = []; // Reset trail
+    drawSpring(amplitude, 0);
+    drawPhasePlot(amplitude, 0);
+    drawEnergyGraph(amplitude, 0);
+    document.getElementById('positionResult').textContent = '0.00';
+    document.getElementById('velocityResult').textContent = '0.00';
+}
+
+function animateSpring() {
+    if (!isOscillating) return;
+    
+    time += 0.016;
+    const position = amplitude * Math.cos(omega * time);
+    const velocity = -amplitude * omega * Math.sin(omega * time);
+    
+    document.getElementById('positionResult').textContent = position.toFixed(2);
+    document.getElementById('velocityResult').textContent = velocity.toFixed(2);
+    
+    drawSpring(position, velocity);
+    drawPhasePlot(position, velocity); // Call plot
+    drawEnergyGraph(position, velocity);
+    
+    animationId = requestAnimationFrame(animateSpring);
+}
+
+// === PENDULUM SIMULATION ===
+let pendulumLength = 2.0;
+let pendulumAngle = 20;
+let pendulumTheta = 0;
+let pendulumOmega = 0;
+let pendulumTime = 0;
+let isPendulumSwinging = false;
+let pendulumAnimationId = null;
+
+function updatePendulumValues() {
+    pendulumLength = parseFloat(document.getElementById('lengthSlider').value);
+    pendulumAngle = parseFloat(document.getElementById('angleSlider').value);
+    
+    document.getElementById('lengthValue').textContent = pendulumLength.toFixed(1);
+    document.getElementById('angleValue').textContent = pendulumAngle;
+    
+    const period = 2 * Math.PI * Math.sqrt(pendulumLength / 9.8);
+    document.getElementById('pendulumPeriod').textContent = period.toFixed(2);
+    
+    if (!isPendulumSwinging) {
+        drawPendulum(pendulumAngle * Math.PI / 180);
+    }
+}
+
+function drawPendulum(theta) {
+    pendulumCtx.clearRect(0, 0, pendulumCanvas.width, pendulumCanvas.height);
+    
+    const pivotX = pendulumCanvas.width / 2;
+    const pivotY = 50;
+    const scale = 80;
+    const length = pendulumLength * scale;
+    
+    const bobX = pivotX + length * Math.sin(theta);
+    const bobY = pivotY + length * Math.cos(theta);
+    
+    // Draw pivot
+    pendulumCtx.fillStyle = '#6b7280';
+    pendulumCtx.beginPath();
+    pendulumCtx.arc(pivotX, pivotY, 8, 0, 2 * Math.PI);
+    pendulumCtx.fill();
+    
+    // Draw string
+    pendulumCtx.strokeStyle = '#1f2937';
+    pendulumCtx.lineWidth = 2;
+    pendulumCtx.beginPath();
+    pendulumCtx.moveTo(pivotX, pivotY);
+    pendulumCtx.lineTo(bobX, bobY);
+    pendulumCtx.stroke();
+    
+    // Draw bob
+    pendulumCtx.fillStyle = '#10b981';
+    pendulumCtx.beginPath();
+    pendulumCtx.arc(bobX, bobY, 20, 0, 2 * Math.PI);
+    pendulumCtx.fill();
+    
+    // Draw vertical reference
+    pendulumCtx.strokeStyle = '#dc2626';
+    pendulumCtx.setLineDash([]);
+    
+    // Draw angle arc
+    pendulumCtx.strokeStyle = '#4f46e5';
+    pendulumCtx.lineWidth = 2;
+    pendulumCtx.beginPath();
+    pendulumCtx.arc(pivotX, pivotY, 40, Math.PI/2, Math.PI/2 + theta, theta > 0);
+    pendulumCtx.stroke();
+    
+    // Labels
+    pendulumCtx.fillStyle = '#1f2937';
+    pendulumCtx.font = '14px Inter';
+    const angleDisplay = (theta * 180 / Math.PI).toFixed(1);
+    pendulumCtx.fillText(`θ = ${angleDisplay}°`, pivotX + 50, pivotY + 30);
+    pendulumCtx.fillText(`L = ${pendulumLength.toFixed(1)}m`, bobX + 25, bobY);
+}
+
+function startPendulum() {
+    if (isPendulumSwinging) return;
+    isPendulumSwinging = true;
+    pendulumTheta = pendulumAngle * Math.PI / 180;
+    pendulumOmega = 0;
+    pendulumTime = 0;
+    animatePendulum();
+}
+
+function stopPendulum() {
+    isPendulumSwinging = false;
+    if (pendulumAnimationId) {
+        cancelAnimationFrame(pendulumAnimationId);
+    }
+}
+
+function resetPendulum() {
+    stopPendulum();
+    pendulumTheta = pendulumAngle * Math.PI / 180;
+    pendulumOmega = 0;
+    drawPendulum(pendulumTheta);
+    document.getElementById('currentAngle').textContent = pendulumAngle.toFixed(1);
+}
+
+function animatePendulum() {
+    if (!isPendulumSwinging) return;
+    
+    const dt = 0.016;
+    const g = 9.8;
+    
+    // Small angle approximation: angular acceleration = -(g/L) * theta
+    const alpha = -(g / pendulumLength) * Math.sin(pendulumTheta);
+    pendulumOmega += alpha * dt;
+    pendulumTheta += pendulumOmega * dt;
+    
+    document.getElementById('currentAngle').textContent = (pendulumTheta * 180 / Math.PI).toFixed(1);
+    
+    drawPendulum(pendulumTheta);
+    
+    pendulumAnimationId = requestAnimationFrame(animatePendulum);
+}
+
+// Event listeners
+document.getElementById('massSlider').addEventListener('input', updateSpringValues);
+document.getElementById('springSlider').addEventListener('input', updateSpringValues);
+document.getElementById('amplitudeSlider').addEventListener('input', updateSpringValues);
+document.getElementById('lengthSlider').addEventListener('input', updatePendulumValues);
+document.getElementById('angleSlider').addEventListener('input', updatePendulumValues);
+
+// Initialize
+window.onload = function() {
+    updateSpringValues();
+    updatePendulumValues();
+};
+</script>
+
 </body>
 </html>
