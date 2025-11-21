@@ -1,0 +1,1156 @@
+[
+  {
+    "label": "Attribute",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Attribute Statistic",
+        "id": "GeometryNodeAttributeStatistic",
+        "type": "NODE"
+      },
+      {
+        "label": "Capture Attribute",
+        "id": "GeometryNodeCaptureAttribute",
+        "type": "NODE"
+      },
+      {
+        "label": "Domain Size",
+        "id": "GeometryNodeAttributeDomainSize",
+        "type": "NODE"
+      },
+      {
+        "label": "Remove Named Attribute",
+        "id": "GeometryNodeRemoveAttribute",
+        "type": "NODE"
+      },
+      {
+        "label": "Store Named Attribute",
+        "id": "GeometryNodeStoreNamedAttribute",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Input",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Constant",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Boolean",
+            "id": "FunctionNodeInputBool",
+            "type": "NODE"
+          },
+          {
+            "label": "Color",
+            "id": "FunctionNodeInputColor",
+            "type": "NODE"
+          },
+          {
+            "label": "Integer",
+            "id": "FunctionNodeInputInt",
+            "type": "NODE"
+          },
+          {
+            "label": "String",
+            "id": "FunctionNodeInputString",
+            "type": "NODE"
+          },
+          {
+            "label": "Vector",
+            "id": "FunctionNodeInputVector",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Gizmo",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Dial Gizmo",
+            "id": "GeometryNodeGizmoDial",
+            "type": "NODE"
+          },
+          {
+            "label": "Linear Gizmo",
+            "id": "GeometryNodeGizmoLinear",
+            "type": "NODE"
+          },
+          {
+            "label": "Transform Gizmo",
+            "id": "GeometryNodeGizmoTransform",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Import",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Import CSV",
+            "id": "GeometryNodeImportCSV",
+            "type": "NODE"
+          },
+          {
+            "label": "Import OBJ",
+            "id": "GeometryNodeImportOBJ",
+            "type": "NODE"
+          },
+          {
+            "label": "Import PLY",
+            "id": "GeometryNodeImportPLY",
+            "type": "NODE"
+          },
+          {
+            "label": "Import STL",
+            "id": "GeometryNodeImportSTL",
+            "type": "NODE"
+          },
+          {
+            "label": "Import VDB",
+            "id": "GeometryNodeImportVDB",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Scene",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Scene Time",
+            "id": "GeometryNodeInputSceneTime",
+            "type": "NODE"
+          },
+          {
+            "label": "Image",
+            "id": "GeometryNodeInputImage",
+            "type": "NODE"
+          },
+          {
+            "label": "Is Viewport",
+            "id": "GeometryNodeIsViewport",
+            "type": "NODE"
+          },
+          {
+            "label": "Object Info",
+            "id": "GeometryNodeObjectInfo",
+            "type": "NODE"
+          },
+          {
+            "label": "Collection Info",
+            "id": "GeometryNodeCollectionInfo",
+            "type": "NODE"
+          },
+          {
+            "label": "Self Object",
+            "id": "GeometryNodeSelfObject",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Group Input",
+        "id": "NodeGroupInput",
+        "type": "NODE"
+      },
+      {
+        "label": "ID",
+        "id": "GeometryNodeInputID",
+        "type": "NODE"
+      },
+      {
+        "label": "Index",
+        "id": "GeometryNodeInputIndex",
+        "type": "NODE"
+      },
+      {
+        "label": "Named Attribute",
+        "id": "GeometryNodeInputNamedAttribute",
+        "type": "NODE"
+      },
+      {
+        "label": "Normal",
+        "id": "GeometryNodeInputNormal",
+        "type": "NODE"
+      },
+      {
+        "label": "Position",
+        "id": "GeometryNodeInputPosition",
+        "type": "NODE"
+      },
+      {
+        "label": "Radius",
+        "id": "GeometryNodeInputRadius",
+        "type": "NODE"
+      },
+      {
+        "label": "Instance Bounds",
+        "id": "GeometryNodeInputInstanceBounds",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Output",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Group Output",
+        "id": "NodeGroupOutput",
+        "type": "NODE"
+      },
+      {
+        "label": "Viewer",
+        "id": "GeometryNodeViewer",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Geometry",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Operations",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Join Geometry",
+            "id": "GeometryNodeJoinGeometry",
+            "type": "NODE"
+          },
+          {
+            "label": "Merge by Distance",
+            "id": "GeometryNodeMergeByDistance",
+            "type": "NODE"
+          },
+          {
+            "label": "Transform Geometry",
+            "id": "GeometryNodeTransform",
+            "type": "NODE"
+          },
+          {
+            "label": "Separate Geometry",
+            "id": "GeometryNodeSeparateGeometry",
+            "type": "NODE"
+          },
+          {
+            "label": "Separate Components",
+            "id": "GeometryNodeSeparateComponents",
+            "type": "NODE"
+          },
+          {
+            "label": "Bounding Box",
+            "id": "GeometryNodeBoundBox",
+            "type": "NODE"
+          },
+          {
+            "label": "Convex Hull",
+            "id": "GeometryNodeConvexHull",
+            "type": "NODE"
+          },
+          {
+            "label": "Duplicate Elements",
+            "id": "GeometryNodeDuplicateElements",
+            "type": "NODE"
+          },
+          {
+            "label": "Geometry to Instance",
+            "id": "GeometryNodeGeometryToInstance",
+            "type": "NODE"
+          },
+          {
+            "label": "Sort Elements",
+            "id": "GeometryNodeSortElements",
+            "type": "NODE"
+          },
+          {
+            "label": "Split to Instances",
+            "id": "GeometryNodeSplitToInstances",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Read",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Geometry Proximity",
+            "id": "GeometryNodeProximity",
+            "type": "NODE"
+          },
+          {
+            "label": "Raycast",
+            "id": "GeometryNodeRaycast",
+            "type": "NODE"
+          },
+          {
+            "label": "ID",
+            "id": "GeometryNodeInputID",
+            "type": "NODE"
+          },
+          {
+            "label": "Index",
+            "id": "GeometryNodeInputIndex",
+            "type": "NODE"
+          },
+          {
+            "label": "Named Attribute",
+            "id": "GeometryNodeInputNamedAttribute",
+            "type": "NODE"
+          },
+          {
+            "label": "Normal",
+            "id": "GeometryNodeInputNormal",
+            "type": "NODE"
+          },
+          {
+            "label": "Position",
+            "id": "GeometryNodeInputPosition",
+            "type": "NODE"
+          },
+          {
+            "label": "Radius",
+            "id": "GeometryNodeInputRadius",
+            "type": "NODE"
+          },
+          {
+            "label": "Material Index",
+            "id": "GeometryNodeInputMaterialIndex",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Sample",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Sample Index",
+            "id": "GeometryNodeSampleIndex",
+            "type": "NODE"
+          },
+          {
+            "label": "Sample Nearest",
+            "id": "GeometryNodeSampleNearest",
+            "type": "NODE"
+          },
+          {
+            "label": "Index of Nearest",
+            "id": "GeometryNodeIndexOfNearest",
+            "type": "NODE"
+          },
+          {
+            "label": "Raycast",
+            "id": "GeometryNodeRaycast",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Write",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Set ID",
+            "id": "GeometryNodeSetID",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Position",
+            "id": "GeometryNodeSetPosition",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Geometry Name",
+            "id": "GeometryNodeSetGeometryName",
+            "type": "NODE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Curve",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Primitives",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Arc",
+            "id": "GeometryNodeCurveArc",
+            "type": "NODE"
+          },
+          {
+            "label": "B\u00e9zier Segment",
+            "id": "GeometryNodeCurvePrimitiveBezierSegment",
+            "type": "NODE"
+          },
+          {
+            "label": "Curve Circle",
+            "id": "GeometryNodeCurvePrimitiveCircle",
+            "type": "NODE"
+          },
+          {
+            "label": "Curve Line",
+            "id": "GeometryNodeCurvePrimitiveLine",
+            "type": "NODE"
+          },
+          {
+            "label": "Spiral",
+            "id": "GeometryNodeCurveSpiral",
+            "type": "NODE"
+          },
+          {
+            "label": "Quadratic B\u00e9zier",
+            "id": "GeometryNodeCurveQuadraticBezier",
+            "type": "NODE"
+          },
+          {
+            "label": "Star",
+            "id": "GeometryNodeCurveStar",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Operations",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Curve to Mesh",
+            "id": "GeometryNodeCurveToMesh",
+            "type": "NODE"
+          },
+          {
+            "label": "Curve to Points",
+            "id": "GeometryNodeCurveToPoints",
+            "type": "NODE"
+          },
+          {
+            "label": "Deform Curves on Surface",
+            "id": "GeometryNodeDeformCurvesOnSurface",
+            "type": "NODE"
+          },
+          {
+            "label": "Fill Curve",
+            "id": "GeometryNodeFillCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Fillet Curve",
+            "id": "GeometryNodeFilletCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Resample Curve",
+            "id": "GeometryNodeResampleCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Reverse Curve",
+            "id": "GeometryNodeReverseCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Subdivide Curve",
+            "id": "GeometryNodeSubdivideCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Trim Curve",
+            "id": "GeometryNodeTrimCurve",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Read",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Curve Length",
+            "id": "GeometryNodeCurveLength",
+            "type": "NODE"
+          },
+          {
+            "label": "Endpoint Selection",
+            "id": "GeometryNodeCurveEndpointSelection",
+            "type": "NODE"
+          },
+          {
+            "label": "Handle Type Selection",
+            "id": "GeometryNodeCurveHandleTypeSelection",
+            "type": "NODE"
+          },
+          {
+            "label": "Is Spline Cyclic",
+            "id": "GeometryNodeInputSplineCyclic",
+            "type": "NODE"
+          },
+          {
+            "label": "Spline Length",
+            "id": "GeometryNodeSplineLength",
+            "type": "NODE"
+          },
+          {
+            "label": "Spline Parameter",
+            "id": "GeometryNodeSplineParameter",
+            "type": "NODE"
+          },
+          {
+            "label": "Spline Resolution",
+            "id": "GeometryNodeInputSplineResolution",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Topology",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Offset Point in Curve",
+            "id": "GeometryNodeOffsetPointInCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Curve of Point",
+            "id": "GeometryNodeCurveOfPoint",
+            "type": "NODE"
+          },
+          {
+            "label": "Points of Curve",
+            "id": "GeometryNodePointsOfCurve",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Write",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Set Curve Normal",
+            "id": "GeometryNodeSetCurveNormal",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Curve Radius",
+            "id": "GeometryNodeSetCurveRadius",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Curve Tilt",
+            "id": "GeometryNodeSetCurveTilt",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Handle Positions",
+            "id": "GeometryNodeSetCurveHandlePositions",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Spline Cyclic",
+            "id": "GeometryNodeSetSplineCyclic",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Spline Resolution",
+            "id": "GeometryNodeSetSplineResolution",
+            "type": "NODE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Grease Pencil",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Operations",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Grease Pencil to Curves",
+            "id": "GeometryNodeGreasePencilToCurves",
+            "type": "NODE"
+          },
+          {
+            "label": "Merge Layers",
+            "id": "GeometryNodeMergeLayers",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Read",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Named Layer Selection",
+            "id": "GeometryNodeInputNamedLayerSelection",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Write",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Set Grease Pencil Color",
+            "id": "GeometryNodeSetGreasePencilColor",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Grease Pencil Depth",
+            "id": "GeometryNodeSetGreasePencilDepth",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Grease Pencil Softness",
+            "id": "GeometryNodeSetGreasePencilSoftness",
+            "type": "NODE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Instances",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Instance on Points",
+        "id": "GeometryNodeInstanceOnPoints",
+        "type": "NODE"
+      },
+      {
+        "label": "Instances to Points",
+        "id": "GeometryNodeInstancesToPoints",
+        "type": "NODE"
+      },
+      {
+        "label": "Realize Instances",
+        "id": "GeometryNodeRealizeInstances",
+        "type": "NODE"
+      },
+      {
+        "label": "Rotate Instances",
+        "id": "GeometryNodeRotateInstances",
+        "type": "NODE"
+      },
+      {
+        "label": "Scale Instances",
+        "id": "GeometryNodeScaleInstances",
+        "type": "NODE"
+      },
+      {
+        "label": "Translate Instances",
+        "id": "GeometryNodeTranslateInstances",
+        "type": "NODE"
+      },
+      {
+        "label": "Instance Rotation",
+        "id": "GeometryNodeInputInstanceRotation",
+        "type": "NODE"
+      },
+      {
+        "label": "Instance Scale",
+        "id": "GeometryNodeInputInstanceScale",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Mesh",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Primitives",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Cone",
+            "id": "GeometryNodeMeshCone",
+            "type": "NODE"
+          },
+          {
+            "label": "Cube",
+            "id": "GeometryNodeMeshCube",
+            "type": "NODE"
+          },
+          {
+            "label": "Cylinder",
+            "id": "GeometryNodeMeshCylinder",
+            "type": "NODE"
+          },
+          {
+            "label": "Grid",
+            "id": "GeometryNodeMeshGrid",
+            "type": "NODE"
+          },
+          {
+            "label": "Ico Sphere",
+            "id": "GeometryNodeMeshIcoSphere",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh Circle",
+            "id": "GeometryNodeMeshCircle",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh Line",
+            "id": "GeometryNodeMeshLine",
+            "type": "NODE"
+          },
+          {
+            "label": "UV Sphere",
+            "id": "GeometryNodeMeshUVSphere",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Operations",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Dual Mesh",
+            "id": "GeometryNodeDualMesh",
+            "type": "NODE"
+          },
+          {
+            "label": "Extrude Mesh",
+            "id": "GeometryNodeExtrudeMesh",
+            "type": "NODE"
+          },
+          {
+            "label": "Flip Faces",
+            "id": "GeometryNodeFlipFaces",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh Boolean",
+            "id": "GeometryNodeMeshBoolean",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh to Curve",
+            "id": "GeometryNodeMeshToCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh to Points",
+            "id": "GeometryNodeMeshToPoints",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh to Volume",
+            "id": "GeometryNodeMeshToVolume",
+            "type": "NODE"
+          },
+          {
+            "label": "Scale Elements",
+            "id": "GeometryNodeScaleElements",
+            "type": "NODE"
+          },
+          {
+            "label": "Split Edges",
+            "id": "GeometryNodeSplitEdges",
+            "type": "NODE"
+          },
+          {
+            "label": "Subdivide Mesh",
+            "id": "GeometryNodeSubdivideMesh",
+            "type": "NODE"
+          },
+          {
+            "label": "Subdivision Surface",
+            "id": "GeometryNodeSubdivisionSurface",
+            "type": "NODE"
+          },
+          {
+            "label": "Triangulate",
+            "id": "GeometryNodeTriangulate",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Read",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Edge Neighbors",
+            "id": "GeometryNodeInputMeshEdgeNeighbors",
+            "type": "NODE"
+          },
+          {
+            "label": "Edge Vertices",
+            "id": "GeometryNodeInputMeshEdgeVertices",
+            "type": "NODE"
+          },
+          {
+            "label": "Face Area",
+            "id": "GeometryNodeInputMeshFaceArea",
+            "type": "NODE"
+          },
+          {
+            "label": "Face Neighbors",
+            "id": "GeometryNodeInputMeshFaceNeighbors",
+            "type": "NODE"
+          },
+          {
+            "label": "Mesh Island",
+            "id": "GeometryNodeInputMeshIsland",
+            "type": "NODE"
+          },
+          {
+            "label": "Vertex Neighbors",
+            "id": "GeometryNodeInputMeshVertexNeighbors",
+            "type": "NODE"
+          },
+          {
+            "label": "Is Face Smooth",
+            "id": "GeometryNodeInputShadeSmooth",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Sample",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Sample Nearest Surface",
+            "id": "GeometryNodeSampleNearestSurface",
+            "type": "NODE"
+          },
+          {
+            "label": "Sample UV Surface",
+            "id": "GeometryNodeSampleUVSurface",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Write",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Set Mesh Normal",
+            "id": "GeometryNodeSetMeshNormal",
+            "type": "NODE"
+          },
+          {
+            "label": "Set Shade Smooth",
+            "id": "GeometryNodeSetShadeSmooth",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "UV",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Pack UV Islands",
+            "id": "GeometryNodeUVPackIslands",
+            "type": "NODE"
+          },
+          {
+            "label": "UV Unwrap",
+            "id": "GeometryNodeUVUnwrap",
+            "type": "NODE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Point",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Distribute Points in Volume",
+        "id": "GeometryNodeDistributePointsInVolume",
+        "type": "NODE"
+      },
+      {
+        "label": "Distribute Points on Faces",
+        "id": "GeometryNodeDistributePointsOnFaces",
+        "type": "NODE"
+      },
+      {
+        "label": "Points to Volume",
+        "id": "GeometryNodePointsToVolume",
+        "type": "NODE"
+      },
+      {
+        "label": "Points to Vertices",
+        "id": "GeometryNodePointsToVertices",
+        "type": "NODE"
+      },
+      {
+        "label": "Points to Curves",
+        "id": "GeometryNodePointsToCurves",
+        "type": "NODE"
+      },
+      {
+        "label": "Set Point Radius",
+        "id": "GeometryNodeSetPointRadius",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Volume",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Volume Cube",
+        "id": "GeometryNodeVolumeCube",
+        "type": "NODE"
+      },
+      {
+        "label": "Volume to Mesh",
+        "id": "GeometryNodeVolumeToMesh",
+        "type": "NODE"
+      },
+      {
+        "label": "Mesh to Volume",
+        "id": "GeometryNodeMeshToVolume",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Material",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Material Index",
+        "id": "GeometryNodeInputMaterialIndex",
+        "type": "NODE"
+      },
+      {
+        "label": "Material Selection",
+        "id": "GeometryNodeMaterialSelection",
+        "type": "NODE"
+      },
+      {
+        "label": "Replace Material",
+        "id": "GeometryNodeReplaceMaterial",
+        "type": "NODE"
+      },
+      {
+        "label": "Set Material",
+        "id": "GeometryNodeSetMaterial",
+        "type": "NODE"
+      },
+      {
+        "label": "Set Material Index",
+        "id": "GeometryNodeSetMaterialIndex",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Simulation",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Simulation Input",
+        "id": "GeometryNodeSimulationInput",
+        "type": "NODE"
+      }
+    ]
+  },
+  {
+    "label": "Utilities",
+    "type": "CATEGORY",
+    "items": [
+      {
+        "label": "Math",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Boolean Math",
+            "id": "FunctionNodeBooleanMath",
+            "type": "NODE"
+          },
+          {
+            "label": "Clamp",
+            "id": "ShaderNodeClamp",
+            "type": "NODE"
+          },
+          {
+            "label": "Compare",
+            "id": "FunctionNodeCompare",
+            "type": "NODE"
+          },
+          {
+            "label": "Float Curve",
+            "id": "ShaderNodeFloatCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Float to Integer",
+            "id": "FunctionNodeFloatToInt",
+            "type": "NODE"
+          },
+          {
+            "label": "Map Range",
+            "id": "ShaderNodeMapRange",
+            "type": "NODE"
+          },
+          {
+            "label": "Math",
+            "id": "ShaderNodeMath",
+            "type": "NODE"
+          },
+          {
+            "label": "Mix",
+            "id": "ShaderNodeMix",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Vector",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Combine XYZ",
+            "id": "ShaderNodeCombineXYZ",
+            "type": "NODE"
+          },
+          {
+            "label": "Separate XYZ",
+            "id": "ShaderNodeSeparateXYZ",
+            "type": "NODE"
+          },
+          {
+            "label": "Vector Curves",
+            "id": "ShaderNodeVectorCurve",
+            "type": "NODE"
+          },
+          {
+            "label": "Vector Math",
+            "id": "ShaderNodeVectorMath",
+            "type": "NODE"
+          },
+          {
+            "label": "Vector Rotate",
+            "id": "ShaderNodeVectorRotate",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "Rotation",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Align Euler to Vector",
+            "id": "FunctionNodeAlignEulerToVector",
+            "type": "NODE"
+          },
+          {
+            "label": "Axis Angle to Rotation",
+            "id": "FunctionNodeAxisAngleToRotation",
+            "type": "NODE"
+          },
+          {
+            "label": "Euler to Rotation",
+            "id": "FunctionNodeEulerToRotation",
+            "type": "NODE"
+          },
+          {
+            "label": "Invert Rotation",
+            "id": "FunctionNodeInvertRotation",
+            "type": "NODE"
+          },
+          {
+            "label": "Quaternion to Rotation",
+            "id": "FunctionNodeQuaternionToRotation",
+            "type": "NODE"
+          },
+          {
+            "label": "Rotate Euler",
+            "id": "FunctionNodeRotateEuler",
+            "type": "NODE"
+          },
+          {
+            "label": "Rotate Rotation",
+            "id": "FunctionNodeRotateRotation",
+            "type": "NODE"
+          },
+          {
+            "label": "Rotation to Axis Angle",
+            "id": "FunctionNodeRotationToAxisAngle",
+            "type": "NODE"
+          },
+          {
+            "label": "Rotation to Euler",
+            "id": "FunctionNodeRotationToEuler",
+            "type": "NODE"
+          },
+          {
+            "label": "Rotation to Quaternion",
+            "id": "FunctionNodeRotationToQuaternion",
+            "type": "NODE"
+          }
+        ]
+      },
+      {
+        "label": "General",
+        "type": "CATEGORY",
+        "items": [
+          {
+            "label": "Accumulate Field",
+            "id": "GeometryNodeAccumulateField",
+            "type": "NODE"
+          },
+          {
+            "label": "Menu Switch",
+            "id": "GeometryNodeMenuSwitch",
+            "type": "NODE"
+          },
+          {
+            "label": "Random Value",
+            "id": "FunctionNodeRandomValue",
+            "type": "NODE"
+          },
+          {
+            "label": "Repeat Input",
+            "id": "GeometryNodeRepeatInput",
+            "type": "NODE"
+          },
+          {
+            "label": "Switch",
+            "id": "GeometryNodeSwitch",
+            "type": "NODE"
+          },
+          {
+            "label": "For Each Geometry Element Input",
+            "id": "GeometryNodeForeachGeometryElementInput",
+            "type": "NODE"
+          }
+        ]
+      }
+    ]
+  }
+]
