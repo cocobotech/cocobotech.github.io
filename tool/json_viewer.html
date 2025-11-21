@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO JSON VIEWER</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-dark: #0b1121;
+            --text-main: #cbd5e1;
+            --accent: #0ea5e9;
+            /* 动态网格布局 */
+            --grid-cols: minmax(400px, 4fr) 140px 3fr;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* JSONEditor Tweaks */
+        .jsoneditor { border: none !important; background: transparent !important; }
+        .jsoneditor-menu { display: none !important; }
+        div.jsoneditor-tree, div.jsoneditor textarea.jsoneditor-text {
+            font-family: 'JetBrains Mono', monospace !important;
+            background-color: #0b1121 !important;
+            color: #94a3b8 !important;
+        }
+        .jsoneditor-text .ace_gutter { background: #0f172a !important; color: #475569 !important; }
+
+        /* Tree Grid Styles */
+        .tree-header {
+            display: grid;
+            grid-template-columns: var(--grid-cols);
+            background: #161e32;
+            border-bottom: 1px solid #334155;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tree-row {
+            display: grid;
+            grid-template-columns: var(--grid-cols);
+            border-bottom: 1px solid #1e293b;
+            transition: background 0.1s;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            align-items: center;
+            line-height: 1.7;
+        }
+
+        .tree-row:hover { background-color: rgba(14, 165, 233, 0.05); }
+        
+        .col-cell {
+            padding: 6px 12px;
+            border-right: 1px solid #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .col-cell:last-child { border-right: none; }
+
+        .indent-guide {
+            position: absolute;
+            top: 0; bottom: 0;
+            border-left: 1px solid #1f2937;
+            width: 1px;
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .loader {
+            border: 3px solid rgba(14, 165, 233, 0.1);
+            border-left-color: #0ea5e9;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modal Animation */
+        .modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease; }
+        .modal-enter-from, .modal-leave-to { opacity: 0; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="h-screen flex flex-col">
+    
+    <!-- Header -->
+    <header class="h-14 bg-[#0f172a] border-b border-slate-800 flex items-center px-6 justify-between select-none z-30 shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-sky-500/10 rounded flex items-center justify-center border border-sky-500/20">
+                <i class="fa-solid fa-atom text-sky-400 text-sm"></i>
+            </div>
+            <h1 class="font-bold text-sm tracking-widest text-white">COCOBO <span class="text-sky-500">JSON Viewer</span></h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <!-- Column Mapping Settings Button -->
+            <button @click="showSettings = true" class="text-slate-400 hover:text-sky-400 transition-colors" title="Configure Columns">
+                <i class="fa-solid fa-gear text-lg"></i>
+            </button>
+
+            <div class="h-6 w-[1px] bg-slate-700"></div>
+
+            <div class="bg-slate-800 p-1 rounded flex text-xs font-medium border border-slate-700">
+                <button @click="viewMode = 'tree'" :class="['px-4 py-1 rounded transition-all', viewMode === 'tree' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-white']">
+                    <i class="fa-solid fa-stream mr-2"></i>Smart Tree
+                </button>
+                <button @click="viewMode = 'code'" :class="['px-4 py-1 rounded transition-all', viewMode === 'code' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:text-white']">
+                    <i class="fa-solid fa-code mr-2"></i>Raw Code
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <!-- Sidebar -->
+        <aside class="w-16 bg-[#0b1121] border-r border-slate-800 flex flex-col items-center py-4 gap-4 z-20">
+            <button v-for="tab in ['local', 'remote', 'github']" 
+                @click="currentTab = tab"
+                :class="['w-10 h-10 rounded-lg flex items-center justify-center transition-all', currentTab === tab ? 'bg-sky-600 text-white' : 'text-slate-500 hover:bg-slate-800']">
+                <i :class="tabIcons[tab]"></i>
+            </button>
+        </aside>
+
+        <!-- Config Panel -->
+        <div class="w-80 bg-[#111827] border-r border-slate-800 flex flex-col z-10 shadow-xl">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-white capitalize">{{ currentTab }} Source</h2>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">v5.0</span>
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto custom-scroll flex flex-col gap-4">
+                <!-- Local -->
+                <div v-if="currentTab === 'local'" 
+                     class="border border-dashed border-slate-700 rounded-lg h-32 flex flex-col items-center justify-center cursor-pointer hover:border-sky-500 hover:bg-sky-500/5 transition-all"
+                     @click="$refs.fileInput.click()">
+                    <i class="fa-solid fa-upload text-xl text-slate-600 mb-2"></i>
+                    <span class="text-xs text-slate-500">Upload JSON</span>
+                    <input type="file" ref="fileInput" @change="handleFileUpload" accept=".json" class="hidden">
+                </div>
+
+                <!-- Remote -->
+                <div v-if="currentTab === 'remote'" class="flex flex-col gap-2">
+                    <input type="text" v-model="remoteUrl" placeholder="https://..." class="bg-slate-900 border border-slate-700 text-white rounded p-2 text-xs outline-none focus:border-sky-500">
+                    <button @click="fetchRemoteUrl" class="bg-sky-600 text-white py-2 rounded text-xs font-bold hover:bg-sky-500">LOAD</button>
+                </div>
+
+                <!-- Github -->
+                <div v-if="currentTab === 'github'" class="flex flex-col gap-2">
+                    <input type="text" v-model="githubFolderUrl" placeholder="GitHub Folder URL..." class="bg-slate-900 border border-slate-700 text-white rounded p-2 text-xs outline-none focus:border-sky-500">
+                    <button @click="scanGithub" class="border border-slate-600 text-slate-300 py-2 rounded text-xs font-bold hover:border-sky-500 hover:text-sky-400">SCAN REPO</button>
+                    <div v-if="githubFiles.length" class="bg-slate-900 rounded border border-slate-800 mt-2 max-h-60 overflow-y-auto custom-scroll">
+                        <div v-for="file in githubFiles" :key="file.sha" @click="fetchGithubFile(file)" 
+                            :class="['px-3 py-2 text-xs cursor-pointer truncate', selectedGithubFile?.sha === file.sha ? 'text-sky-400 bg-sky-500/10' : 'text-slate-400 hover:bg-slate-800']">
+                            {{ file.name }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div v-if="fileInfo.name" class="mt-auto pt-4 border-t border-slate-800">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="text-sky-400 text-xs font-mono truncate w-40" :title="fileInfo.name">{{ fileInfo.name }}</div>
+                        <div class="text-slate-500 text-[10px]">{{ fileInfo.size }}</div>
+                    </div>
+                    <!-- Active Mapping Info -->
+                    <div v-if="hasContent" class="text-[10px] text-slate-500 bg-slate-900 p-2 rounded border border-slate-800">
+                        <div class="flex justify-between"><span class="text-slate-600">Label:</span> <span class="text-emerald-500 font-mono">{{ mapping.label }}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-600">Type:</span> <span class="text-purple-500 font-mono">{{ mapping.type }}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-600">ID:</span> <span class="text-sky-500 font-mono">{{ mapping.id }}</span></div>
+                    </div>
+                </div>
+                <div v-if="errorMsg" class="text-red-400 text-xs bg-red-900/20 p-2 rounded border border-red-500/20 break-words">{{ errorMsg }}</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-[#0b1121] relative flex flex-col overflow-hidden">
+            
+            <!-- VIEW 1: SMART TREE GRID -->
+            <div v-if="viewMode === 'tree'" class="flex-1 flex flex-col overflow-hidden">
+                
+                <!-- Dynamic Headers -->
+                <div class="tree-header shrink-0 pr-2">
+                    <div class="px-4 py-3 border-r border-slate-700 flex items-center gap-2">
+                        <span>Tree Structure</span>
+                    </div>
+                    <div class="px-4 py-3 border-r border-slate-700 text-purple-400">{{ mapping.type }}</div>
+                    <div class="px-4 py-3 text-sky-400">{{ mapping.id }}</div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scroll relative">
+                    <div v-if="hasContent" class="min-w-[800px] pb-20 pt-2">
+                        <smart-node 
+                            v-for="(val, key) in jsonData" 
+                            :key="key" 
+                            :name="String(key)" 
+                            :value="val" 
+                            :depth="0">
+                        </smart-node>
+                    </div>
+                    
+                    <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-slate-600 opacity-50">
+                        <i class="fa-solid fa-network-wired text-5xl mb-4"></i>
+                        <p class="text-sm tracking-widest">DATA STREAM OFFLINE</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: RAW CODE -->
+            <div v-show="viewMode === 'code'" class="flex-1">
+                 <div id="jsoneditor" class="w-full h-full"></div>
+            </div>
+
+            <div v-if="isLoading" class="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <transition name="modal">
+        <div v-if="showSettings" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center" @click.self="showSettings = false">
+            <div class="bg-[#161e32] border border-slate-600 w-96 rounded-lg shadow-2xl p-6 transform transition-all">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-white font-bold text-lg"><i class="fa-solid fa-sliders mr-2 text-sky-500"></i>Column Mapping</h3>
+                    <button @click="showSettings = false" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <p class="text-xs text-slate-400 mb-4">Map your JSON keys to the visual columns. Detected keys from current file:</p>
+
+                <div class="space-y-4">
+                    <!-- Label Setting -->
+                    <div>
+                        <label class="block text-xs font-bold text-emerald-500 mb-1 uppercase">Display Name (Tree)</label>
+                        <select v-model="mapping.label" class="w-full bg-[#0b1121] border border-slate-600 text-white text-sm rounded p-2 focus:border-emerald-500 outline-none font-mono">
+                            <option v-for="k in detectedKeys" :value="k">{{ k }}</option>
+                        </select>
+                    </div>
+
+                    <!-- Type Setting -->
+                    <div>
+                        <label class="block text-xs font-bold text-purple-500 mb-1 uppercase">Type Badge (Col 2)</label>
+                        <select v-model="mapping.type" class="w-full bg-[#0b1121] border border-slate-600 text-white text-sm rounded p-2 focus:border-purple-500 outline-none font-mono">
+                            <option value="">(None)</option>
+                            <option v-for="k in detectedKeys" :value="k">{{ k }}</option>
+                        </select>
+                    </div>
+
+                    <!-- ID Setting -->
+                    <div>
+                        <label class="block text-xs font-bold text-sky-500 mb-1 uppercase">Detail / ID (Col 3)</label>
+                        <select v-model="mapping.id" class="w-full bg-[#0b1121] border border-slate-600 text-white text-sm rounded p-2 focus:border-sky-500 outline-none font-mono">
+                            <option value="">(None)</option>
+                            <option v-for="k in detectedKeys" :value="k">{{ k }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button @click="showSettings = false" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded text-xs font-bold">APPLY SETTINGS</button>
+                </div>
+            </div>
+        </div>
+    </transition>
+
+</div>
+
+<!-- Vue Template: Smart Node -->
+<script type="text/x-template" id="smart-node-template">
+    <div>
+        <div class="tree-row group">
+            
+            <!-- Column 1: Name/Label (With Indentation) -->
+            <div class="col-cell relative" :style="{ paddingLeft: (depth * 24 + 12) + 'px' }">
+                <div v-for="i in depth" :key="i" class="indent-guide" :style="{ left: ((i-1) * 24 + 20) + 'px' }"></div>
+                
+                <span v-if="hasChildren" @click="toggle" class="w-4 h-4 flex items-center justify-center cursor-pointer text-slate-500 hover:text-sky-400 mr-2 z-10 shrink-0">
+                    <i :class="['fa-solid text-[10px]', isOpen ? 'fa-caret-down' : 'fa-caret-right']"></i>
+                </span>
+                <span v-else class="w-4 h-4 mr-2 shrink-0"></span>
+
+                <span :class="['truncate z-10 font-medium flex items-center gap-2', hasChildren ? 'text-sky-100' : 'text-slate-400']">
+                    <i v-if="extractedFields._isCategory" class="fa-regular fa-folder text-amber-500 text-xs"></i>
+                    <i v-else-if="extractedFields._isNode" class="fa-solid fa-cube text-emerald-500 text-xs"></i>
+                    
+                    {{ displayName }}
+                    
+                    <span v-if="isArray && !extractedFields.label" class="text-[10px] text-slate-600">[{{ value.length }}]</span>
+                </span>
+            </div>
+
+            <!-- Column 2: Type -->
+            <div class="col-cell text-purple-400 text-xs">
+                {{ extractedFields.type || '' }}
+            </div>
+
+            <!-- Column 3: ID or Value -->
+            <div class="col-cell text-xs font-mono">
+                <span v-if="extractedFields.id" class="text-slate-400">{{ extractedFields.id }}</span>
+                <span v-else-if="!hasChildren" :class="valueColor">{{ displayValue }}</span>
+                <span v-else class="text-slate-600 italic">--</span>
+            </div>
+        </div>
+
+        <div v-if="isOpen && hasChildren">
+            <smart-node 
+                v-for="(childVal, childKey) in smartChildren" 
+                :key="childKey" 
+                :name="String(childKey)" 
+                :value="childVal" 
+                :depth="depth + 1">
+            </smart-node>
+        </div>
+    </div>
+</script>
+
+<script>
+    const { createApp, ref, reactive, computed, onMounted, inject, provide } = Vue;
+
+    const SmartNode = {
+        name: 'SmartNode',
+        template: '#smart-node-template',
+        props: { name: String, value: [String, Number, Boolean, Object, Array, null], depth: Number },
+        setup(props) {
+            const isOpen = ref(false);
+            // 注入全局配置映射
+            const mapping = inject('mapping'); 
+            
+            const isObject = props.value !== null && typeof props.value === 'object' && !Array.isArray(props.value);
+            const isArray = Array.isArray(props.value);
+            const hasChildren = isObject || isArray;
+
+            // 动态提取字段
+            const extractedFields = computed(() => {
+                if (!isObject) return {};
+                // 使用注入的 mapping key 来取值
+                const labelVal = props.value[mapping.label];
+                const typeVal = props.value[mapping.type];
+                const idVal = props.value[mapping.id];
+
+                return {
+                    label: labelVal,
+                    type: typeVal,
+                    id: idVal,
+                    // 辅助判断
+                    _isCategory: props.value.type === 'CATEGORY' || (props.value.items || props.value.children),
+                    _isNode: props.value.type === 'NODE'
+                };
+            });
+
+            const displayName = computed(() => {
+                return extractedFields.value.label || props.name;
+            });
+
+            const smartChildren = computed(() => {
+                if (!hasChildren) return {};
+                if (isObject) {
+                    // 自动拆包常见的容器字段
+                    if (Array.isArray(props.value.items)) return props.value.items;
+                    if (Array.isArray(props.value.categories)) return props.value.categories;
+                    if (Array.isArray(props.value.children)) return props.value.children;
+                    if (Array.isArray(props.value.menu_structure)) return props.value.menu_structure;
+                    
+                    // 过滤已显示字段
+                    const filtered = {};
+                    const skip = [mapping.label, mapping.type, mapping.id, 'items', 'categories', 'children'];
+                    Object.keys(props.value).forEach(k => {
+                        if (!skip.includes(k)) filtered[k] = props.value[k];
+                    });
+                    return filtered;
+                }
+                return props.value;
+            });
+
+            const toggle = () => isOpen.value = !isOpen.value;
+
+            const displayValue = computed(() => {
+                if (props.value === null) return 'null';
+                return String(props.value);
+            });
+
+            const valueColor = computed(() => {
+                if (typeof props.value === 'string') return 'text-emerald-400';
+                if (typeof props.value === 'number') return 'text-orange-400';
+                if (typeof props.value === 'boolean') return 'text-pink-400 font-bold';
+                return 'text-slate-500';
+            });
+
+            if (props.depth < 2) isOpen.value = true;
+
+            return { 
+                isOpen, toggle, hasChildren, isArray, isObject,
+                extractedFields, displayName, smartChildren,
+                displayValue, valueColor, mapping
+            };
+        }
+    };
+
+    createApp({
+        components: { SmartNode },
+        setup() {
+            const viewMode = ref('tree');
+            const currentTab = ref('github');
+            const jsonData = ref({});
+            const hasContent = ref(false);
+            const isLoading = ref(false);
+            const errorMsg = ref('');
+            const fileInfo = ref({});
+            const tabIcons = { local: 'fa-solid fa-hard-drive', remote: 'fa-solid fa-globe', github: 'fa-brands fa-github' };
+            
+            const remoteUrl = ref('');
+            const githubFolderUrl = ref('https://github.com/cocobotech/cocobotech.github.io/tree/main/3D/blender/json');
+            const githubFiles = ref([]);
+            const selectedGithubFile = ref(null);
+            let editorInstance = null;
+
+            // --- 配置系统 ---
+            const showSettings = ref(false);
+            const detectedKeys = ref([]); // 扫描出的所有可用 Key
+            // 默认映射
+            const mapping = reactive({
+                label: 'label',
+                type: 'type',
+                id: 'id'
+            });
+            // 向下提供给所有 SmartNode 使用
+            provide('mapping', mapping);
+
+            // 自动推断最佳 Key
+            const autoDetectMapping = (keys) => {
+                const defaults = {
+                    label: ['label', 'name', 'title', 'key', 'text'],
+                    type: ['type', 'category', 'kind', 'class'],
+                    id: ['id', 'uuid', 'code', 'value']
+                };
+                
+                // 查找匹配函数
+                const findMatch = (candidates) => candidates.find(c => keys.includes(c));
+
+                const foundLabel = findMatch(defaults.label);
+                if (foundLabel) mapping.label = foundLabel;
+
+                const foundType = findMatch(defaults.type);
+                if (foundType) mapping.type = foundType;
+
+                const foundId = findMatch(defaults.id);
+                if (foundId) mapping.id = foundId;
+            };
+
+            // 扫描 JSON 中的所有 Key
+            const scanKeys = (json) => {
+                const keySet = new Set();
+                // 深度优先简单扫描前几层，避免过大
+                const traverse = (obj, depth) => {
+                    if (depth > 5 || !obj) return;
+                    if (typeof obj === 'object') {
+                        Object.keys(obj).forEach(k => {
+                            if (isNaN(k)) keySet.add(k); // 排除数字索引
+                            traverse(obj[k], depth + 1);
+                        });
+                    } else if (Array.isArray(obj)) {
+                        obj.forEach(item => traverse(item, depth + 1));
+                    }
+                };
+                traverse(json, 0);
+                detectedKeys.value = Array.from(keySet).sort();
+                autoDetectMapping(detectedKeys.value);
+            };
+
+            onMounted(() => {
+                editorInstance = new JSONEditor(document.getElementById('jsoneditor'), {
+                    mode: 'code', mainMenuBar: false, statusBar: false,
+                    onChangeText: (txt) => { try { jsonData.value = JSON.parse(txt); } catch(e){} }
+                });
+            });
+
+            const loadData = (json, name, size) => {
+                // 智能拆包
+                let dataToRender = json;
+                if (!Array.isArray(json) && json.menu_structure) dataToRender = json.menu_structure;
+                else if (!Array.isArray(json) && json.categories) dataToRender = json.categories;
+
+                jsonData.value = dataToRender;
+                hasContent.value = true;
+                fileInfo.value = { name, size: formatSize(size) };
+                editorInstance.update(json);
+                
+                // 加载数据后立即扫描 Key
+                scanKeys(json);
+            };
+
+            const formatSize = (b) => {
+                if(!b) return ''; const k=1024, i=Math.floor(Math.log(b)/Math.log(k));
+                return (b/Math.pow(k,i)).toFixed(2)+' '+['B','KB','MB'][i];
+            };
+
+            const handleFileUpload = (e) => readFile(e.target.files[0]);
+            const readFile = (f) => {
+                if(!f) return; isLoading.value=true;
+                const r = new FileReader();
+                r.onload = (e) => { loadData(JSON.parse(e.target.result), f.name, f.size); isLoading.value=false; };
+                r.readAsText(f);
+            };
+
+            const fetchRemoteUrl = async () => {
+                if(!remoteUrl.value) return; isLoading.value=true;
+                try { const r = await fetch(remoteUrl.value); loadData(await r.json(), 'Remote', 'Live'); } 
+                catch(e) { errorMsg.value=e.message; } isLoading.value=false;
+            };
+
+            const scanGithub = async () => {
+                if(!githubFolderUrl.value) return; isLoading.value=true; githubFiles.value=[];
+                try {
+                    const parts = githubFolderUrl.value.split('/');
+                    const u=parts.indexOf('github.com'), owner=parts[u+1], repo=parts[u+2];
+                    const t=parts.indexOf('tree'), path=t>-1?parts.slice(t+2).join('/'):'';
+                    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+                    if(!res.ok) throw new Error('API Error');
+                    const d = await res.json();
+                    githubFiles.value = d.filter(f=>f.name.endsWith('.json'));
+                    errorMsg.value = '';
+                } catch(e){ errorMsg.value=e.message; } isLoading.value=false;
+            };
+
+            const fetchGithubFile = async (f) => {
+                selectedGithubFile.value=f; isLoading.value=true;
+                try { const r = await fetch(f.download_url); loadData(await r.json(), f.name, f.size); }
+                catch(e){ errorMsg.value=e.message; } isLoading.value=false;
+            };
+
+            return {
+                viewMode, currentTab, tabIcons, jsonData, hasContent, isLoading, errorMsg, fileInfo,
+                remoteUrl, githubFolderUrl, githubFiles, selectedGithubFile,
+                handleFileUpload, fetchRemoteUrl, scanGithub, fetchGithubFile,
+                showSettings, detectedKeys, mapping
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
