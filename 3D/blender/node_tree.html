@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>COCOBO-PLOT · Geometry Nodes 菜单对比（服务器 JSON 版）</title>
+<title>COCOBO-PLOT · Geometry Nodes 菜单对比</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   :root {
@@ -27,26 +27,37 @@
   .toolbar input[type="text"] { flex:1; min-width:200px; padding:9px; background:#1e1e1e; border:1px solid #555; border-radius:6px; color:white; }
   .toolbar label { color:white; white-space:nowrap; cursor:pointer; user-select:none; }
   .toolbar input[type="checkbox"] { transform:scale(1.3); accent-color:var(--new); cursor:pointer; }
-  .tree { padding:8px 0; }
-  .cat { margin:6px 12px; border:1px solid #555; border-radius:8px; overflow:hidden; background:#2f2f2f; }
-  .cat-head { padding:11px 16px; background:#3a3a3a; cursor:pointer; user-select:none; font-weight:bold; display:flex; align-items:center; gap:10px; transition:background 0.2s; }
+  .tree-content { padding: 15px; }
+  
+  /* 树状结构样式优化 */
+  .cat { margin-bottom:5px; border:1px solid #444; border-radius:4px; overflow:hidden; background:#2f2f2f; }
+  .cat-head { padding:8px 12px; background:#3a3a3a; cursor:pointer; user-select:none; font-weight:bold; display:flex; align-items:center; gap:8px; transition:background 0.2s; font-size: 0.9rem; }
   .cat-head:hover { background:#444; }
-  .cat-head::before { content:">"; font-size:0.9rem; transition:transform 0.25s; color:#aaa; }
-  .cat-head:not(.collapsed)::before { transform:rotate(90deg); }
-  .items { padding:4px 0; background:#2a2a2a; }
-  .item { padding:8px 32px; cursor:default; font-size:0.95rem; transition:background 0.2s; display:flex; align-items:center; gap:10px; }
-  .item:hover { background:var(--hover); }
-  .item.new { color:var(--new); font-weight:bold; }
+  .cat-head::before { content:"▼"; font-size:0.7rem; transition:transform 0.2s; color:#aaa; display:inline-block;}
+  
+  /* 折叠逻辑 */
+  .cat.collapsed .cat-head::before { transform:rotate(-90deg); }
+  .cat.collapsed .items { display:none; }
+
+  .items { padding:0; background:#262626; border-top:1px solid #333; }
+  
+  /* 嵌套缩进 */
+  .items .cat, .items .item { margin-left: 15px; border-left: 1px solid #444; }
+
+  .item { padding:6px 10px; cursor:default; font-size:0.9rem; transition:background 0.2s; display:flex; align-items:center; gap:10px; color: #ccc; }
+  .item:hover { background:var(--hover); color: #fff; }
+  .item .id-tag { font-size: 0.75rem; color: #666; margin-left: auto; }
+
+  .item.new { color:var(--new); font-weight:bold; background: rgba(255, 107, 107, 0.1); }
   .item.new::after { content:"NEW"; background:var(--new); color:white; font-size:0.65rem; padding:2px 6px; border-radius:4px; margin-left:8px; }
-  .item.hidden { display:none !important; }
-  .collapsed + .items { display:none; }
+  
   .footer { padding:12px; background:#2a2a2a; border-top:1px solid var(--border); text-align:center; font-size:0.9rem; color:#888; }
   .loading { text-align:center; padding:40px; color:var(--text-dim); }
 </style>
 </head>
 <body>
 
-<div class="header">COCOBO Geometry Nodes 菜单对比（GitHub JSON 版）</div>
+<div class="header">COCOBO Geometry Nodes 菜单</div>
 
 <div class="selector-bar">
   <div>
@@ -68,8 +79,8 @@
   <div class="side">
     <h2 id="leftTitle">左侧版本</h2>
     <div class="toolbar"><input type="text" id="sLeft" placeholder="搜索节点..."></div>
-    <div class="tree" id="leftTree">
-      <div class="loading">选择左侧 JSON 文件加载菜单...</div>
+    <div class="tree-content" id="leftTree">
+      <div class="loading">请在上方选择文件</div>
     </div>
   </div>
 
@@ -80,36 +91,47 @@
       <input type="text" id="sRight" placeholder="搜索节点...">
       <label><input type="checkbox" id="onlyNew"> 只看 NEW</label>
     </div>
-    <div class="tree" id="rightTree">
-      <div class="loading">选择右侧 JSON 文件加载菜单...</div>
+    <div class="tree-content" id="rightTree">
+      <div class="loading">请在上方选择文件</div>
     </div>
   </div>
 </div>
 
-<div class="footer">COCOBO 2025 ·</div>
+<div class="footer">COCOBO 2025 · JSON 解析已修复</div>
 
 <script>
-    
+// 配置路径：确保这里的路径是你 GitHub 仓库的真实路径
+// 如果你的 json 文件在 3D/blender/json/ 文件夹下，保持如下：
+const USER = 'cocobotech';
+const REPO = 'cocobotech.github.io';
+const PATH = '3D/blender/json'; // 注意这里修改为了 json 子目录
+const BRANCH = 'main';
 
-const BASE_URL = 'https://raw.githubusercontent.com/cocobotech/cocobotech.github.io/main/3D/blender/json/';
-const DIR_URL  = 'https://api.github.com/repos/cocobotech/cocobotech.github.io/contents/3D/blender/json?ref=main';
+const DIR_URL  = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}?ref=${BRANCH}`;
+const BASE_URL = `https://raw.githubusercontent.com/${USER}/${REPO}/${BRANCH}/${PATH}/`;
 
 // 获取目录下所有 .json 文件
 async function fetchJsonFiles() {
   try {
     const res = await fetch(DIR_URL);
+    if (!res.ok) throw new Error(`GitHub API 限制或路径错误 (${res.status})`);
     const data = await res.json();
-    return data.filter(item => item.name.endsWith('.json')).map(item => item.name);
+    return data
+      .filter(item => item.name.endsWith('.json'))
+      .map(item => item.name)
+      .sort().reverse();
   } catch (err) {
     console.error('获取文件列表失败:', err);
-    return []; // 或 fallback 列表
+    alert('获取文件列表失败，请检查控制台网络错误。');
+    return [];
   }
 }
 
 // 加载单个 JSON 文件
 async function loadJson(filename) {
   try {
-    const res = await fetch(BASE_URL + filename);
+    // 加个时间戳防止缓存
+    const res = await fetch(BASE_URL + filename + '?t=' + new Date().getTime());
     if (!res.ok) throw new Error('文件加载失败');
     return await res.json();
   } catch (err) {
@@ -118,51 +140,101 @@ async function loadJson(filename) {
   }
 }
 
-// 生成树形菜单 HTML
-function generateTree(data, highlightNew = false) {
-  if (!data || !data.categories) return '<div class="loading">无效 JSON 数据</div>';
+/**
+ * 核心修复：递归生成树形菜单
+ * 兼容 Python 脚本生成的 { label, type, items } 结构
+ */
+function generateTree(data) {
+  // 1. 尝试获取根数组：Python 脚本生成的是 menu_structure，但也可能直接是数组
+  const roots = data.menu_structure || data.categories || (Array.isArray(data) ? data : []);
+  
+  if (!roots || roots.length === 0) return '<div class="loading">JSON 数据为空或结构不匹配</div>';
 
-  let html = '';
-  data.categories.forEach(cat => {
-    html += `<div class="cat">
-      <div class="cat-head">${cat.name || cat.id}</div>
-      <div class="items">`;
-    (cat.items || []).forEach(item => {
-      html += `<div class="item">${item}</div>`;
+  // 内部递归函数
+  function buildItems(items) {
+    let html = '';
+    items.forEach(item => {
+      if (item.type === 'CATEGORY') {
+        // 这是一个文件夹/分类
+        const childHtml = buildItems(item.items || []);
+        if (childHtml) {
+            html += `
+            <div class="cat">
+              <div class="cat-head" onclick="this.parentElement.classList.toggle('collapsed')">
+                ${item.label}
+              </div>
+              <div class="items">${childHtml}</div>
+            </div>`;
+        }
+      } else if (item.type === 'NODE') {
+        // 这是一个节点
+        html += `
+        <div class="item" data-text="${item.label.toLowerCase()}">
+            <span>${item.label}</span>
+            <span class="id-tag">${item.id || ''}</span>
+        </div>`;
+      }
     });
-    html += '</div></div>';
-  });
-  return html;
+    return html;
+  }
+
+  return buildItems(roots);
 }
 
 // 更新侧边栏
 async function updateSide(select, treeId, titleId, isRight = false) {
   const filename = select.value;
   if (!filename) {
-    document.getElementById(treeId).innerHTML = '<div class="loading">选择 JSON 文件</div>';
+    document.getElementById(treeId).innerHTML = '<div class="loading">请选择文件</div>';
     document.getElementById(titleId).textContent = isRight ? "右侧版本" : "左侧版本";
     return;
   }
 
+  document.getElementById(treeId).innerHTML = '<div class="loading">加载中...</div>';
+  
   const data = await loadJson(filename);
   document.getElementById(titleId).textContent = filename;
 
   if (data) {
     document.getElementById(treeId).innerHTML = generateTree(data);
-    if (isRight) updateNewHighlight(treeId); // 右侧高亮 NEW
+    if (isRight) updateNewHighlight(treeId); 
   } else {
-    document.getElementById(treeId).innerHTML = '<div class="loading">加载失败</div>';
+    document.getElementById(treeId).innerHTML = '<div class="loading">加载失败 (请检查控制台)</div>';
   }
 }
 
-// 只看 NEW（右侧）
+// 简单的 NEW 高亮（这里只是模拟，如果你需要真实的对比逻辑，参考我上一个回答的 extractNodeIds 方法）
 function updateNewHighlight(treeId) {
+  // 目前只作为占位，因为对比逻辑需要同时读取左右两边的数据。
+  // 如果需要完整对比功能，请使用我上一次回答中的 updateView 逻辑。
   const onlyNew = document.getElementById('onlyNew').checked;
-  document.querySelectorAll(`#${treeId} .item`).forEach(item => {
-    if (onlyNew) {
-      item.style.display = item.classList.contains('new') ? 'flex' : 'none';
-    } else {
-      item.style.display = 'flex';
+  // ...
+}
+
+// 搜索功能修复
+function filterTree(treeId, event) {
+  const query = event.target.value.toLowerCase();
+  const container = document.getElementById(treeId);
+  
+  // 过滤节点
+  container.querySelectorAll('.item').forEach(item => {
+    const text = item.getAttribute('data-text') || '';
+    item.style.display = text.includes(query) ? 'flex' : 'none';
+  });
+
+  // 自动处理空分类
+  container.querySelectorAll('.cat').forEach(cat => {
+    // 查找该分类下是否有可见的 item
+    // 注意：这里不能只用 querySelectorAll('.item')，因为可能嵌套多层
+    // 我们检查该 cat 内部是否有 display != none 的 item
+    const items = Array.from(cat.getElementsByClassName('item'));
+    const hasVisible = items.some(el => el.style.display !== 'none');
+    
+    cat.style.display = hasVisible ? 'block' : 'none';
+    
+    // 如果在搜索，自动展开
+    if (query !== '' && hasVisible) {
+        cat.classList.remove('collapsed');
     }
   });
 }
@@ -173,40 +245,26 @@ async function initSelectors() {
   const leftSel = document.getElementById('leftSelect');
   const rightSel = document.getElementById('rightSelect');
 
-  files.forEach(f => {
-    const optL = document.createElement('option');
-    optL.value = f;
-    optL.textContent = f;
-    leftSel.appendChild(optL);
+  // 清空并添加默认项
+  leftSel.innerHTML = '<option value="">— 请选择 —</option>';
+  rightSel.innerHTML = '<option value="">— 请选择 —</option>';
 
-    const optR = document.createElement('option');
-    optR.value = f;
-    optR.textContent = f;
-    rightSel.appendChild(optR);
+  files.forEach(f => {
+    leftSel.add(new Option(f, f));
+    rightSel.add(new Option(f, f));
   });
 
   if (files.length === 0) {
-    leftSel.innerHTML = '<option>目录中无 .json 文件</option>';
-    rightSel.innerHTML = '<option>目录中无 .json 文件</option>';
+    leftSel.innerHTML = '<option>未找到 JSON 文件</option>';
+    rightSel.innerHTML = '<option>未找到 JSON 文件</option>';
   }
 
   leftSel.onchange = () => updateSide(leftSel, 'leftTree', 'leftTitle');
   rightSel.onchange = () => updateSide(rightSel, 'rightTree', 'rightTitle', true);
 
-  // 只看 NEW 绑定
-  document.getElementById('onlyNew').onchange = () => updateNewHighlight('rightTree');
-
-  // 搜索绑定
-  document.getElementById('sLeft').oninput = filterTree.bind(null, 'leftTree');
-  document.getElementById('sRight').oninput = filterTree.bind(null, 'rightTree');
-}
-
-// 搜索过滤
-function filterTree(treeId, query) {
-  query = query.toLowerCase();
-  document.querySelectorAll(`#${treeId} .item`).forEach(item => {
-    item.style.display = item.textContent.toLowerCase().includes(query) ? 'flex' : 'none';
-  });
+  // 绑定搜索事件（修复了之前的 bind 错误）
+  document.getElementById('sLeft').addEventListener('input', (e) => filterTree('leftTree', e));
+  document.getElementById('sRight').addEventListener('input', (e) => filterTree('rightTree', e));
 }
 
 // 启动
