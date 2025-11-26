@@ -1,0 +1,25 @@
+[
+            {
+                name: "IT 技术", id: "it", type: "category",
+                children: [
+                    {
+                        name: "Python", id: "it-py", type: "category",
+                        children: [
+                            // 注意：这里的 keys 会被动态扫描
+                            { title: "Fluent Python", author: "Luciano Ramalho", year: 2022, isbn: "978-1492056355", publisher: "O'Reilly", type: "book" },
+                            { title: "Python Tricks", author: "Dan Bader", year: 2017, pages: 300, type: "book" } 
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "集成电路", id: "ic", type: "category",
+                children: [
+                    { 
+                        name: "Chip Design", id: "ic-design", type: "category",
+                        // 不同类型的数据可能有不同的 key
+                        children: [{ title: "CMOS VLSI Design", author: "Weste", edition: "4th", technology: "45nm", type: "book" }]
+                    }
+                ]
+            }
+        ]
