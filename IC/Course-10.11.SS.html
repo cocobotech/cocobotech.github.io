@@ -237,94 +237,13 @@
         <!-- Section 1: Boltzmann Physics -->
         <section id="bands" class="card">
             <h2 class="section-title"><i class="fas fa-project-diagram"></i> 1. The Physics: Energy Barriers</h2>
-            <div class="grid-2">
-                <div>
-                    <p>In the subthreshold region ($V_{GS} < V_{th}$), current is dominated by <strong>Diffusion</strong>, not Drift.</p>
-                    <p>Electrons in the Source must overcome a potential barrier to reach the Drain. The height of this barrier is controlled by the surface potential $\psi_s$.</p>
-                    <br>
-                    <p>Since electrons follow the <strong>Boltzmann Distribution</strong>, the carrier concentration ($n_s$) is exponentially related to the barrier height:</p>
-                    <div class="math-box">
-                        $$ I_D \propto n_s \propto \exp\left( \frac{q\psi_s}{k_B T} \right) $$
-                    </div>
-                </div>
-                
-                <!-- SVG Animation -->
-                <div class="band-container">
-                    <svg width="100%" height="100%" viewBox="0 0 300 250">
-                        <text x="20" y="30" fill="#888" font-size="12">Source</text>
-                        <text x="130" y="30" fill="#888" font-size="12">Gate (Barrier)</text>
-                        <text x="250" y="30" fill="#888" font-size="12">Drain</text>
-
-                        <path class="band-line ec-line" d="M 0 50 L 100 50 Q 150 50 200 150 L 300 150" />
-                        
-                        <circle cx="50" cy="60" r="3" class="electrons" />
-                        <circle cx="70" cy="70" r="3" class="electrons" />
-                        <circle cx="30" cy="80" r="3" class="electrons" />
-                        
-                        <line x1="150" y1="60" x2="150" y2="140" stroke="#555" stroke-dasharray="4" />
-                        <text x="160" y="100" fill="var(--primary)" font-size="12">ψs</text>
-                    </svg>
-                    <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">Animated: Modulating Surface Potential</div>
-                </div>
-            </div>
+            
         </section>
 
         <!-- Section 2: Electrostatics -->
         <section id="caps" class="card">
             <h2 class="section-title"><i class="fas fa-battery-half"></i> 2. The Control: Capacitive Divider</h2>
-            <div class="grid-2">
-                <div class="cap-circuit">
-                    <div style="color:var(--text-header); font-weight:bold; margin-bottom:10px;">Gate ($V_{GS}$)</div>
-                    <div class="wire"></div>
-                    
-                    <div class="cap-box">
-                        <div class="cap-plate"></div>
-                        <div style="margin: 5px 0; color: var(--primary);">$C_{ox}$</div>
-                        <div class="cap-plate"></div>
-                    </div>
-
-                    <div class="wire" style="position:relative;">
-                        <span style="position:absolute; right:10px; top:5px; color:var(--text-header);">$\psi_s$</span>
-                    </div>
-
-                    <div class="parallel-group">
-                        <!-- Depletion Cap -->
-                        <div class="cap-box">
-                            <div class="wire" style="height:10px;"></div>
-                            <div class="cap-plate"></div>
-                            <div style="font-size:0.9rem; color:#aaa;">$C_{dep}$</div>
-                            <div class="cap-plate"></div>
-                            <div class="wire" style="height:10px;"></div>
-                        </div>
-
-                        <!-- Interface Trap Cap -->
-                        <div class="cap-box">
-                            <div class="wire" style="height:10px;"></div>
-                            <div class="cap-plate" style="background:var(--accent);"></div>
-                            <div style="font-size:0.9rem; color:var(--accent);">Traps ($C_{it}$)</div>
-                            <div class="trap-dots">
-                                <div class="trap"></div><div class="trap"></div><div class="trap"></div>
-                            </div>
-                            <div class="cap-plate" style="background:var(--accent); margin-top:5px;"></div>
-                            <div class="wire" style="height:10px;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="wire"></div>
-                    <div style="color:#666;">Ground (Substrate)</div>
-                </div>
-
-                <div>
-                    <p>The Gate voltage $V_{GS}$ does <strong>not</strong> translate 1-to-1 to the surface potential $\psi_s$. It forms a <strong>Voltage Divider</strong> network.</p>
-                    <p>The oxide capacitance $C_{ox}$ is in series with the parallel combination of depletion capacitance $C_{dep}$ and interface trap capacitance $C_{it}$.</p>
-                    
-                    <div class="math-box">
-                        $$ m = \frac{dV_{GS}}{d\psi_s} = 1 + \frac{C_{dep} + C_{it}}{C_{ox}} $$
-                    </div>
-                    
-                    <p>This factor $m$ is called the <strong>Body Factor</strong>. Since capacitances are always positive, $m \geq 1$.</p>
-                </div>
-            </div>
+            
         </section>
 
         <!-- Section 3: The Derivation -->
