@@ -1,0 +1,239 @@
+[
+  {
+    "name": "IT 技术 (Information Tech)",
+    "id": "it",
+    "type": "category",
+    "children": [
+      {
+        "name": "Python Ecosystem",
+        "id": "it-py",
+        "type": "category",
+        "children": [
+          {
+            "name": "Core Language",
+            "id": "it-py-core",
+            "type": "category",
+            "children": [
+              {
+                "title": "Fluent Python",
+                "author": "Luciano Ramalho",
+                "year": 2022,
+                "isbn": "978-1492056355",
+                "summary": "Effective programming.",
+                "type": "book"
+              },
+              {
+                "title": "Python Cookbook",
+                "author": "Beazley & Jones",
+                "year": 2013,
+                "isbn": "978-1449340377",
+                "summary": "Recipes for mastering Python 3.",
+                "type": "book"
+              }
+            ]
+          },
+          {
+            "name": "Artificial Intelligence",
+            "id": "it-py-ai",
+            "type": "category",
+            "children": [
+              {
+                "name": "Deep Learning",
+                "id": "it-py-ai-dl",
+                "type": "category",
+                "children": [
+                  {
+                    "name": "Frameworks (PyTorch)",
+                    "id": "it-py-ai-dl-fw",
+                    "type": "category",
+                    "children": [
+                      {
+                        "title": "Deep Learning with PyTorch",
+                        "author": "Stevens et al.",
+                        "year": 2020,
+                        "isbn": "978-1617295263",
+                        "summary": "Build, train, and tune neural networks.",
+                        "type": "book"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "JavaScript Ecosystem",
+        "id": "it-js",
+        "type": "category",
+        "children": [
+          {
+            "name": "Frontend Frameworks",
+            "id": "it-js-fe",
+            "type": "category",
+            "children": [
+              {
+                "title": "React Up & Running",
+                "author": "Stoyan Stefanov",
+                "year": 2021,
+                "isbn": "978-1492051466",
+                "summary": "Building Web Applications.",
+                "type": "book"
+              },
+              {
+                "title": "Vue.js: Up and Running",
+                "author": "Callum Macrae",
+                "year": 2018,
+                "isbn": "978-1491997246",
+                "summary": "Building Accessible Apps.",
+                "type": "book"
+              }
+            ]
+          },
+          {
+            "name": "Runtime (Node.js)",
+            "id": "it-js-node",
+            "type": "category",
+            "children": [
+              {
+                "title": "Node.js Design Patterns",
+                "author": "Mario Casciaro",
+                "year": 2020,
+                "isbn": "978-1839214110",
+                "summary": "Master best practices.",
+                "type": "book"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "集成电路 (Integrated Circuits)",
+    "id": "ic",
+    "type": "category",
+    "children": [
+      {
+        "name": "Process & Device",
+        "id": "ic-manu",
+        "type": "category",
+        "children": [
+          {
+            "name": "Process Technology",
+            "id": "ic-process",
+            "type": "category",
+            "children": [
+              {
+                "title": "Silicon VLSI Technology",
+                "author": "Plummer et al.",
+                "year": 2000,
+                "isbn": "978-0130850379",
+                "summary": "Fundamentals, Practice and Modeling.",
+                "type": "book"
+              }
+            ]
+          },
+          {
+            "name": "Device Physics",
+            "id": "ic-device",
+            "type": "category",
+            "children": [
+              {
+                "title": "Physics of Semiconductor Devices",
+                "author": "Simon Sze",
+                "year": 2006,
+                "isbn": "978-0471143239",
+                "summary": "The classic reference for semiconductor devices.",
+                "type": "book"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "IC Design Chain",
+        "id": "ic-design",
+        "type": "category",
+        "children": [
+          {
+            "name": "EDA Tools",
+            "id": "ic-eda",
+            "type": "category",
+            "children": [
+              {
+                "title": "Electronic Design Automation",
+                "author": "Wang et al.",
+                "year": 2009,
+                "isbn": "978-0123743640",
+                "summary": "Synthesis, Verification, and Test.",
+                "type": "book"
+              }
+            ]
+          },
+          {
+            "name": "Digital Chip Design",
+            "id": "ic-digital",
+            "type": "category",
+            "children": [
+              {
+                "title": "CMOS VLSI Design",
+                "author": "Weste & Harris",
+                "year": 2010,
+                "isbn": "978-0321547743",
+                "summary": "A Circuits and Systems Perspective.",
+                "type": "book"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "2D / 3D Graphics",
+    "id": "gfx",
+    "type": "category",
+    "children": [
+      {
+        "name": "3D Modeling (Blender)",
+        "id": "gfx-blender",
+        "type": "category",
+        "children": [
+          {
+            "title": "The Complete Guide to Blender",
+            "author": "John M. Blain",
+            "year": 2020,
+            "isbn": "978-1032121658",
+            "summary": "Computer Modeling & Animation.",
+            "type": "book"
+          }
+        ]
+      },
+      {
+        "name": "Web 3D (Three.js)",
+        "id": "gfx-three",
+        "type": "category",
+        "children": [
+          {
+            "title": "Learning Three.js",
+            "author": "Jos Dirksen",
+            "year": 2018,
+            "isbn": "978-1788833288",
+            "summary": "The JavaScript 3D Library for WebGL.",
+            "type": "book"
+          },
+          {
+            "title": "Discover three.js",
+            "author": "Lewy Blue",
+            "year": 2021,
+            "isbn": "N/A",
+            "summary": "A deep dive into WebGL.",
+            "type": "book"
+          }
+        ]
+      }
+    ]
+  }
+]
