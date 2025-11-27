@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>半导体物理 | Semiconductor Physics</title>
+    
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 引入 MathJax 用于渲染公式 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #00d4ff;
+            --secondary-color: #7000ff;
+            --bg-color: #0a0e17;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #e0e0e0;
+            --accent: #ff0055;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* 动态背景 Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1f35 0%, #0a0e17 100%);
+        }
+
+        /* 导航栏 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            line-height: 1.6;
+            color: #a0a0a0;
+            margin-bottom: 40px;
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        /* 内容容器 */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        /* 布局 Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2.5rem; }
+        }
+
+        /* 公式块 */
+        .formula-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px dashed var(--secondary-color);
+        }
+
+        /* 定制 SVG 图表样式 */
+        .diagram-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 能带图动画 */
+        .band-diagram rect {
+            transition: 0.3s;
+        }
+        .band-diagram text {
+            fill: #fff;
+            font-size: 14px;
+        }
+        .electron {
+            fill: var(--primary-color);
+            animation: jump 3s infinite ease-in-out;
+        }
+        .hole {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2;
+        }
+
+        @keyframes jump {
+            0%, 100% { cy: 220; opacity: 0.5; } /* Valence Band */
+            40% { cy: 220; opacity: 1; }
+            50% { cy: 80; opacity: 1; }  /* Conduction Band */
+            90% { cy: 80; opacity: 0.5; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* PN结 动画 */
+        .pn-junction {
+            display: flex;
+            width: 100%;
+            height: 150px;
+            margin-top: 20px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .p-type {
+            flex: 1;
+            background: rgba(255, 0, 85, 0.1);
+            border-right: 1px dashed rgba(255,255,255,0.2);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .n-type {
+            flex: 1;
+            background: rgba(0, 212, 255, 0.1);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .carrier {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .h-plus {
+            border: 2px solid var(--accent);
+            animation: diffuse-right 4s infinite linear;
+        }
+        .e-minus {
+            background: var(--primary-color);
+            animation: diffuse-left 4s infinite linear;
+        }
+
+        @keyframes diffuse-right {
+            0% { left: 10%; opacity: 1; }
+            50% { left: 50%; opacity: 0; transform: scale(1.5); }
+            100% { left: 50%; opacity: 0; }
+        }
+        @keyframes diffuse-left {
+            0% { right: 10%; opacity: 1; }
+            50% { right: 50%; opacity: 0; transform: scale(1.5); }
+            100% { right: 50%; opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 背景 Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- 导航 -->
+    <nav>
+        <div class="logo"><i class="fas fa-atom"></i> COCOBO.TECH-SEMICONDUCTOR</div>
+        <div class="nav-links">
+       
+            <a href="#bands">能带理论</a>
+   
+            <a href="#pn">PN结</a>
+        </div>
+    </nav>
+
+    <!-- 头部 Hero -->
+    <header>
+        <h1>COCOBO Semiconductor Physics</h1>
+        <p class="subtitle">探索现代微观世界理解半导体</p>
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down" style="color: var(--primary-color); font-size: 24px;"></i>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <div class="container">
+
+        <!-- 模块 1: 简介 -->
+        <section id="intro" class="card">
+            
+        </section>
+
+        <!-- 模块 2: 能带理论 -->
+        <section id="bands" class="card">
+            <h2 class="section-title"><i class="fas fa-layer-group"></i> 能带理论 (Energy Bands)</h2>
+            <div class="grid-2">
+                <div class="diagram-container">
+                    <svg class="band-diagram" width="300" height="300">
+                        <!-- Conduction Band -->
+                        <rect x="50" y="50" width="200" height="60" fill="rgba(0, 212, 255, 0.2)" stroke="#00d4ff" />
+                        <text x="110" y="85">导带 (Ec)</text>
+                        
+                        <!-- Valence Band -->
+                        <rect x="50" y="190" width="200" height="60" fill="rgba(255, 0, 85, 0.2)" stroke="#ff0055" />
+                        <text x="110" y="225">价带 (Ev)</text>
+
+                        <!-- Band Gap Label -->
+                        <line x1="260" y1="110" x2="260" y2="190" stroke="#fff" stroke-width="1" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+                        <text x="270" y="155" fill="#aaa" font-size="12">Eg (禁带)</text>
+
+                        <!-- Electrons Animating -->
+                        <circle class="electron" cx="100" cy="220" r="6" />
+                        <circle class="electron" cx="150" cy="220" r="6" style="animation-delay: 1s;" />
+                        <circle class="electron" cx="200" cy="220" r="6" style="animation-delay: 2s;" />
+                    </svg>
+                </div>
+                <div>
+                    <h3>能带间隙 (Band Gap)</h3>
+                    <p>电子在固体中的能量不是连续的，而是形成能带。</p>
+                    <ul style="margin: 20px 0 20px 20px; line-height: 1.8;">
+                        <li><strong>价带 (Valence Band):</strong> 充满电子，此时电子不能自由移动。</li>
+                        <li><strong>禁带 (Band Gap, \(E_g\)):</strong> 没有电子存在的能量区域。硅的 \(E_g \approx 1.12 \text{eV}\)。</li>
+                        <li><strong>导带 (Conduction Band):</strong> 电子获得足够能量跃迁至此，可以自由导电。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模块 3: 载流子浓度 -->
+        <section id="carrier" class="card">
+            <h2 class="section-title"><i class="fas fa-calculator"></i> 载流子浓度 (Carrier Concentration)</h2>
+            <p>本征半导体中，电子浓度 \(n\) 等于空穴浓度 \(p\)。这个数值称为本征载流子浓度 \(n_i\)。</p>
+            
+            <div class="formula-box">
+                $$ n_i = \sqrt{N_c N_v} e^{-\frac{E_g}{2k_B T}} $$
+            </div>
+            
+            <p>其中：</p>
+            <ul style="list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; color: #aaa;">
+                <li>\(N_c, N_v\): 有效状态密度</li>
+                <li>\(E_g\): 禁带宽度</li>
+                <li>\(k_B\): 玻尔兹曼常数</li>
+                <li>\(T\): 绝对温度 (Kelvin)</li>
+            </ul>
+            <br>
+            <p><strong>费米-狄拉克分布 (Fermi-Dirac Distribution):</strong> 描述电子占据某一能级的概率。</p>
+            <div class="formula-box">
+                $$ f(E) = \frac{1}{1 + e^{\frac{E - E_F}{k_B T}}} $$
+            </div>
+        </section>
+
+        <!-- 模块 4: PN 结 -->
+        <section id="pn" class="card">
+            <h2 class="section-title"><i class="fas fa-microchip"></i> PN 结 (The PN Junction)</h2>
+            <p>当 P 型半导体（多空穴）与 N 型半导体（多电子）接触时，发生扩散运动，形成<strong>耗尽层 (Depletion Region)</strong>。</p>
+            
+            <div class="pn-junction">
+                <div class="p-type">
+                    <span style="position: absolute; top: 10px; left: 10px; font-weight: bold; color:var(--accent);">P-Type</span>
+                    <!-- 模拟空穴 -->
+                    <div class="carrier h-plus" style="top: 30%; animation-delay: 0s;"></div>
+                    <div class="carrier h-plus" style="top: 60%; animation-delay: 1.5s;"></div>
+                    <div class="carrier h-plus" style="top: 45%; animation-delay: 2.5s;"></div>
+                </div>
+                <div class="n-type">
+                    <span style="position: absolute; top: 10px; right: 10px; font-weight: bold; color:var(--primary-color);">N-Type</span>
+                    <!-- 模拟电子 -->
+                    <div class="carrier e-minus" style="top: 30%; animation-delay: 0.5s;"></div>
+                    <div class="carrier e-minus" style="top: 60%; animation-delay: 2s;"></div>
+                    <div class="carrier e-minus" style="top: 45%; animation-delay: 3s;"></div>
+                </div>
+                <!-- 耗尽层文字 -->
+                <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: white; font-size: 0.8rem; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 4px;">Recombination Region</div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p><i class="fas fa-info-circle"></i> <strong>扩散与漂移:</strong> 多数载流子因浓度梯度扩散（Diffusion），留下的离子形成内建电场，引起少数载流子的漂移（Drift），最终达到动态平衡。</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: #666; font-size: 0.9rem;">
+        <p>&copy; -Semiconductor Physics- Designed by COCOBO.TECH </p>
+    </footer>
+
+    <script>
+        // 背景粒子特效脚本
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(0, 212, 255, 0.5)";
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(window.innerWidth / 10, 100);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制连线
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.1 - distance/1500})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+
+        resize();
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
