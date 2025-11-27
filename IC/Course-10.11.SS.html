@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subthreshold Swing | The 60mV Limit</title>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 1. MathJax Configuration (MUST BE BEFORE LOADING THE SCRIPT) -->
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      }
+    };
+    </script>
+    <!-- 2. Load MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: rgba(22, 27, 34, 0.85);
+            --primary: #58a6ff; /* Blue for Electrons/Ideal */
+            --accent: #ff7b72;  /* Red for Heat/Traps */
+            --gold: #d29922;    /* Gold for Interconnects */
+            --text-main: #c9d1d9;
+            --text-header: #f0f6fc;
+            --border: rgba(48, 54, 61, 0.7);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Background Particle Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at top, #161b22 0%, #0d1117 100%);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            padding: 20px 40px;
+            background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.4rem; font-weight: bold; color: var(--text-header); }
+        .logo i { color: var(--accent); margin-right: 10px; }
+
+        .nav-links a {
+            color: var(--text-main);
+            margin-left: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* Hero Header */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            color: var(--text-header);
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(88, 166, 255, 0.25);
+        }
+        
+        .highlight { color: var(--accent); }
+
+        .subtitle {
+            font-size: 1.25rem;
+            max-width: 700px;
+            color: #8b949e;
+        }
+
+        /* Content Container */
+        .container { max-width: 1000px; margin: 0 auto; padding: 100px 20px; }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--text-header);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        @media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } h1 { font-size: 2.5rem; } }
+
+        /* Math Box */
+        .math-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--gold);
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 1.1rem; /* Slightly larger for readability */
+        }
+
+        /* --- Diagrams --- */
+
+        /* 1. Energy Band Diagram */
+        .band-container {
+            position: relative;
+            height: 250px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            border-bottom: 2px solid #333;
+        }
+        .band-line { fill: none; stroke-width: 3; stroke-linecap: round; }
+        .ec-line { stroke: var(--primary); animation: bend 4s infinite ease-in-out; }
+        .electrons { fill: var(--primary); opacity: 0.8; }
+
+        @keyframes bend {
+            0%, 100% { d: path("M 0 50 L 100 50 Q 150 50 200 150 L 300 150"); }
+            50% { d: path("M 0 50 L 100 50 Q 150 50 200 80 L 300 80"); }
+        }
+
+        /* 2. Capacitor Model */
+        .cap-circuit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+        .wire { width: 2px; height: 30px; background: #555; }
+        .cap-plate { width: 60px; height: 4px; background: var(--text-header); margin: 2px 0; }
+        
+        .parallel-group {
+            display: flex;
+            gap: 40px;
+            position: relative;
+        }
+        .parallel-group::before { content: ''; position: absolute; top: -10px; left: 30px; right: 30px; height: 2px; background: #555; }
+        .parallel-group::after { content: ''; position: absolute; bottom: -10px; left: 30px; right: 30px; height: 2px; background: #555; }
+        
+        .cap-box { display: flex; flex-direction: column; align-items: center; }
+
+        /* Traps Visual */
+        .trap-dots { display: flex; gap: 3px; margin-top: 5px; }
+        .trap { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; animation: blink 1s infinite alternate; }
+
+        @keyframes blink { from { opacity: 0.2; } to { opacity: 1; } }
+
+        /* Derivation Step */
+        .step-number {
+            display: inline-block; width: 30px; height: 30px;
+            background: var(--primary); color: #000;
+            border-radius: 50%; text-align: center;
+            line-height: 30px; font-weight: bold; margin-right: 10px;
+        }
+
+        footer { text-align: center; padding: 50px; color: #666; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <nav>
+        <div class="logo"><i class="fas fa-wave-square"></i> COCOBO.TECH.SEMICONDUCTOR Course-10.11</div>
+        <div class="nav-links">
+            <a href="#bands">Energy Bands</a>
+            <a href="#caps">Capacitance</a>
+            <a href="#math">Derivation</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Subthreshold Swing <br><span class="highlight">The 60 mV/dec Limit</span></h1>
+        <p class="subtitle">Why can't we turn off a transistor instantly? <br>A deep dive into the thermodynamics of leakage current.</p>
+        <br>
+        <div style="font-family: monospace; color: var(--primary);">T = 300K &nbsp;|&nbsp; SS ≥ 60 mV/dec</div>
+    </header>
+
+    <div class="container">
+
+        <!-- Section 1: Boltzmann Physics -->
+        <section id="bands" class="card">
+            <h2 class="section-title"><i class="fas fa-project-diagram"></i> 1. The Physics: Energy Barriers</h2>
+            <div class="grid-2">
+                <div>
+                    <p>In the subthreshold region ($V_{GS} < V_{th}$), current is dominated by <strong>Diffusion</strong>, not Drift.</p>
+                    <p>Electrons in the Source must overcome a potential barrier to reach the Drain. The height of this barrier is controlled by the surface potential $\psi_s$.</p>
+                    <br>
+                    <p>Since electrons follow the <strong>Boltzmann Distribution</strong>, the carrier concentration ($n_s$) is exponentially related to the barrier height:</p>
+                    <div class="math-box">
+                        $$ I_D \propto n_s \propto \exp\left( \frac{q\psi_s}{k_B T} \right) $$
+                    </div>
+                </div>
+                
+                <!-- SVG Animation -->
+                <div class="band-container">
+                    <svg width="100%" height="100%" viewBox="0 0 300 250">
+                        <text x="20" y="30" fill="#888" font-size="12">Source</text>
+                        <text x="130" y="30" fill="#888" font-size="12">Gate (Barrier)</text>
+                        <text x="250" y="30" fill="#888" font-size="12">Drain</text>
+
+                        <path class="band-line ec-line" d="M 0 50 L 100 50 Q 150 50 200 150 L 300 150" />
+                        
+                        <circle cx="50" cy="60" r="3" class="electrons" />
+                        <circle cx="70" cy="70" r="3" class="electrons" />
+                        <circle cx="30" cy="80" r="3" class="electrons" />
+                        
+                        <line x1="150" y1="60" x2="150" y2="140" stroke="#555" stroke-dasharray="4" />
+                        <text x="160" y="100" fill="var(--primary)" font-size="12">ψs</text>
+                    </svg>
+                    <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">Animated: Modulating Surface Potential</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Electrostatics -->
+        <section id="caps" class="card">
+            <h2 class="section-title"><i class="fas fa-battery-half"></i> 2. The Control: Capacitive Divider</h2>
+            <div class="grid-2">
+                <div class="cap-circuit">
+                    <div style="color:var(--text-header); font-weight:bold; margin-bottom:10px;">Gate ($V_{GS}$)</div>
+                    <div class="wire"></div>
+                    
+                    <div class="cap-box">
+                        <div class="cap-plate"></div>
+                        <div style="margin: 5px 0; color: var(--primary);">$C_{ox}$</div>
+                        <div class="cap-plate"></div>
+                    </div>
+
+                    <div class="wire" style="position:relative;">
+                        <span style="position:absolute; right:10px; top:5px; color:var(--text-header);">$\psi_s$</span>
+                    </div>
+
+                    <div class="parallel-group">
+                        <!-- Depletion Cap -->
+                        <div class="cap-box">
+                            <div class="wire" style="height:10px;"></div>
+                            <div class="cap-plate"></div>
+                            <div style="font-size:0.9rem; color:#aaa;">$C_{dep}$</div>
+                            <div class="cap-plate"></div>
+                            <div class="wire" style="height:10px;"></div>
+                        </div>
+
+                        <!-- Interface Trap Cap -->
+                        <div class="cap-box">
+                            <div class="wire" style="height:10px;"></div>
+                            <div class="cap-plate" style="background:var(--accent);"></div>
+                            <div style="font-size:0.9rem; color:var(--accent);">Traps ($C_{it}$)</div>
+                            <div class="trap-dots">
+                                <div class="trap"></div><div class="trap"></div><div class="trap"></div>
+                            </div>
+                            <div class="cap-plate" style="background:var(--accent); margin-top:5px;"></div>
+                            <div class="wire" style="height:10px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="wire"></div>
+                    <div style="color:#666;">Ground (Substrate)</div>
+                </div>
+
+                <div>
+                    <p>The Gate voltage $V_{GS}$ does <strong>not</strong> translate 1-to-1 to the surface potential $\psi_s$. It forms a <strong>Voltage Divider</strong> network.</p>
+                    <p>The oxide capacitance $C_{ox}$ is in series with the parallel combination of depletion capacitance $C_{dep}$ and interface trap capacitance $C_{it}$.</p>
+                    
+                    <div class="math-box">
+                        $$ m = \frac{dV_{GS}}{d\psi_s} = 1 + \frac{C_{dep} + C_{it}}{C_{ox}} $$
+                    </div>
+                    
+                    <p>This factor $m$ is called the <strong>Body Factor</strong>. Since capacitances are always positive, $m \geq 1$.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Derivation -->
+        <section id="math" class="card" style="border-color: var(--gold);">
+            <h2 class="section-title"><i class="fas fa-calculator"></i> 3. The Complete Derivation</h2>
+            <p><strong>Definition of SS:</strong> The change in gate voltage required to increase drain current by one decade ($10\times$).</p>
+            <div class="math-box" style="text-align: center;">
+                $$ SS = \frac{dV_{GS}}{d(\log_{10} I_D)} $$
+            </div>
+
+            <br>
+            <p><span class="step-number">1</span> <strong>Apply Chain Rule:</strong> Split into electrostatic term and transport term.</p>
+            <div class="math-box">
+                $$ SS = \underbrace{\frac{dV_{GS}}{d\psi_s}}_{\text{Capacitors}} \times \underbrace{\frac{d\psi_s}{d(\log_{10} I_D)}}_{\text{Boltzmann}} $$
+            </div>
+
+            <br>
+            <p><span class="step-number">2</span> <strong>Solve Transport Term:</strong></p>
+            <p style="margin-left: 50px; color:#888;">
+                From $I_D \propto e^{\frac{q\psi_s}{kT}}$, taking $\ln$: $\ln(I_D) = \frac{q}{kT}\psi_s$. <br>
+                Convert to $\log_{10}$: $\ln(10) \cdot \log_{10}(I_D) = \frac{q}{kT}\psi_s$. <br>
+                Derivative: $\frac{d\psi_s}{d(\log_{10}I_D)} = \ln(10) \frac{kT}{q}$.
+            </p>
+
+            <br>
+            <p><span class="step-number">3</span> <strong>Final Result:</strong></p>
+            <div class="math-box" style="border-left-color: var(--primary);">
+                $$ SS = \left( 1 + \frac{C_{dep} + C_{it}}{C_{ox}} \right) \underbrace{\ln(10) \frac{k_B T}{q}}_{\text{Thermodynamic Limit}} $$
+            </div>
+        </section>
+
+        <!-- Section 4: The Result -->
+        <section class="card">
+            <h2 class="section-title"><i class="fas fa-check-circle"></i> The 60 mV/dec Limit</h2>
+            <p>At room temperature ($T = 300 K$), the thermodynamic term becomes a fundamental constant.</p>
+            
+            <div class="grid-2">
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px;">
+                    <ul style="list-style: none; font-family: monospace;">
+                        <li><span style="color:var(--accent)">k_B</span> = 1.38e-23 J/K</li>
+                        <li><span style="color:var(--accent)">T</span> = 300 K</li>
+                        <li><span style="color:var(--accent)">q</span> = 1.602e-19 C</li>
+                        <li><span style="color:var(--primary)">kT/q</span> ≈ 25.85 mV</li>
+                        <li><span style="color:var(--primary)">ln(10)</span> ≈ 2.3026</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Calculation:</h3>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">
+                        2.3 × 26 mV ≈ <span style="color: var(--accent); text-shadow: 0 0 10px var(--accent);">60 mV</span>
+                    </div>
+                    <p style="margin-top: 10px;">
+                        Therefore, even if $C_{dep}=0$ and $C_{it}=0$, <br>
+                        <strong>SS cannot be less than 60 mV/dec.</strong>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; COCOBO.TECH.SEMICONDUCTOR </p>
+    </footer>
+
+    <script>
+        // Enhanced Background with "COCOBO" Text
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                
+                // 20% chance to be "COCOBO" text, 80% chance to be a dot
+                this.isText = Math.random() > 0.8; 
+                this.size = this.isText ? 12 : Math.random() * 2;
+                this.alpha = Math.random() * 0.5 + 0.1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Wrap around screen
+                if(this.x < 0) this.x = width;
+                if(this.x > width) this.x = 0;
+                if(this.y < 0) this.y = height;
+                if(this.y > height) this.y = 0;
+            }
+
+            draw() {
+                if (this.isText) {
+                    ctx.font = 'bold 10px monospace';
+                    ctx.fillStyle = `rgba(88, 166, 255, ${this.alpha})`;
+                    ctx.fillText("COCOBO", this.x, this.y);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                    ctx.fillStyle = `rgba(139, 148, 158, ${this.alpha})`;
+                    ctx.fill();
+                }
+            }
+        }
+
+        const particles = [];
+        for(let i=0; i<60; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
