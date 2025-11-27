@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术知识库 (多层级支持版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-select: #eff6ff;
+            --bg-hover: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #334155;
+            --text-sub: #64748b;
+            /* 第一列给宽一点，以便显示深层级缩进 */
+            --grid-columns: 320px 140px 80px 140px; 
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 13px; 
+            color: var(--text-main);
+            background-color: #f1f5f9;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border: 2px solid #f1f5f9; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .tree-toggle { display: none; }
+        .tree-toggle ~ ul { display: none; }
+        .tree-toggle:checked ~ ul { display: block; }
+        .arrow-icon { transition: transform 0.2s ease; }
+        .tree-toggle:checked + .tree-node-row .arrow-icon { transform: rotate(90deg); }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: var(--grid-columns);
+            width: fit-content;
+            min-width: 100%;
+        }
+
+        .grid-header {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .tree-node-row {
+            height: 28px;
+            cursor: default;
+            white-space: nowrap;
+            border-bottom: 1px solid transparent;
+        }
+        .tree-node-row:hover { background-color: var(--bg-hover); }
+        .tree-node-row.selected {
+            background-color: var(--bg-select);
+            outline: 1px solid #bfdbfe;
+            z-index: 1;
+        }
+
+        .grid-cell {
+            padding: 0 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-right: 1px solid transparent;
+            position: relative;
+        }
+        
+        .grid-header .grid-cell { border-right: 1px solid var(--border-color); }
+        
+        .col-resizer {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 4px; cursor: col-resize; z-index: 10;
+        }
+        .col-resizer:hover, .col-resizer.resizing { background-color: #3b82f6; }
+
+        .sort-btn { width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; height: 100%;}
+        .toggle-trigger { cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; }
+        body.is-resizing { cursor: col-resize !important; }
+        .filter-input { width: 100%; background: transparent; border: 1px solid transparent; outline: none; font-size: 11px; padding: 1px 4px; border-radius: 2px; }
+        .filter-input:focus { background-color: white; border-color: #bfdbfe; }
+        #panel-resizer { width: 1px; background: #cbd5e1; cursor: col-resize; z-index: 20; position: relative; }
+        #panel-resizer:hover { width: 2px; background: #3b82f6; }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+
+    <div class="h-8 bg-white border-b border-gray-300 flex items-center px-4 flex-shrink-0 shadow-sm z-20">
+        <span class="font-bold text-gray-800 flex items-center gap-2 text-xs mr-6">
+            <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            Library Manager
+        </span>
+        <div class="flex space-x-2 text-xs text-gray-600">
+            <button class="hover:bg-gray-100 px-2 rounded">文件</button>
+            <button class="hover:bg-gray-100 px-2 rounded">编辑</button>
+            <button class="hover:bg-gray-100 px-2 rounded">视图</button>
+        </div>
+    </div>
+
+    <div class="flex flex-grow overflow-hidden">
+        
+        <aside id="left-panel" class="flex flex-col bg-white w-[600px] min-w-[300px] h-full border-r border-gray-200">
+            
+            <div class="px-3 py-1.5 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-semibold text-gray-600">资源导航</span>
+                    <div class="flex space-x-1">
+                        <button id="btn-expand-all" class="flex items-center px-1.5 py-0.5 bg-white border border-gray-300 rounded hover:bg-gray-100 hover:text-blue-600 text-[10px] text-gray-500 shadow-sm transition-colors" title="全部展开">
+                            <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7" /></svg>
+                            展开
+                        </button>
+                        <button id="btn-collapse-all" class="flex items-center px-1.5 py-0.5 bg-white border border-gray-300 rounded hover:bg-gray-100 hover:text-blue-600 text-[10px] text-gray-500 shadow-sm transition-colors" title="全部折叠">
+                            <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-7 7 7M5 19l7-7 7 7" /></svg>
+                            折叠
+                        </button>
+                    </div>
+                </div>
+                <div id="display-controls" class="flex space-x-3 text-[11px]"></div>
+            </div>
+
+            <div class="flex-grow overflow-auto flex flex-col relative" id="grid-container">
+                
+                <div class="sticky top-0 z-20 bg-gray-50 shadow-sm border-b border-gray-300">
+                    <div class="grid-header grid-layout h-8 bg-gray-100 border-b border-gray-200" id="grid-header-content"></div>
+                    <div class="grid-layout bg-gray-50 py-1" id="filter-container"></div>
+                </div>
+
+                <div id="tree-root" class="pb-10 min-h-0 pt-1"></div>
+            </div>
+
+            <div class="h-6 bg-gray-100 border-t border-gray-300 flex items-center px-2 text-xs text-gray-500 flex-shrink-0">
+                <span id="status-bar">就绪</span>
+            </div>
+        </aside>
+
+        <div id="panel-resizer"></div>
+
+        <main class="flex-grow bg-gray-50 h-full overflow-hidden flex flex-col min-w-[300px]">
+            <div class="h-9 bg-white border-b border-gray-200 flex items-center px-6 flex-shrink-0">
+                <h2 class="text-sm font-bold text-gray-700">书籍详情</h2>
+            </div>
+            <div id="detail-view" class="p-6 overflow-y-auto h-full"></div>
+        </main>
+    </div>
+
+    <script type="module">
+        // ----------------------- 全新数据源 -----------------------
+        const bookCollection = [
+            {
+                name: "IT 技术 (Information Tech)", id: "it", type: "category",
+                children: [
+                    {
+                        name: "Python Ecosystem", id: "it-py", type: "category",
+                        children: [
+                            {
+                                name: "Core Language", id: "it-py-core", type: "category",
+                                children: [
+                                    { title: "Fluent Python", author: "Luciano Ramalho", year: 2022, isbn: "978-1492056355", summary: "Effective programming.", type: "book" },
+                                    { title: "Python Cookbook", author: "Beazley & Jones", year: 2013, isbn: "978-1449340377", summary: "Recipes for mastering Python 3.", type: "book" }
+                                ]
+                            },
+                            {
+                                // 演示深层级：Level 3
+                                name: "Artificial Intelligence", id: "it-py-ai", type: "category",
+                                children: [
+                                    {
+                                        // Level 4
+                                        name: "Deep Learning", id: "it-py-ai-dl", type: "category",
+                                        children: [
+                                            {
+                                                // Level 5
+                                                name: "Frameworks (PyTorch)", id: "it-py-ai-dl-fw", type: "category",
+                                                children: [
+                                                    // Level 6: Book
+                                                    { title: "Deep Learning with PyTorch", author: "Stevens et al.", year: 2020, isbn: "978-1617295263", summary: "Build, train, and tune neural networks.", type: "book" }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "JavaScript Ecosystem", id: "it-js", type: "category",
+                        children: [
+                            {
+                                name: "Frontend Frameworks", id: "it-js-fe", type: "category",
+                                children: [
+                                    { title: "React Up & Running", author: "Stoyan Stefanov", year: 2021, isbn: "978-1492051466", summary: "Building Web Applications.", type: "book" },
+                                    { title: "Vue.js: Up and Running", author: "Callum Macrae", year: 2018, isbn: "978-1491997246", summary: "Building Accessible Apps.", type: "book" }
+                                ]
+                            },
+                            {
+                                name: "Runtime (Node.js)", id: "it-js-node", type: "category",
+                                children: [
+                                    { title: "Node.js Design Patterns", author: "Mario Casciaro", year: 2020, isbn: "978-1839214110", summary: "Master best practices.", type: "book" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "集成电路 (Integrated Circuits)", id: "ic", type: "category",
+                children: [
+                    {
+                        name: "Process & Device", id: "ic-manu", type: "category",
+                        children: [
+                            {
+                                name: "Process Technology", id: "ic-process", type: "category",
+                                children: [
+                                    { title: "Silicon VLSI Technology", author: "Plummer et al.", year: 2000, isbn: "978-0130850379", summary: "Fundamentals, Practice and Modeling.", type: "book" }
+                                ]
+                            },
+                            {
+                                name: "Device Physics", id: "ic-device", type: "category",
+                                children: [
+                                    { title: "Physics of Semiconductor Devices", author: "Simon Sze", year: 2006, isbn: "978-0471143239", summary: "The classic reference for semiconductor devices.", type: "book" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "IC Design Chain", id: "ic-design", type: "category",
+                        children: [
+                            {
+                                name: "EDA Tools", id: "ic-eda", type: "category",
+                                children: [
+                                    { title: "Electronic Design Automation", author: "Wang et al.", year: 2009, isbn: "978-0123743640", summary: "Synthesis, Verification, and Test.", type: "book" }
+                                ]
+                            },
+                            {
+                                name: "Digital Chip Design", id: "ic-digital", type: "category",
+                                children: [
+                                    { title: "CMOS VLSI Design", author: "Weste & Harris", year: 2010, isbn: "978-0321547743", summary: "A Circuits and Systems Perspective.", type: "book" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "2D / 3D Graphics", id: "gfx", type: "category",
+                children: [
+                    {
+                        name: "3D Modeling (Blender)", id: "gfx-blender", type: "category",
+                        children: [
+                            { title: "The Complete Guide to Blender", author: "John M. Blain", year: 2020, isbn: "978-1032121658", summary: "Computer Modeling & Animation.", type: "book" }
+                        ]
+                    },
+                    {
+                        name: "Web 3D (Three.js)", id: "gfx-three", type: "category",
+                        children: [
+                            { title: "Learning Three.js", author: "Jos Dirksen", year: 2018, isbn: "978-1788833288", summary: "The JavaScript 3D Library for WebGL.", type: "book" },
+                            { title: "Discover three.js", author: "Lewy Blue", year: 2021, isbn: "N/A", summary: "A deep dive into WebGL.", type: "book" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // ----------------------- 状态管理 -----------------------
+        const state = {
+            columns: [
+                { key: 'title', width: 320, label: '名称' }, // 增加名称列宽以适应深层级
+                { key: 'author', width: 140, label: '作者' },
+                { key: 'year', width: 80, label: '年份' },
+                { key: 'isbn', width: 140, label: 'ISBN' }
+            ],
+            visibleKeys: ['title', 'author', 'year'], 
+            sort: { key: 'title', dir: 'asc' },
+            filter: { title: '', author: '', year: '', isbn: '' },
+            selectedId: null,
+            expandedIds: new Set(), 
+            flatBooks: []
+        };
+
+        const els = {
+            treeRoot: document.getElementById('tree-root'),
+            header: document.getElementById('grid-header-content'),
+            filters: document.getElementById('filter-container'),
+            detailView: document.getElementById('detail-view'),
+            controls: document.getElementById('display-controls'),
+            leftPanel: document.getElementById('left-panel'),
+            btnExpand: document.getElementById('btn-expand-all'),
+            btnCollapse: document.getElementById('btn-collapse-all')
+        };
+
+        // ----------------------- 初始化 -----------------------
+        function init() {
+            flattenBooks(bookCollection);
+            // 默认展开第一个根节点
+            if(bookCollection.length > 0) state.expandedIds.add(bookCollection[0].id);
+            renderControls();
+            updateGridCSS();
+            refreshView();
+            initEvents();
+            showEmptyDetails();
+        }
+
+        function flattenBooks(items) {
+            items.forEach(item => {
+                if (item.type === 'book') {
+                    if(!item.book_id) item.book_id = Math.random().toString(36).substr(2, 9);
+                    state.flatBooks.push(item);
+                }
+                if (item.children) flattenBooks(item.children);
+            });
+        }
+
+        function updateGridCSS() {
+            const activeWidths = state.columns
+                .filter(col => state.visibleKeys.includes(col.key))
+                .map(col => `${col.width}px`)
+                .join(' ');
+            document.documentElement.style.setProperty('--grid-columns', activeWidths);
+        }
+
+        // ----------------------- 渲染逻辑 -----------------------
+        function refreshView() {
+            renderHeader();
+            renderFilters();
+            const data = processData();
+            els.treeRoot.innerHTML = renderNodes(data, 0);
+            if (state.selectedId) {
+                const row = document.querySelector(`[data-id="${state.selectedId}"]`);
+                if(row) row.classList.add('selected');
+            }
+        }
+
+        function renderHeader() {
+            let html = '';
+            state.columns.forEach(col => {
+                if (!state.visibleKeys.includes(col.key)) return;
+                const arrow = state.sort.key === col.key ? (state.sort.dir === 'asc' ? '▲' : '▼') : '';
+                html += `
+                    <div class="grid-cell">
+                        <button class="sort-btn text-xs" data-key="${col.key}">
+                            ${col.label} <span class="text-gray-400 ml-1">${arrow}</span>
+                        </button>
+                        <div class="col-resizer" data-key="${col.key}"></div>
+                    </div>
+                `;
+            });
+            els.header.innerHTML = html;
+        }
+
+        function renderFilters() {
+            let html = '';
+            state.columns.forEach(col => {
+                if (!state.visibleKeys.includes(col.key)) return;
+                html += `
+                    <div class="grid-cell">
+                        <input type="text" class="filter-input w-full" placeholder="filter..." data-key="${col.key}" value="${state.filter[col.key] || ''}">
+                    </div>
+                `;
+            });
+            els.filters.innerHTML = html;
+        }
+
+        // 递归渲染核心：无论多少层级，只要是 children 就递归调用
+        function renderNodes(items, level) {
+            if (!items || items.length === 0) return '';
+            
+            return `<ul>` + items.map((item, idx) => {
+                const isBook = item.type === 'book';
+                const hasChildren = item.children && item.children.length > 0;
+                
+                // 缩进逻辑：每增加一级，缩进增加 20px
+                const indent = level * 20 + 8;
+                
+                // ID 生成逻辑
+                const itemId = isBook ? `book-${item.book_id}` : (item.id || `cat-${idx}-${level}`);
+                const isExpanded = state.expandedIds.has(itemId);
+
+                let html = `<li>`;
+                if (!isBook) {
+                    html += `<input type="checkbox" id="toggle-${itemId}" class="tree-toggle" ${isExpanded ? 'checked' : ''}>`;
+                }
+
+                html += `<div class="tree-node-row grid-layout group" data-type="${item.type}" data-id="${item.book_id || itemId}">`;
+
+                state.columns.forEach((col) => {
+                    if (!state.visibleKeys.includes(col.key)) return;
+                    html += `<div class="grid-cell">`;
+
+                    if (col.key === 'title') {
+                        // 动态缩进：padding-left 根据 level 计算
+                        html += `<div class="flex items-center w-full h-full" style="padding-left: ${indent}px">`;
+                        
+                        if (!isBook) html += `<label for="toggle-${itemId}" class="toggle-trigger select-none">`;
+                        else html += `<div class="toggle-trigger">`;
+
+                        if (hasChildren && !isBook) {
+                            html += `<svg class="w-3 h-3 text-gray-400 mr-2 arrow-icon flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>`;
+                            html += `<svg class="w-4 h-4 text-yellow-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>`;
+                        } else if (!isBook) {
+                            html += `<span class="w-3 mr-2"></span>`;
+                            html += `<svg class="w-4 h-4 text-gray-300 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>`;
+                        } else {
+                            html += `<svg class="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>`;
+                        }
+
+                        const val = isBook ? item.title : item.name;
+                        html += `<span class="truncate" title="${val}">${val}</span>`;
+
+                        if (!isBook) html += `</label>`;
+                        else html += `</div>`;
+                        
+                        html += `</div>`;
+                    } else {
+                        if (isBook) {
+                            html += `<span class="truncate text-gray-600 w-full cursor-default" title="${item[col.key]}">${item[col.key] || '-'}</span>`;
+                        }
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+
+                if (hasChildren) {
+                    html += renderNodes(item.children, level + 1);
+                }
+                html += `</li>`;
+                return html;
+            }).join('') + `</ul>`;
+        }
+
+        function processData() {
+            const hasFilter = Object.values(state.filter).some(v => v);
+            const isDefaultSort = state.sort.key === 'title' && state.sort.dir === 'asc';
+            if (hasFilter || !isDefaultSort) {
+                let list = state.flatBooks.filter(book => {
+                    return state.visibleKeys.every(k => {
+                        const f = state.filter[k].toLowerCase();
+                        if (!f) return true;
+                        return String(book[k] || '').toLowerCase().includes(f);
+                    });
+                });
+                list.sort((a, b) => {
+                    const va = String(a[state.sort.key] || '').toLowerCase();
+                    const vb = String(b[state.sort.key] || '').toLowerCase();
+                    if (va < vb) return state.sort.dir === 'asc' ? -1 : 1;
+                    if (va > vb) return state.sort.dir === 'asc' ? 1 : -1;
+                    return 0;
+                });
+                return [{ type: 'category', id: 'res', name: `搜索结果 (${list.length})`, children: list, forceExpand: true }];
+            }
+            return bookCollection;
+        }
+
+        // ----------------------- 事件处理 -----------------------
+        function initEvents() {
+            els.treeRoot.addEventListener('change', e => {
+                if (e.target.classList.contains('tree-toggle')) {
+                    const id = e.target.id.replace('toggle-', '');
+                    if (e.target.checked) state.expandedIds.add(id);
+                    else state.expandedIds.delete(id);
+                }
+            });
+
+            els.btnExpand.addEventListener('click', () => {
+                const collectIds = (items, level = 0) => {
+                    items.forEach((item, idx) => {
+                        if (item.type !== 'book') {
+                            const itemId = item.id || `cat-${idx}-${level}`;
+                            state.expandedIds.add(itemId);
+                            if (item.children) collectIds(item.children, level + 1);
+                        }
+                    });
+                };
+                collectIds(bookCollection);
+                refreshView();
+            });
+
+            els.btnCollapse.addEventListener('click', () => {
+                state.expandedIds.clear();
+                refreshView();
+            });
+
+            let isColResizing = false;
+            let currentResizer = null;
+            let startX = 0;
+            let startWidth = 0;
+            let colKey = '';
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('col-resizer')) {
+                    isColResizing = true;
+                    currentResizer = e.target;
+                    colKey = e.target.dataset.key;
+                    startX = e.clientX;
+                    const colObj = state.columns.find(c => c.key === colKey);
+                    startWidth = colObj.width;
+                    document.body.classList.add('is-resizing');
+                    currentResizer.classList.add('resizing');
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isColResizing) return;
+                const diff = e.clientX - startX;
+                let newWidth = startWidth + diff;
+                if (newWidth < 50) newWidth = 50;
+                const colObj = state.columns.find(c => c.key === colKey);
+                colObj.width = newWidth;
+                updateGridCSS();
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isColResizing) {
+                    isColResizing = false;
+                    document.body.classList.remove('is-resizing');
+                    if(currentResizer) currentResizer.classList.remove('resizing');
+                }
+            });
+
+            els.treeRoot.addEventListener('click', e => {
+                const row = e.target.closest('.tree-node-row');
+                if (!row) return;
+                document.querySelectorAll('.tree-node-row.selected').forEach(el => el.classList.remove('selected'));
+                row.classList.add('selected');
+                if (row.dataset.type === 'book') {
+                    state.selectedId = row.dataset.id;
+                    showDetails(state.selectedId);
+                }
+            });
+
+            els.header.addEventListener('click', e => {
+                const btn = e.target.closest('.sort-btn');
+                if (!btn) return;
+                const key = btn.dataset.key;
+                if (state.sort.key === key) state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+                else { state.sort.key = key; state.sort.dir = 'asc'; }
+                refreshView();
+            });
+
+            els.filters.addEventListener('input', e => {
+                if(e.target.dataset.key) {
+                    state.filter[e.target.dataset.key] = e.target.value;
+                    refreshView();
+                }
+            });
+
+            els.controls.addEventListener('change', e => {
+                const key = e.target.dataset.col;
+                if(e.target.checked) state.visibleKeys.push(key);
+                else state.visibleKeys = state.visibleKeys.filter(k => k !== key);
+                updateGridCSS();
+                refreshView(); 
+            });
+
+            const panelResizer = document.getElementById('panel-resizer');
+            let isPanelResizing = false;
+            panelResizer.addEventListener('mousedown', () => { isPanelResizing = true; document.body.style.cursor = 'col-resize'; });
+            document.addEventListener('mousemove', e => {
+                if (isPanelResizing && e.clientX > 200 && e.clientX < window.innerWidth - 300) els.leftPanel.style.width = e.clientX + 'px';
+            });
+            document.addEventListener('mouseup', () => { isPanelResizing = false; document.body.style.cursor = ''; });
+        }
+
+        function renderControls() {
+            const keys = ['author', 'year', 'isbn'];
+            let html = '';
+            keys.forEach(key => {
+                const label = state.columns.find(c => c.key === key).label;
+                const checked = state.visibleKeys.includes(key) ? 'checked' : '';
+                html += `
+                    <label class="flex items-center space-x-1 cursor-pointer hover:text-blue-600">
+                        <input type="checkbox" data-col="${key}" ${checked} class="accent-blue-600">
+                        <span>${label}</span>
+                    </label>
+                `;
+            });
+            els.controls.innerHTML = html;
+        }
+
+        function showDetails(id) {
+            const book = state.flatBooks.find(b => String(b.book_id) === String(id));
+            if (!book) return;
+            els.detailView.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <h1 class="text-xl font-bold text-gray-800">${book.title}</h1>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><span class="inline-block w-16 text-gray-400">作者:</span> ${book.author}</p>
+                        <p><span class="inline-block w-16 text-gray-400">年份:</span> ${book.year}</p>
+                        <p><span class="inline-block w-16 text-gray-400">ISBN:</span> <span class="font-mono">${book.isbn}</span></p>
+                    </div>
+                    <div class="p-3 bg-white border rounded text-sm text-gray-700 leading-relaxed">${book.summary}</div>
+                </div>
+            `;
+        }
+
+        function showEmptyDetails() {
+            els.detailView.innerHTML = `<div class="h-full flex items-center justify-center text-gray-400 text-sm">选择条目查看详情</div>`;
+        }
+
+        init();
+    </script>
+</body>
+</html>
