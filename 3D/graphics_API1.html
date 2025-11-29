@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphics API Ecosystem: Software & Games</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.9);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            /* Brand Colors */
+            --khronos-red: #ef4444;    /* OpenGL / Vulkan */
+            --ms-blue: #3b82f6;        /* DirectX */
+            --apple-gray: #e2e8f0;     /* Metal */
+            --web-purple: #a855f7;     /* WebGPU */
+            
+            --king-yellow: #fbbf24;    /* The Crown Color */
+            --cocobo-cyan: #22d3ee;    /* COCOBO Special Color */
+            
+            --tag-bg: rgba(255,255,255,0.08);
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Inter, Roboto, sans-serif;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 70px 1fr;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Grid */
+        main {
+            display: grid;
+            grid-template-columns: 500px 1fr; /* Widened sidebar for content */
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 110px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+        .step-label {
+            font-size: 0.7rem;
+            color: var(--ms-blue);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+
+        .content-area {
+            flex-grow: 1;
+            font-size: 0.7rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        /* Badges & Tables */
+        .king-badge {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--king-yellow);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            font-size: 0.75em;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .cocobo-badge {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--cocobo-cyan);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(34, 211, 238, 0.4);
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 0.75rem;
+        }
+        .tech-table th {
+            text-align: left;
+            color: var(--text-muted);
+            padding: 8px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .tech-table td {
+            padding: 10px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Ecosystem Grid Style */
+        .eco-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .eco-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid transparent;
+        }
+
+        .eco-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .app-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .app-tag {
+            font-size: 0.75rem;
+            background: var(--tag-bg);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .game-highlight {
+            color: var(--king-yellow);
+            border-color: rgba(251, 191, 36, 0.2);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.7rem;
+        }
+        button:hover { background: rgba(255,255,255,0.2); }
+        button.active { background: var(--ms-blue); border-color: var(--ms-blue); color: #000; font-weight: bold; }
+
+        /* Visualization Area */
+        .viz-panel {
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas { width: 100%; height: 100%; display: block; }
+
+        .overlay-label {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: monospace;
+            pointer-events: none;
+            font-size: 0.7rem;
+        }
+        #cpu-label { top: 35%; left: 40px; color: var(--text-muted); }
+        #gpu-label { top: 35%; right: 40px; color: var(--text-main); }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.4s ease forwards; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div style="width:20px; height:20px; background:var(--king-yellow); border-radius:50%; box-shadow:0 0 10px var(--king-yellow);"></div>
+            <h1>COCOBO.TECH-Graphics API Architecture</h1>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--text-muted);"><a href="graphics_API2.html">Interactive Roadmap</a></div>
+    </header>
+
+    <main>
+        <!-- Content Side -->
+        <section class="sidebar">
+            <div class="step-label" id="step-num">OVERVIEW</div>
+            <h2 class="step-title animate-in" id="step-title">The API Landscape</h2>
+            
+            <div class="content-area animate-in" id="step-content">
+                <!-- Content injected via JS -->
+            </div>
+
+            <div class="controls">
+                <button onclick="setPhase(0)" class="active" id="btn-0">Summary</button>
+                <button onclick="setPhase(1)" id="btn-1">Legacy (OpenGL)</button>
+                <button onclick="setPhase(2)" id="btn-2">Modern (Vulkan)</button>
+                <button onclick="setPhase(3)" id="btn-3">Web (WebGPU)</button>
+            </div>
+        </section>
+
+        <!-- Visual Side -->
+        <section class="viz-panel">
+            <canvas id="apiCanvas"></canvas>
+            <div id="cpu-label" class="overlay-label">CPU</div>
+            <div id="gpu-label" class="overlay-label">GPU</div>
+        </section>
+    </main>
+
+    <script>
+        // --- DATA CONTENT ---
+        const contentData = [
+            {
+                // PHASE 0: SUMMARY
+                title: "Industry Ecosystem",
+                html: `
+                    <p style="margin-bottom:15px; font-size:0.9rem;">
+                        图形 API 决定了软件与显卡的对话效率。右侧动画 <span class="cocobo-badge">COCOBO</span> 指令的数据流。
+                    </p>
+                    
+                    <table class="tech-table">
+                        <thead>
+                            <tr>
+                                <th>Faction</th>
+                                <th>Legacy</th>
+                                <th>King (Current)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="color:var(--khronos-red)">Open Std.</td><td>OpenGL</td><td><span class="king-badge">Vulkan</span></td></tr>
+                            <tr><td style="color:var(--ms-blue)">Microsoft</td><td>DX11</td><td><span class="king-badge">DX12 Ult.</span></td></tr>
+                            <tr><td style="color:var(--apple-gray)">Apple</td><td>OpenGL</td><td><span class="king-badge">Metal 3</span></td></tr>
+                        </tbody>
+                    </table>
+
+                    
+                    
+                    <div class="eco-grid">
+                        <!-- DirectX Box -->
+                        <div class="eco-card" style="border-left-color: var(--ms-blue)">
+                            <div class="eco-title">
+                                <span>DirectX 12 / Ultimate</span>
+                                <span style="color:var(--ms-blue)">Windows Dominant</span>
+                            </div>
+                            <div class="app-tags">
+                                <span class="app-tag">Unreal Engine 5</span>
+                                <span class="app-tag">Unity (HDRP)</span>
+                                <span class="app-tag">3ds Max</span>
+                                <span class="app-tag game-highlight">Black Myth: Wukong</span>
+                                <span class="app-tag game-highlight">Cyberpunk 2077</span>
+                                <span class="app-tag game-highlight">Elden Ring</span>
+                            </div>
+                        </div>
+
+                        <!-- Vulkan Box -->
+                        <div class="eco-card" style="border-left-color: var(--khronos-red)">
+                            <div class="eco-title">
+                                <span>Vulkan</span>
+                                <span style="color:var(--khronos-red)">Cross-Platform</span>
+                            </div>
+                            <div class="app-tags">
+                                <span class="app-tag">Blender (New Backend)</span>
+                                <span class="app-tag">Godot Engine</span>
+                                <span class="app-tag">Maya (Viewport)</span>
+                                <span class="app-tag game-highlight">Doom Eternal</span>
+                                <span class="app-tag game-highlight">Red Dead Redemption 2</span>
+                            </div>
+                        </div>
+
+                        <!-- Metal Box -->
+                        <div class="eco-card" style="border-left-color: var(--apple-gray)">
+                            <div class="eco-title">
+                                <span>Metal</span>
+                                <span style="color:var(--apple-gray)">Apple Exclusive</span>
+                            </div>
+                            <div class="app-tags">
+                                <span class="app-tag">DaVinci Resolve</span>
+                                <span class="app-tag">Cinema 4D (Mac)</span>
+                                <span class="app-tag">Final Cut Pro</span>
+                                <span class="app-tag game-highlight">Res. Evil Village (Mac)</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                // PHASE 1: LEGACY
+                title: "The Legacy Era (OpenGL)",
+                html: `
+                    <p><strong>Status:</strong> 单线程堵塞 (Single-Threaded).</p>
+                    <p>在旧时代的 API 中，如 OpenGL 和 DX11，CPU 像是一个单通道收费站。<span class="cocobo-badge">COCOBO</span> 字母必须严格排队。</p>
+                    <div style="margin-top:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:6px;">
+                        <strong>典型应用:</strong><br>
+                        • Maya (旧 Viewport)<br>
+                        • SketchUp<br>
+                        • Minecraft (Java Edition)
+                    </div>
+                    <p style="font-size:0.85rem; margin-top:10px; color:#ef4444">
+                        * 瓶颈：无论你有多少核 CPU，只有一个核在工作。
+                    </p>
+                `
+            },
+            {
+                // PHASE 2: MODERN
+                title: "The Modern Era (Vulkan/DX12)",
+                html: `
+                    <p><strong>Status:</strong> 并行高速 (Multi-Threaded).</p>
+                    <p>Vulkan 和 DX12 允许所有 CPU 核心同时生成绘图指令 (Command Buffers)。<span class="cocobo-badge">COCOBO</span> 在多条车道上并行飞驰。</p>
+                    <div style="margin-top:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:6px;">
+                        <strong>Powering:</strong><br>
+                        • <span class="highlight">Unreal Engine 5</span> (Lumen/Nanite)<br>
+                        • <span class="highlight">Blender 4.0+</span> (Eevee Next)<br>
+                        • <span class="highlight">Black Myth: Wukong</span> (Path Tracing)
+                    </div>
+                `
+            },
+            {
+                // PHASE 3: WEB
+                title: "The Web Future (WebGPU)",
+                html: `
+                    <p><strong>Status:</strong> 分布式计算 (Compute).</p>
+                    <p>WebGPU 将 Vulkan 级别的性能带入浏览器，并解锁了 Compute Shader。<span class="cocobo-badge">COCOBO</span> 变成了神经网络节点。</p>
+                    <div style="margin-top:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:6px;">
+                        <strong>Use Cases:</strong><br>
+                        • 网页端 Blender (重构中)<br>
+                        • Figma (高性能渲染)<br>
+                        • WebLLM (浏览器跑 AI 模型)
+                    </div>
+                `
+            }
+        ];
+
+        // --- VISUALIZATION ENGINE (Unchanged Logic, Optimized for Display) ---
+        const canvas = document.getElementById('apiCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let animationId;
+        let currentPhase = 0;
+        const TARGET_STRING = "COCOBO";
+        const COCOBO_SETS = 2;
+
+        const CONFIG = {
+            legacy: { speed: 3.5, laneCount: 1, color: '#ef4444' },
+            modern: { speed: 14, laneCount: 8, color: '#fbbf24' },
+            web: { speed: 7, laneCount: 4, color: '#a855f7' } 
+        };
+
+        function resize() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Packet {
+            constructor(type, char = null, orderIndex = 0) {
+                this.char = char; 
+                this.orderIndex = orderIndex; 
+                this.reset(type, true);
+            }
+
+            reset(type, isInit = false) {
+                this.type = type;
+                const centerY = height / 2;
+
+                if (type === 'LEGACY') {
+                    this.y = centerY + (Math.random() - 0.5) * 20;
+                    this.speed = CONFIG.legacy.speed + Math.random();
+                    this.color = CONFIG.legacy.color;
+                    if (this.char) {
+                        this.speed = CONFIG.legacy.speed;
+                        this.color = '#22d3ee';
+                        this.y = centerY;
+                    }
+
+                } else if (type === 'MODERN') {
+                    const laneHeight = 180;
+                    if (this.char) {
+                        const lane = this.orderIndex % CONFIG.modern.laneCount;
+                        const offset = (lane / (CONFIG.modern.laneCount - 1)) - 0.5;
+                        this.y = centerY + offset * laneHeight;
+                        this.speed = CONFIG.modern.speed * 0.9;
+                        this.color = '#22d3ee';
+                    } else {
+                        const lane = Math.floor(Math.random() * CONFIG.modern.laneCount);
+                        const offset = (lane / (CONFIG.modern.laneCount - 1)) - 0.5; 
+                        this.y = centerY + offset * laneHeight + (Math.random() - 0.5) * 20;
+                        this.speed = CONFIG.modern.speed + Math.random() * 5;
+                        this.color = (Math.random() > 0.5) ? CONFIG.modern.color : '#3b82f6';
+                    }
+
+                } else if (type === 'WEB') {
+                    this.y = Math.random() * height;
+                    this.speed = CONFIG.web.speed;
+                    this.color = this.char ? '#22d3ee' : CONFIG.web.color;
+                    this.vx = (Math.random() + 0.5) * 3;
+                    this.vy = (Math.random() - 0.5) * 3;
+                    if(this.char) {
+                        this.vx = 2; 
+                        this.vy = (Math.random()-0.5) * 1.5;
+                    }
+                } else {
+                    // Summary Orbit
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.radius = 120 + Math.random() * 100;
+                    this.speed = 0.005 + Math.random() * 0.01;
+                    const colors = ['#ef4444', '#3b82f6', '#fbbf24', '#a855f7'];
+                    this.color = this.char ? '#22d3ee' : colors[Math.floor(Math.random() * colors.length)];
+                }
+
+                if (type !== 'SUMMARY' && type !== 'WEB') {
+                    if (isInit) this.x = Math.random() * width;
+                    else this.x = -50;
+                } else if (isInit) {
+                     this.x = Math.random() * width;
+                }
+            }
+
+            update() {
+                if (this.type === 'SUMMARY') {
+                    this.angle += this.speed;
+                    this.x = width/2 + Math.cos(this.angle) * this.radius;
+                    this.y = height/2 + Math.sin(this.angle) * this.radius;
+                    return;
+                }
+                if (this.type === 'WEB') {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if(this.x > width) this.x = 0;
+                    if(this.y > height) this.y = 0;
+                    if(this.y < 0) this.y = height;
+                    return;
+                }
+                this.x += this.speed;
+                if (this.x > width + 50) {
+                    this.x = -50;
+                    if (!this.char && this.type === 'MODERN') {
+                         const laneHeight = 180;
+                         const lane = Math.floor(Math.random() * CONFIG.modern.laneCount);
+                         const offset = (lane / (CONFIG.modern.laneCount - 1)) - 0.5; 
+                         this.y = height/2 + offset * laneHeight + (Math.random() - 0.5) * 20;
+                    }
+                }
+            }
+
+            draw(ctx) {
+                if (this.char) {
+                    ctx.font = "bold 22px 'Courier New', monospace";
+                    ctx.shadowColor = "#22d3ee";
+                    ctx.shadowBlur = 12;
+                    ctx.fillStyle = "#fff";
+                    ctx.fillText(this.char, this.x, this.y + 8);
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.fillStyle = this.color;
+                    if (this.type === 'LEGACY') {
+                        ctx.fillRect(this.x, this.y, 15, 8);
+                    } else if (this.type === 'MODERN') {
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(this.x - 30, this.y);
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+
+        function initParticles(mode) {
+            particles = [];
+            let count = 80;
+            if (mode === 'LEGACY') count = 15; 
+            if (mode === 'MODERN') count = 250; 
+            if (mode === 'WEB') count = 60;
+
+            // Background Noise Packets
+            for(let i=0; i<count; i++) {
+                particles.push(new Packet(mode));
+            }
+
+            // COCOBO Letters
+            const letterMode = (mode === 'SUMMARY') ? 'SUMMARY' : mode;
+            const sets = (mode === 'SUMMARY') ? 1 : COCOBO_SETS;
+            
+            for (let s = 0; s < sets; s++) {
+                for (let i = 0; i < TARGET_STRING.length; i++) {
+                    const p = new Packet(letterMode, TARGET_STRING[i], i);
+                    if (mode === 'LEGACY') p.x = (width * 0.1) + (s * 350) + (i * 45); 
+                    else if (mode === 'MODERN') p.x = (width * 0.1) + (s * 450) + (i * 15);
+                    particles.push(p);
+                }
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.25)'; 
+            ctx.fillRect(0, 0, width, height);
+
+            if (currentPhase === 3) {
+                ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)';
+                ctx.lineWidth = 1;
+                for(let i=0; i<particles.length; i++) {
+                    if (Math.random() > 0.05) continue;
+                    for(let j=i+1; j<particles.length; j++) {
+                         if (Math.random() > 0.05) continue;
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        if(dx*dx + dy*dy < 10000) {
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            if (currentPhase === 1 || currentPhase === 2) {
+                // CPU
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.strokeRect(40, height/2 - 120, 80, 240);
+                // GPU
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillRect(width - 100, height/2 - 180, 80, 360);
+                ctx.strokeRect(width - 100, height/2 - 180, 80, 360);
+            }
+
+            particles.sort((a, b) => (a.char ? 1 : 0) - (b.char ? 1 : 0));
+            particles.forEach(p => { p.update(); p.draw(ctx); });
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function setPhase(index) {
+            currentPhase = index;
+            const data = contentData[index];
+            const contentDiv = document.getElementById('step-content');
+            
+            contentDiv.style.opacity = 0;
+            setTimeout(() => {
+                document.getElementById('step-title').innerText = data.title;
+                contentDiv.innerHTML = data.html;
+                contentDiv.style.opacity = 1;
+                contentDiv.classList.remove('animate-in');
+                void contentDiv.offsetWidth; 
+                contentDiv.classList.add('animate-in');
+            }, 200);
+
+            for(let i=0; i<4; i++) {
+                const btn = document.getElementById(`btn-${i}`);
+                if(i === index) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+
+            const cpuLbl = document.getElementById('cpu-label');
+            const gpuLbl = document.getElementById('gpu-label');
+            
+            if (index === 0 || index === 3) {
+                cpuLbl.style.display = 'none'; gpuLbl.style.display = 'none';
+            } else {
+                cpuLbl.style.display = 'block'; gpuLbl.style.display = 'block';
+                cpuLbl.innerText = index === 1 ? "CPU (Single Thread)" : "CPU (Multi Core)";
+            }
+            
+            const modes = ['SUMMARY', 'LEGACY', 'MODERN', 'WEB'];
+            initParticles(modes[index]);
+        }
+
+        setPhase(0);
+        animate();
+    </script>
+</body>
+</html>
