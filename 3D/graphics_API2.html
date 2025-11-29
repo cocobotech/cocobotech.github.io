@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图形API完全进化史（1992–2025）– 最美时间轴版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d0d1a;
+            --card: #141426;
+            --text: #e0e0ff;
+            --accent: #00f5ff;
+            --yellow: #ffd60a;
+            --purple: #9d4edd;
+            --green: #00ff9d;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+        }
+        header {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: linear-gradient(135deg, #1a0033, #000011), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><radialGradient id="g"><stop offset="0%" stop-color="%2300f5ff"/><stop offset="100%" stop-color="%239d4edd"/></defs><path fill="url(%23g)" opacity="0.15" d="M0,0 L1920,0 L1920,1080 L0,1080 Z M960,540 a400,400 0 1,0 0.1,0 Z"/></svg>') center/cover;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5.5rem;
+            background: linear-gradient(90deg, #00f5ff, #9d4edd, #ffd60a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(0,255,255,0.6);
+        }
+        .summary {
+            background: rgba(20,20,38,0.85);
+            padding: 40px 60px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,255,255,0.3);
+            max-width: 1100px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .kings {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        .king {
+            background: linear-gradient(135deg, #ffd60a22, #ffd60a44);
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 2px solid #ffd60a;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd60a;
+            text-shadow: 0 0 20px #ffd60a;
+            box-shadow: 0 0 40px #ffd60a44;
+        }
+        .timeline {
+            padding: 100px 0;
+            position: relative;
+        }
+        .year {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--card);
+            margin: 2px 0;
+        }
+        .year h2 {
+            font-family: 'Orbitron';
+            font-size: 8rem;
+            color: rgba(255,255,255,0.1);
+            position: absolute;
+            z-index: 1;
+        }
+        .card {
+            background: rgba(30,30,60,0.9);
+            padding: 40px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 1000px;
+            border: 1px solid var(--accent);
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .api {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .dead { opacity: 0.4; text-decoration: line-through; }
+        .current-king { color: var(--yellow); text-shadow: 0 0 30px var(--yellow); }
+        .footer {
+            text-align: center;
+            padding: 100px 20px;
+            font-size: 1.2rem;
+            background: linear-gradient(to top, #000, transparent);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Graphics API 完全进化史</h1>
+    <div class="summary">
+        <h2>2025 年终极结论</h2>
+        <p style="font-size:1.4rem;margin:30px 0;">
+            30年进化后，图形API已经彻底完成“三国鼎立 → 三强争霸”格局<br>
+            OpenGL 已经退出主流，处于“维护模式”，不再是未来方向，新时代的王者只有这三位：
+        </p>
+        <div class="kings">
+            <div class="king">Vulkan <span style="font-size:0.8em;">跨平台之王</span></div>
+            <div class="king">Metal <span style="font-size:0.8em;">Apple 帝国的铁律</span></div>
+            <div class="king">DirectX 12 Ultimate <span style="font-size:0.8em;">Windows + Xbox 霸主</span></div>
+        </div>
+        <p style="margin-top:40px;font-size:1.3rem;">
+            主流3D游戏引擎与动画软件（2025）实际使用情况：<br>
+            <strong>Unreal Engine 5 / Unity / Godot / Blender / Houdini / Maya 2026</strong> → 全部以 <span class="current-king">Vulkan + Metal + DX12</span> 为核心渲染后端
+        </p>
+    </div>
+</header>
+
+<div class="timeline">
+
+    <div class="year"><h2>1992</h2><div class="card">
+        <div class="api">OpenGL 1.0</div>
+        <p>SGI 发布，第一个真正跨平台的3D图形API，开启PC 3D时代</p>
+    </div></div>
+
+    <div class="year"><h2>2006</h2><div class="card">
+        <div class="api">Direct3D 10</div>
+        <p>微软强制Vista使用，引入Geometry Shader，第一次在性能上大幅超越OpenGL</p>
+    </div></div>
+
+    <div class="year"><h2>2009</h2><div class="card">
+        <div class="api">Direct3D 11</div>
+        <p>黄金时代开始，Tessellation、Compute Shader，让DX11统治整个2010年代</p>
+    </div></div>
+
+    <div class="year"><h2>2014</h2><div class="card">
+        <div class="api dead">Mantle</div>
+        <p>AMD的“低层革命”，虽死却直接催生了Vulkan</p>
+    </div></div>
+
+    <div class="year"><h2>2015</h2><div class="card">
+        <div class="api">Metal</div>
+        <p>苹果在WWDC发布，iOS/macOS从此抛弃OpenGL</p>
+    </div></div>
+
+    <div class="year"><h2>2016</h2><div class="card">
+        <div class="api current-king">Vulkan 1.0</div>
+        <p>Khronos集团发布，继承Mantle精神，真正跨平台低层API诞生！</p>
+    </div></div>
+
+    <div class="year"><h2>2016</h2><div class="card">
+        <div class="api">DirectX 12</div>
+        <p>微软正式进入低层时代，与Vulkan正面竞争</p>
+    </div></div>
+
+    <div class="year"><h2>2018</h2><div class="card">
+        <div class="api dead">OpenGL 被苹果彻底删除</div>
+        <p>macOS Mojave起，OpenGL成为历史遗留</p>
+    </div></div>
+
+    <div class="year"><h2>2020</h2><div class="card">
+        <div class="api current-king">DirectX 12 Ultimate</div>
+        <p>Mesh Shader、Raytracing、VRS等全部强制，Xbox Series X标配</p>
+    </div></div>
+
+    <div class="year"><h2>2023</h2><div class="card">
+        <div class="api current-king">WebGPU</div>
+        <p>正式在Chrome/Edge/Firefox落地，WebGL开始退场</p>
+    </div></div>
+
+    <div class="year"><h2>2024</h2><div class="card">
+        <div class="api current-king">Vulkan 1.4 成为强制要求</div>
+        <p>Android 15、Steam Deck、所有新游戏默认要求</p>
+    </div></div>
+
+    <div class="year"><h2>2025</h2><div class="card">
+        <div class="api current-king">三大王者彻底确立</div>
+        <p>Vulkan（跨平台）<br>Metal（苹果）<br>DirectX 12 Ultimate（Windows/Xbox）<br>
+        OpenGL、DX11、WebGL全部进入“仅维护”阶段</p>
+    </div></div>
+
+</div>
+
+<div class="footer">
+    <h2>最终答案（2025年11月）</h2>
+    <p style="font-size:2rem;margin:30px 0;">
+        如果你要开发任何一款新的3D游戏、引擎、实时渲染软件：<br>
+        必须同时支持 <span class="current-king">Vulkan + Metal + DirectX 12 Ultimate</span><br>
+        其他API已正在离去。
+    </p>
+</div>
+
+<script>
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray(".year").forEach(year => {
+        gsap.from(year.querySelector(".card"), {
+            scrollTrigger: {
+                trigger: year,
+                start: "top 80%",
+                end: "bottom 20%",
+                scrub: 1,
+            },
+            y: 300,
+            opacity: 0,
+            scale: 0.8,
+            ease: "power2.out"
+        });
+    });
+</script>
+</body>
+</html>
