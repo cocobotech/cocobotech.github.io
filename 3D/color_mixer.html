@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO.TECH Color Mixer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050510;
+            --panel-bg: rgba(20, 25, 40, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #00f2ff;
+            --grid-size: 60px; /* 定义网格尺寸变量 */
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- 背景层 --- */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #111118 0%, #000 100%);
+        }
+
+        /* 星云 */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            animation: float 25s infinite ease-in-out;
+        }
+        .orb-1 { width: 300px; height: 300px; background: #4a00e0; top: -50px; left: -50px; animation-delay: 0s; }
+        .orb-2 { width: 250px; height: 250px; background: #8e2de2; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .orb-3 { width: 200px; height: 200px; background: #00d2ff; top: 40%; left: 40%; opacity: 0.1; animation-delay: -10s; }
+
+        /* 网格线 (使用变量控制尺寸) */
+        .grid-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: var(--grid-size) var(--grid-size);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
+        }
+
+        /* --- COCOBO 背景字母 (无边框，完美对齐) --- */
+        .grid-letter {
+            position: absolute;
+            width: var(--grid-size); 
+            height: var(--grid-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 20px; /* 字体大小 */
+            color: rgba(0, 242, 255, 0.15); /* 默认非常暗 */
+            
+            user-select: none;
+            /* 呼吸动画：只改变透明度和辉光，不改变背景 */
+            animation: pulse-text 6s infinite ease-in-out;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { color: rgba(0, 242, 255, 0.15); text-shadow: none; }
+            50% { color: rgba(0, 242, 255, 0.5); text-shadow: 0 0 8px rgba(0, 242, 255, 0.3); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, 30px) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* --- 标题 --- */
+        h1 {
+            margin-top: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            z-index: 20;
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #00d2ff 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 8s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.3));
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: #00d2ff;
+            box-shadow: 0 0 5px #00d2ff;
+            opacity: 0.6;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* --- 容器样式 --- */
+        .source-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px; 
+            margin-top: 30px;
+            padding: 20px 40px;
+            background: var(--panel-bg);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .tank-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .tank {
+            width: 45px;
+            height: 70px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.4);
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        
+        .liquid-fill {
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 5%;
+            opacity: 0.95; 
+        }
+
+        .tank::after {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; width: 4px; height: 50px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0.1));
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        .pipe-stub {
+            width: 10px;
+            height: 25px;
+            background: linear-gradient(90deg, #333, #666, #333);
+            border: 1px solid #111;
+            margin-top: -1px;
+            position: relative;
+            z-index: -1;
+        }
+
+        .switch {
+            width: 40px;
+            height: 22px;
+            background: #2c3e50;
+            border-radius: 11px;
+            margin-top: -5px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border: 2px solid #444;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
+
+        .switch.active {
+            background: #00d2ff; 
+            border-color: #00b4d8;
+            box-shadow: 0 0 10px #00d2ff;
+        }
+
+        .switch::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; width: 14px; height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .switch.active::after {
+            transform: translateX(18px);
+        }
+
+        .color-label {
+            margin-top: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        canvas { display: block; }
+
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            color: #00d2ff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
+        }
+        .btn:hover { 
+            background: rgba(0, 210, 255, 0.2); 
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            text-shadow: 0 0 5px #00d2ff;
+            color: #fff;
+        }
+
+        .result-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: #fff;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        
+        .color-dot {
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: black;
+            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 动态背景层 -->
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="grid-overlay"></div>
+        
+        <!-- 左侧 COCOBO (Left Column) -->
+        <!-- 注意：top值必须是60px的倍数，确保位于网格中心 -->
+        <div class="grid-letter" style="top: 180px; left: 60px; animation-delay: 0s;">C</div>
+        <div class="grid-letter" style="top: 240px; left: 60px; animation-delay: 1s;">O</div>
+        <div class="grid-letter" style="top: 300px; left: 60px; animation-delay: 2s;">C</div>
+        <div class="grid-letter" style="top: 360px; left: 60px; animation-delay: 3s;">O</div>
+        <div class="grid-letter" style="top: 420px; left: 60px; animation-delay: 4s;">B</div>
+        <div class="grid-letter" style="top: 480px; left: 60px; animation-delay: 5s;">O</div>
+
+        <!-- 右侧 COCOBO (Right Column) -->
+        <div class="grid-letter" style="top: 180px; right: 60px; animation-delay: 0.5s;">C</div>
+        <div class="grid-letter" style="top: 240px; right: 60px; animation-delay: 1.5s;">O</div>
+        <div class="grid-letter" style="top: 300px; right: 60px; animation-delay: 2.5s;">C</div>
+        <div class="grid-letter" style="top: 360px; right: 60px; animation-delay: 3.5s;">O</div>
+        <div class="grid-letter" style="top: 420px; right: 60px; animation-delay: 4.5s;">B</div>
+        <div class="grid-letter" style="top: 480px; right: 60px; animation-delay: 5.5s;">O</div>
+    </div>
+
+    <h1>COCOBO.TECH Color Mixer</h1>
+
+    <!-- 顶部颜料源 -->
+    <div class="source-container" id="sources">
+        <!-- JS将自动生成 -->
+    </div>
+
+    <!-- 动画区域 -->
+    <div id="canvas-container">
+        <canvas id="flowCanvas"></canvas>
+    </div>
+
+    <!-- 底部控制 -->
+    <div class="controls">
+        <div class="result-display">
+            <div class="color-dot" id="resultDot"></div>
+            <span id="colorCode">RGB(0, 0, 0)</span>
+        </div>
+        <button class="btn" onclick="resetTank()">Drain Tank</button>
+    </div>
+
+<script>
+    const colors = [
+        { name: 'Red',    r: 255, g: 0,   b: 0   },
+        { name: 'Orange', r: 255, g: 165, b: 0   },
+        { name: 'Yellow', r: 255, g: 255, b: 0   },
+        { name: 'Green',  r: 0,   g: 255, b: 0   },
+        { name: 'Cyan',   r: 0,   g: 255, b: 255 },
+        { name: 'Blue',   r: 0,   g: 0,   b: 255 },
+        { name: 'Purple', r: 128, g: 0,   b: 128 },
+        { name: 'White',  r: 255, g: 255, b: 255 },
+        { name: 'Black',  r: 0,   g: 0,   b: 0   }
+    ];
+
+    const sourceContainer = document.getElementById('sources');
+    const canvas = document.getElementById('flowCanvas');
+    const ctx = canvas.getContext('2d');
+    const colorCodeDisplay = document.getElementById('colorCode');
+    const resultDot = document.getElementById('resultDot');
+
+    let activeFlows = new Set();
+    let tankVolume = 0;
+    const maxVolume = 60000;
+    let tankColor = { r: 0, g: 0, b: 0 };
+    let isInitial = true;
+    
+    let waveOffset = 0; 
+    let bubbles = [];   
+    let tankDimensions = { x: 0, y: 0, w: 0, h: 280 };
+
+    function initUI() {
+        colors.forEach((color, index) => {
+            const unit = document.createElement('div');
+            unit.className = 'tank-unit';
+            const tank = document.createElement('div');
+            tank.className = 'tank';
+            const fill = document.createElement('div');
+            fill.className = 'liquid-fill';
+            fill.style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
+            tank.appendChild(fill);
+            const pipeStub = document.createElement('div');
+            pipeStub.className = 'pipe-stub';
+            const switchBtn = document.createElement('div');
+            switchBtn.className = 'switch';
+            switchBtn.onclick = () => toggleSwitch(index, switchBtn);
+            const label = document.createElement('div');
+            label.className = 'color-label';
+            label.innerText = color.name;
+            unit.appendChild(tank);
+            unit.appendChild(pipeStub);
+            unit.appendChild(switchBtn);
+            unit.appendChild(label);
+            sourceContainer.appendChild(unit);
+            color.element = pipeStub; 
+        });
+        
+        for(let i=0; i<50; i++) {
+            bubbles.push({
+                x: Math.random(), 
+                y: Math.random(), 
+                r: Math.random() * 3 + 1,
+                speed: Math.random() * 0.005 + 0.002,
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        requestAnimationFrame(animate);
+    }
+
+    function toggleSwitch(index, btn) {
+        btn.classList.toggle('active');
+        if (activeFlows.has(index)) {
+            activeFlows.delete(index);
+        } else {
+            activeFlows.add(index);
+        }
+    }
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        calculateTankGeometry();
+    }
+
+    function calculateTankGeometry() {
+        if (colors.length === 0) return;
+        const firstPipe = colors[0].element.getBoundingClientRect();
+        const lastPipe = colors[colors.length - 1].element.getBoundingClientRect();
+        const padding = 80;
+        
+        tankDimensions.x = firstPipe.left - padding;
+        tankDimensions.w = (lastPipe.right - firstPipe.left) + (padding * 2);
+        tankDimensions.y = canvas.height - tankDimensions.h - 120; 
+    }
+
+    function resetTank() {
+        const drain = setInterval(() => {
+            tankVolume -= 800;
+            if (tankVolume <= 0) {
+                tankVolume = 0;
+                tankColor = { r: 0, g: 0, b: 0 };
+                isInitial = true;
+                updateDisplay();
+                clearInterval(drain);
+            }
+        }, 16);
+    }
+
+    function updateDisplay() {
+        const r = Math.round(tankColor.r);
+        const g = Math.round(tankColor.g);
+        const b = Math.round(tankColor.b);
+        colorCodeDisplay.innerText = `RGB(${r}, ${g}, ${b})`;
+        resultDot.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        calculateTankGeometry();
+        const { x, y, w, h } = tankDimensions;
+
+        // Container Back
+        ctx.fillStyle = "rgba(20, 25, 40, 0.5)"; 
+        ctx.beginPath();
+        const r = 20;
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.fill();
+        
+        ctx.strokeStyle = "rgba(0, 210, 255, 0.2)"; 
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Mixing
+        if (activeFlows.size > 0 && tankVolume < maxVolume) {
+            const flowRate = 50; 
+            activeFlows.forEach(index => {
+                const incoming = colors[index];
+                if (isInitial) {
+                    tankColor = { ...incoming };
+                    isInitial = false;
+                } else {
+                    const blendingWeight = 10;
+                    tankColor.r = (tankColor.r * tankVolume + incoming.r * flowRate * blendingWeight) / (tankVolume + flowRate * blendingWeight);
+                    tankColor.g = (tankColor.g * tankVolume + incoming.g * flowRate * blendingWeight) / (tankVolume + flowRate * blendingWeight);
+                    tankColor.b = (tankColor.b * tankVolume + incoming.b * flowRate * blendingWeight) / (tankVolume + flowRate * blendingWeight);
+                }
+                tankVolume += flowRate;
+            });
+            updateDisplay();
+        }
+
+        // Liquid
+        const fillRatio = Math.min(tankVolume / maxVolume, 1);
+        const liquidHeight = fillRatio * h;
+        const liquidTopY = y + h - liquidHeight;
+
+        if (liquidHeight > 0) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.clip();
+
+            const gradient = ctx.createLinearGradient(x, liquidTopY, x, y + h);
+            gradient.addColorStop(0, `rgb(${tankColor.r}, ${tankColor.g}, ${tankColor.b})`);
+            gradient.addColorStop(1, `rgb(${Math.floor(tankColor.r * 0.7)}, ${Math.floor(tankColor.g * 0.7)}, ${Math.floor(tankColor.b * 0.7)})`);
+            ctx.fillStyle = gradient;
+
+            // Wave
+            ctx.beginPath();
+            waveOffset += 0.06;
+            const startWaveY = Math.sin(0 + waveOffset) * 4 + Math.sin(0 + waveOffset * 2) * 2;
+            ctx.moveTo(x, liquidTopY + startWaveY);
+            for (let px = 0; px <= w; px += 10) {
+                const waveY = Math.sin(px * 0.02 + waveOffset) * 4 + Math.sin(px * 0.05 + waveOffset * 2) * 2;
+                const py = liquidTopY + waveY;
+                ctx.lineTo(x + px, py);
+            }
+            const finalWaveY = Math.sin(w * 0.02 + waveOffset) * 4 + Math.sin(w * 0.05 + waveOffset * 2) * 2;
+            ctx.lineTo(x + w, liquidTopY + finalWaveY);
+            ctx.lineTo(x + w, y + h); 
+            ctx.lineTo(x, y + h);     
+            ctx.closePath();
+            ctx.fill();
+
+            // Bubbles
+            ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+            bubbles.forEach(b => {
+                b.y -= b.speed;
+                b.wobble += 0.1;
+                if (b.y < 0) b.y = 1; 
+                const bx = x + b.x * w + Math.sin(b.wobble) * 5; 
+                const by = (y + h) - (b.y * liquidHeight); 
+                if (by > liquidTopY + 5) {
+                    ctx.beginPath();
+                    ctx.arc(bx, by, b.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // Surface shine
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+            ctx.lineWidth = 3;
+            ctx.moveTo(x, liquidTopY + startWaveY); 
+            for (let px = 0; px <= w; px += 10) {
+                const waveY = Math.sin(px * 0.02 + waveOffset) * 4 + Math.sin(px * 0.05 + waveOffset * 2) * 2;
+                const py = liquidTopY + waveY;
+                ctx.lineTo(x + px, py);
+            }
+            ctx.lineTo(x + w, liquidTopY + finalWaveY); 
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Container Front (Glass)
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        const shine = ctx.createLinearGradient(x, y, x + w, y + h);
+        shine.addColorStop(0, "rgba(255, 255, 255, 0.05)");
+        shine.addColorStop(0.3, "rgba(255, 255, 255, 0.0)");
+        shine.addColorStop(0.7, "rgba(255, 255, 255, 0.0)");
+        shine.addColorStop(1, "rgba(255, 255, 255, 0.05)");
+        ctx.fillStyle = shine;
+        ctx.fill();
+        ctx.restore();
+
+        // Streams
+        activeFlows.forEach(index => {
+            const colorObj = colors[index];
+            const rect = colorObj.element.getBoundingClientRect();
+            const startX = rect.left + rect.width / 2;
+            
+            const relX = startX - x;
+            const waveYAtPoint = Math.sin(relX * 0.02 + waveOffset) * 4 + Math.sin(relX * 0.05 + waveOffset * 2) * 2;
+            const targetY = liquidHeight > 0 ? (liquidTopY + waveYAtPoint) : (y + h);
+
+            if (tankVolume < maxVolume) {
+                ctx.beginPath();
+                ctx.moveTo(startX, rect.bottom); 
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = `rgb(${colorObj.r}, ${colorObj.g}, ${colorObj.b})`;
+                ctx.lineCap = 'butt';
+                ctx.lineTo(startX, targetY);
+                ctx.stroke();
+
+                ctx.fillStyle = `rgb(${colorObj.r}, ${colorObj.g}, ${colorObj.b})`;
+                ctx.beginPath();
+                const splashSize = 8 + Math.sin(Date.now() * 0.05) * 3;
+                ctx.ellipse(startX, targetY, splashSize, splashSize/2.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (Math.random() > 0.6) {
+                    ctx.beginPath();
+                    ctx.arc(startX + (Math.random()-0.5)*15, targetY - Math.random()*15, 2.5, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            }
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    initUI();
+
+</script>
+</body>
+</html>
