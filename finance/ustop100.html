@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech 100: 52W Range Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-panel: #121214;
+            --bg-header: #18181a;
+            --bg-hover: #1e1e20;
+            --border-color: #333; 
+            
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+            
+            --accent-green: #10b981; 
+            --accent-purple: #8b5cf6;
+            --accent-gold: #24acfb;
+            
+            --trend-up: #22c55e;
+            --trend-down: #ef4444;
+
+            --font-ui: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; height: 100vh; overflow: hidden; 
+        }
+
+        .dashboard {
+            width: 100%; max-width: 1600px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+            border-radius: 6px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.6);
+            height: 100%; max-height: 100%;
+        }
+
+        /* --- Header --- */
+        header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-header); flex-shrink: 0;
+        }
+        .header-left h1 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .controls-area { display: flex; gap: 15px; align-items: center; }
+
+        /* Switch & Search */
+        .mode-switch {
+            background: #000; border: 1px solid var(--border-color);
+            border-radius: 4px; padding: 2px; display: flex; gap: 2px;
+        }
+        .mode-switch label {
+            padding: 4px 10px; font-size: 11px; font-weight: 500;
+            cursor: pointer; border-radius: 3px; transition: all 0.2s;
+            color: var(--text-muted); user-select: none;
+        }
+        .mode-switch input[type="radio"] { display: none; }
+        .mode-switch input#radioDemo:checked + label { background: var(--accent-purple); color: #fff; }
+        .mode-switch input#radioLive:checked + label { background: var(--accent-green); color: #000; }
+
+        .search-input {
+            background: #000; border: 1px solid var(--border-color); color: #fff;
+            padding: 5px 10px; border-radius: 4px; font-family: var(--font-ui); width: 180px; font-size: 12px;
+        }
+        .search-input:focus { outline: none; border-color: #666; }
+
+        /* --- Table Layout --- */
+        .table-container { flex: 1; overflow: auto; position: relative; min-height: 0; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; table-layout: fixed; }
+        thead { position: sticky; top: 0; z-index: 20; background: var(--bg-panel); }
+        
+        th, td {
+            text-align: left; padding: 8px 12px;
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        th:last-child, td:last-child { border-right: none; }
+
+        th {
+            color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase;
+            position: relative; background: var(--bg-header); user-select: none; cursor: pointer; transition: color 0.2s;
+        }
+        th:hover { color: #fff; background: #222; }
+        th.sort-asc::after { content: " ▲"; font-size: 9px; }
+        th.sort-desc::after { content: " ▼"; font-size: 9px; }
+
+        td { vertical-align: middle; background: var(--bg-panel); transition: background 0.2s; }
+        tr:hover td { background: var(--bg-hover); }
+
+        /* --- Highlight & Styles --- */
+        .highlight-row td {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.02) 100%) !important;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            color: #fff !important;
+        }
+        .highlight-row td:first-child { box-shadow: inset 3px 0 0 var(--accent-gold); }
+        .highlight-row .symbol { color: var(--accent-gold) !important; text-shadow: 0 0 12px rgba(36, 165, 251, 0.4); }
+        .highlight-row .trend-up { color: var(--trend-up) !important; font-weight: 700; }
+        .highlight-row .trend-down { color: var(--trend-down) !important; font-weight: 700; }
+
+        .watch-mark { color: var(--accent-gold); font-weight: bold; font-family: var(--font-mono); text-align: center; }
+
+        /* --- 52W Range CSS --- */
+        .range-container { width: 100%; display: flex; flex-direction: column; justify-content: center; }
+        .range-track {
+            width: 100%; height: 4px; background: #333; border-radius: 2px; position: relative; margin-bottom: 4px;
+        }
+        .range-thumb {
+            width: 8px; height: 8px; border-radius: 50%;
+            position: absolute; top: -2px; transform: translateX(-50%);
+            box-shadow: 0 0 5px rgba(255,255,255,0.3);
+            transition: left 0.5s ease;
+        }
+        .range-labels {
+            display: flex; justify-content: space-between; font-size: 9px; color: #666; font-family: var(--font-mono);
+        }
+
+        /* --- Footer & Resizer --- */
+        footer {
+            flex-shrink: 0; padding: 10px; text-align: center; font-size: 11px; color: #555;
+            border-top: 1px solid var(--border-color); background: var(--bg-header); font-family: var(--font-mono); letter-spacing: 0.5px;
+        }
+        .resizer { position: absolute; top: 0; right: 0; width: 4px; height: 100%; cursor: col-resize; z-index: 30; opacity: 0; }
+        th:hover .resizer { opacity: 1; background: #444; }
+        .resizer:hover, .resizing { background: var(--accent-green) !important; opacity: 1; }
+
+        .symbol { font-weight: 700; font-family: var(--font-mono); font-size: 13px; }
+        .data-font { font-family: var(--font-mono); }
+        .trend-up { color: var(--trend-up); }
+        .trend-down { color: var(--trend-down); }
+        .cap { color: #fff; font-weight: 600; font-family: var(--font-mono); }
+        .comment-text { font-size: 12px; color: #888; font-style: italic; }
+
+        #loadingOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 20, 0.95); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 50;
+        }
+        .spinner {
+            width: 24px; height: 24px; border: 2px solid var(--text-muted);
+            border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: var(--bg-panel); border-left: 1px solid var(--border-color); }
+        .table-container::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <header>
+        <div class="header-left">
+            <h1>COCOBO.TECH</h1>
+        </div>
+        <div class="controls-area">
+            <div class="mode-switch">
+                <input type="radio" name="source" id="radioDemo" onchange="switchMode('demo')">
+                <label for="radioDemo">Demo</label>
+                <input type="radio" name="source" id="radioLive" checked onchange="switchMode('live')">
+                <label for="radioLive">Google Sheet</label>
+            </div>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search...">
+        </div>
+    </header>
+
+    <div class="table-container">
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+            <div style="margin-top:10px; font-size:12px; color:#888;">Connecting to Google Sheets...</div>
+        </div>
+
+        <table id="stockTable">
+            <thead>
+                <tr>
+                    <th style="width: 50px;" onclick="sortTable('rank')"># <div class="resizer"></div></th>
+                    <th style="width: 50px;" onclick="sortTable('isWatch')">W <div class="resizer"></div></th>
+                    <th style="width: 280px;" onclick="sortTable('name')">Company / Symbol <div class="resizer"></div></th>
+                    <th style="width: 120px;" onclick="sortTable('sector')">Sector <div class="resizer"></div></th>
+                    <th style="width: 90px;" onclick="sortTable('price')">Price <div class="resizer"></div></th>
+                    <th style="width: 90px;" onclick="sortTable('change')">24h % <div class="resizer"></div></th>
+                    
+                    <!-- 新增的 52W Range 列 -->
+                    <th style="width: 140px;" onclick="sortTable('pctRange')">52W Range <div class="resizer"></div></th>
+                    
+                    <th style="width: 110px;" onclick="sortTable('mktCap')">Mkt Cap <div class="resizer"></div></th>
+                    <th style="width: 70px;" onclick="sortTable('pe')">P/E <div class="resizer"></div></th>
+                    <th style="width: 90px;" onclick="sortTable('vol')">Vol <div class="resizer"></div></th>
+                    <th onclick="sortTable('comment')">Comment <div class="resizer"></div></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <footer>@copyright design by COCOBO.TECH</footer>
+</div>
+
+<script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    
+    // 💎 WATCHLIST
+    const WATCHLIST = ["INTC", "TSLA", "NVDA", "PLTR", "AMD","TSM"]; 
+
+    // Replace with your published CSV link
+    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFbr3ES0PB3ZPyPHWcv4NPlpVunnhswy8JCEFIXT88JWxK4kjoGqtW2KOkPCJ0kqwpJsi2dN7yQEJs/pub?output=csv"; 
+
+    // Demo Data (Includes High/Low for simulation)
+    const DEMO_DATA = [
+        {s:"NVDA",n:"NVIDIA Corp",p:177.05,c:1.83,m:4302000000000,pe:48.5,v:245000000, sec:"Semiconductor", com:"AI King", h:180, l:90},
+        {s:"AAPL",n:"Apple Inc.",p:278.82,c:0.46,m:4120000000000,pe:34.2,v:45100000, sec:"Consumer Electronics", com:"", h:285, l:190},
+        {s:"TSLA",n:"Tesla",p:430.09,c:3.59,m:1385000000000,pe:262.3,v:85400000, sec:"Auto/AI", com:"Robotaxi hype", h:450, l:150},
+        {s:"APP",n:"AppLovin",p:402.10,c:5.2,m:202000000000,pe:85.2,v:1200000, sec:"AdTech", com:"Growth monster", h:410, l:80},
+        {s:"INTC",n:"Intel Corp",p:40.56,c:-1.2,m:193000000000,pe:85.0,v:33700000, sec:"Semiconductor", com:"Turnaround Watch", h:50, l:18},
+        {s:"PLTR",n:"Palantir",p:168.45,c:5.6,m:401000000000,pe:401.1,v:62300000, sec:"AI Software", com:"", h:170, l:40}
+    ];
+
+    let currentData = [];
+    let currentMode = 'live'; 
+    let sortCol = 'mktCap'; 
+    let sortAsc = false;    
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initResizableColumns();
+        switchMode('live'); 
+    });
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `<div class="spinner"></div><div style="margin-top:10px; font-size:12px; color:#888;">${mode === 'live' ? 'Fetching Google Sheet...' : 'Loading Demo...'}</div>`;
+        
+        if (mode === 'demo') {
+            setTimeout(() => {
+                loadData(DEMO_DATA);
+                overlay.style.display = 'none';
+            }, 500);
+        } else {
+            fetchGoogleSheet();
+        }
+    }
+
+    async function fetchGoogleSheet() {
+        const overlay = document.getElementById('loadingOverlay');
+        try {
+            const url = GOOGLE_SHEET_URL + "&t=" + new Date().getTime();
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Failed to fetch CSV");
+            const text = await response.text();
+            const parsedData = parseCSV(text);
+            if (parsedData.length === 0) throw new Error("CSV is empty");
+            loadData(parsedData);
+            overlay.style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            overlay.innerHTML = `<div class="error-msg">⚠️ Failed to Load Google Sheet<br><small>${error.message}</small></div>`;
+        }
+    }
+
+    // Updated CSV Parser to read Column J (High52) and K (Low52)
+    // Index 0=Sym, 1=Name, 2=Price, 3=Change, 4=Cap, 5=PE, 6=Vol, 7=Sec, 8=Com, 9=High52, 10=Low52
+    function parseCSV(csvText) {
+        const lines = csvText.split(/\r\n|\n/);
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line) continue;
+            const parts = line.split(',');
+            if (parts.length < 5) continue; 
+            data.push({
+                s: parts[0], n: parts[1], 
+                p: parseFloat(parts[2]) || 0, c: parseFloat(parts[3]) || 0,
+                m: parseFloat(parts[4]) || 0, pe: parseFloat(parts[5]) || 0,
+                v: parseFloat(parts[6]) || 0, 
+                sec: parts[7] || "-", com: parts[8] || "",
+                h: parseFloat(parts[9]) || 0, // High52
+                l: parseFloat(parts[10]) || 0 // Low52
+            });
+        }
+        return data;
+    }
+
+    function loadData(rawData) {
+        currentData = rawData.map(d => {
+            // Calculate % position in 52W Range
+            let pct = 0;
+            if (d.h > d.l) {
+                pct = ((d.p - d.l) / (d.h - d.l)) * 100;
+                pct = Math.max(0, Math.min(100, pct)); // Clamp 0-100
+            }
+
+            return {
+                symbol: d.s, name: d.n, price: d.p, change: d.c,
+                mktCap: d.m, pe: d.pe, vol: d.v, sector: d.sec, comment: d.com,
+                high52: d.h, low52: d.l, pctRange: pct,
+                isWatch: WATCHLIST.includes(d.s) ? "Y" : ""
+            };
+        });
+        doSort();
+        renderTable();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = currentData.filter(d => 
+            d.symbol.toLowerCase().includes(term) || d.name.toLowerCase().includes(term) || d.sector.toLowerCase().includes(term)
+        );
+
+        filtered.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            
+            const inWatchlist = item.isWatch === "Y";
+            if (inWatchlist) tr.classList.add('highlight-row');
+
+            const isUp = item.change >= 0;
+            const trendClass = isUp ? 'trend-up' : 'trend-down';
+            const sign = isUp ? '+' : '';
+            // Symbol color & Range thumb color
+            let themeColor = currentMode === 'live' ? 'var(--accent-green)' : 'var(--accent-purple)';
+            
+            const rank = index + 1; 
+
+            tr.innerHTML = `
+                <td class="data-font" style="color:var(--text-muted)">${rank}</td>
+                <td class="watch-mark">${item.isWatch}</td>
+                <td title="${item.name}">
+                    <span class="symbol" style="color:${themeColor}">${item.symbol}</span>
+                    <span style="font-size:12px; color:#aaa; margin-left:8px;">${item.name}</span>
+                </td>
+                <td style="color:var(--text-muted); font-size:12px;">${item.sector}</td>
+                <td class="data-font">$${item.price.toFixed(2)}</td>
+                <td class="data-font ${trendClass}">${sign}${item.change.toFixed(2)}%</td>
+                
+                <!-- 52W RANGE VIZ -->
+                <td>
+                    <div class="range-container">
+                        <div class="range-track">
+                            <div class="range-thumb" style="left: ${item.pctRange}%; background:${themeColor}"></div>
+                        </div>
+                        <div class="range-labels">
+                            <span>${item.low52.toFixed(0)}</span>
+                            <span>${item.high52.toFixed(0)}</span>
+                        </div>
+                    </div>
+                </td>
+
+                <td class="cap">${formatCap(item.mktCap)}</td>
+                <td class="data-font" style="color:${item.pe > 60 || item.pe < 0 ? '#eab308':'#888'}">${item.pe ? item.pe.toFixed(1) : '-'}</td>
+                <td class="data-font" style="color:#666">${formatVol(item.vol)}</td>
+                <td class="comment-text">${item.comment}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        updateSortIcons();
+    }
+
+    window.sortTable = (key) => {
+        if (sortCol === key) sortAsc = !sortAsc;
+        else { 
+            sortCol = key; 
+            sortAsc = false; 
+            if (['name', 'sector', 'comment', 'isWatch'].includes(key)) sortAsc = true; 
+        }
+        doSort();
+        renderTable();
+    };
+
+    function doSort() {
+        currentData.sort((a, b) => {
+            let valA = a[sortCol];
+            let valB = b[sortCol];
+            if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = valB.toLowerCase(); }
+            
+            if (sortCol === 'isWatch') {
+                if (valA < valB) return sortAsc ? -1 : 1; 
+                if (valA > valB) return sortAsc ? 1 : -1;
+            } else {
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+            }
+            return 0;
+        });
+    }
+
+    function updateSortIcons() {
+        document.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (th.getAttribute('onclick').includes(`'${sortCol}'`)) {
+                th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+            }
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+
+    const formatCap = (num) => {
+        if (!num) return "-";
+        if (num >= 1e12) return (num / 1e12).toFixed(3) + " T";
+        if (num >= 1e9) return (num / 1e9).toFixed(2) + " B";
+        return (num / 1e6).toFixed(2) + " M";
+    };
+
+    const formatVol = (num) => {
+        if (!num) return "-";
+        return (num / 1e6).toFixed(1) + " M";
+    };
+
+    function initResizableColumns() {
+        const cols = document.querySelectorAll('th');
+        cols.forEach((col) => {
+            const resizer = col.querySelector('.resizer');
+            if (!resizer) return;
+            let x = 0; let w = 0;
+            const mouseDownHandler = function (e) {
+                e.stopPropagation(); x = e.clientX;
+                const styles = window.getComputedStyle(col);
+                w = parseInt(styles.width, 10);
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+            };
+            const mouseMoveHandler = function (e) { col.style.width = `${w + e.clientX - x}px`; };
+            const mouseUpHandler = function () {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+                resizer.classList.remove('resizing');
+                document.body.style.removeProperty('cursor');
+            };
+            resizer.addEventListener('mousedown', mouseDownHandler);
+            resizer.addEventListener('click', (e) => e.stopPropagation());
+        });
+    }
+</script>
+</body>
+</html>
