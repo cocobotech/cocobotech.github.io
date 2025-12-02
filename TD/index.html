@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COCOBO TECH - Advanced Engineering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gray: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            900: '#111827',
+                            950: '#030712',
+                        },
+                        blue: {
+                            600: '#2563eb',
+                        }
+                    },
+                    letterSpacing: {
+                        tighter: '-0.04em',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #ffffff;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #f5f5f5 0,
+                #f5f5f5 1px,
+                transparent 0,
+                transparent 10px
+            );
+        }
+        .main-container {
+            background-color: white;
+            box-shadow: 0 0 0 1px #e5e7eb;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .vertical-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-orientation: mixed;
+            white-space: nowrap; /* 防止文字换行 */
+        }
+        .code-annotation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-950 overflow-x-hidden">
+
+    <!-- 导航栏 -->
+    <div class="bg-white border-b border-gray-100 relative z-20 sticky top-0">
+        <div class="max-w-[1400px] mx-auto bg-white border-x border-gray-100">
+            <div class="h-14 flex items-center justify-between px-6">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 cursor-pointer">
+                        <div class="relative w-6 h-6 flex items-center justify-center">
+                            <div class="absolute w-full h-full bg-black rounded-md transform rotate-45"></div>
+                            <div class="absolute w-3 h-3 bg-white rounded-full"></div>
+                        </div>
+                        <span class="text-xl font-extrabold tracking-tighter text-gray-950">COCOBO</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold text-blue-600 border border-blue-100 tracking-wide">TECH v2.0</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-600">
+                    <a href="#" class="hover:text-black transition-colors">Solutions</a>
+                    <a href="#" class="hover:text-black transition-colors">Documentation</a>
+                    <a href="#" class="bg-black text-white px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-gray-800 transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主布局容器 -->
+    <div class="max-w-[1400px] mx-auto main-container min-h-screen grid grid-cols-1 relative">
+        <!-- 左右装饰线 -->
+        <div class="absolute left-0 top-0 bottom-0 w-px bg-gray-100"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-px bg-gray-100"></div>
+
+        <!-- LOGO 网格栏 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100 border-b border-gray-100">
+            <!-- Col 1 -->
+            <div class="h-32 flex items-center justify-center p-8 group hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="flex items-center gap-2 font-bold text-lg text-gray-900">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+                        COCOBO
+                    </div>
+                    <span class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Core Tech</span>
+                </div>
+            </div>
+            <!-- Col 2 -->
+            <div class="h-32 flex items-center justify-center p-8 group hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 border-2 border-gray-900 rounded-sm flex items-center justify-center relative"><div class="w-1 h-1 bg-gray-900 absolute top-1 left-1"></div><div class="w-1 h-1 bg-gray-900 absolute bottom-1 right-1"></div><div class="w-3 h-3 border border-gray-900"></div></div>
+                    <div class="text-sm font-bold leading-tight">Silicon<br><span class="text-gray-500 font-normal">Logic IC</span></div>
+                </div>
+            </div>
+            <!-- Col 3 -->
+            <div class="h-32 flex items-center justify-center p-8 group hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center gap-2">
+                     <svg class="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <div class="font-extrabold text-xl tracking-tighter italic">/// V-Render</div>
+                </div>
+            </div>
+            <!-- Col 4 -->
+            <div class="h-32 flex items-center justify-center p-8 group hover:bg-gray-50 transition-colors cursor-pointer">
+                <div class="flex items-center gap-2 font-bold text-lg">
+                    <div class="flex space-x-0.5"><div class="w-1.5 h-6 bg-gray-900 rounded-sm"></div><div class="w-1.5 h-6 bg-gray-400 rounded-sm"></div><div class="w-1.5 h-6 bg-gray-900 rounded-sm"></div></div>NetScale IT
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部主体内容 -->
+        <div class="flex flex-col md:grid md:grid-cols-4 min-h-[calc(100vh-184px)]">
+            
+            <!-- 左侧区域：占据 1/4 (col-span-1) -->
+            <div class="hidden md:flex md:col-span-1 border-r border-gray-100 bg-white">
+                
+                <!-- 1. 最左侧的垂直文字条 -->
+                <!-- 修改点：pt-16 改为 pt-4，让文字大幅上移 -->
+                <div class="w-14 border-r border-gray-100 flex justify-center pt-4 flex-shrink-0 bg-white relative">
+                    <!-- 修改点：top-20 改为 top-4，sticky 状态下也离顶部更近 -->
+                    <div class="vertical-text text-[10px] font-mono tracking-widest text-blue-600 font-bold uppercase sticky top-4 self-start">
+                        Why COCOBO TECH?
+                    </div>
+                </div>
+
+                <!-- 2. 链接列 -->
+                <div class="flex-1 px-8 py-12">
+                    <div class="space-y-10">
+                        <!-- 分类 1 -->
+                        <div>
+                            <h3 class="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold">Silicon / IC</h3>
+                            <ul class="space-y-2.5 text-xs font-medium text-gray-600">
+                                
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">ASIC Design Flow</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">DUV/EUV</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">5nm/4nm/3nm FINFET</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">GAA/CFET</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">EDA</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">Spice</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- 分类 2 -->
+                        <div>
+                            <h3 class="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold">FINANCE</h3>
+                            <ul class="space-y-2.5 text-xs font-medium text-gray-600">
+                                <li><a href="https://cocobotech.github.io/finance/ustop100.html" class="block hover:text-blue-600 transition-colors">TECH100</a></li>
+                                
+                            </ul>
+                        </div>
+
+                        <!-- 分类 3 -->
+                        <div>
+                            <h3 class="font-mono text-[10px] uppercase tracking-widest text-gray-400 mb-4 font-bold">2D/3D</h3>
+                            <ul class="space-y-2.5 text-xs font-medium text-gray-600">
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">Real-time Tracing</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">WebGL/WebGPU</a></li>
+                                <li><a href="#" class="block hover:text-blue-600 transition-colors">Spatial Computing</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧区域：占据 3/4 -->
+            <div class="md:col-span-3 bg-white">
+                
+                <!-- Hero Headline -->
+                <div class="px-8 py-16 md:px-12 md:py-20 border-b border-gray-100">
+                    <div class="code-annotation text-blue-500 mb-2">
+                        &lt;System status="optimized" core="neural-engine" /&gt;
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-950 mb-6 leading-[1.1]">
+                        Precision Engineering for<br>
+                        <span class="text-gray-400">Digital Reality.</span>
+                    </h1>
+                    
+                    <div class="code-annotation mt-8 mb-2">
+                        // Integrating hardware, software, and spatial design
+                    </div>
+                    <p class="text-lg text-gray-600 max-w-2xl leading-relaxed">
+                        COCOBO integrates advanced <strong>IC design</strong>, robust <strong>IT infrastructure</strong>, and photorealistic <strong>3D visualization</strong> to build the foundation of the next-generation web.
+                    </p>
+                </div>
+
+                <!-- 底部展示卡片 -->
+                <div class="bg-gray-50/50 p-6 md:p-10 h-full">
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                        
+                        <div class="p-8 md:p-10 pb-0">
+                            <div class="flex items-center justify-between">
+                                <div class="w-12 h-12 mb-6 text-gray-900 p-2 bg-gray-100 rounded-lg border border-gray-200">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                </div>
+                                <span class="font-mono text-[10px] text-gray-400 border border-gray-200 px-2 py-1 rounded">REV_2025.1</span>
+                            </div>
+                            
+                            <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-2">Multi-Disciplinary Integration</h2>
+                            <p class="text-gray-500 max-w-lg leading-relaxed">
+                                From the nanometer scale of integrated circuits to massive IT server clusters and immersive 3D environments.
+                            </p>
+                        </div>
+
+                        <div class="mt-10 border-t border-gray-100 bg-gray-50 relative h-64 overflow-hidden">
+                            <div class="absolute inset-0 dot-grid opacity-60"></div>
+                            
+                            <!-- 标尺 -->
+                            <div class="absolute inset-0 flex text-[10px] font-mono text-gray-400 pt-3 select-none pointer-events-none">
+                                <div class="flex-1 border-r border-dashed border-gray-300 pl-3">Micro_Scale</div>
+                                <div class="w-32 border-r border-dashed border-gray-300 pl-2">Macro_Net</div>
+                                <div class="w-40 border-r border-dashed border-gray-300 pl-2">Visual_X</div>
+                                <div class="flex-1 pl-2">Output</div>
+                            </div>
+
+                            <div class="absolute bottom-[-20px] left-6 right-6 flex gap-4 overflow-hidden">
+                                <div class="w-64 h-48 bg-white p-2 rounded-lg shadow-md border border-gray-200 flex-shrink-0 group">
+                                    <div class="w-full h-full bg-gray-900 rounded overflow-hidden relative">
+                                        <img src="" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                        <div class="absolute top-2 left-2 bg-blue-600/90 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded font-mono border border-blue-400">IC_CHIP</div>
+                                    </div>
+                                </div>
+                                <div class="w-64 h-48 bg-white p-2 rounded-lg shadow-md border border-gray-200 flex-shrink-0 group">
+                                    <div class="w-full h-full bg-gray-900 rounded overflow-hidden relative">
+                                        <img src="" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                        <div class="absolute top-2 left-2 bg-black/70 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded font-mono">Server_Rack</div>
+                                    </div>
+                                </div>
+                                <div class="w-64 h-48 bg-white p-2 rounded-lg shadow-md border border-gray-200 flex-shrink-0 group">
+                                    <div class="w-full h-full bg-gray-900 rounded overflow-hidden relative">
+                                        <img src="https://images.unsplash.com/photo-1633412802994-5c058f151b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                                        <div class="absolute top-2 left-2 bg-purple-600/90 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded font-mono border border-purple-400">Mesh_Render</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
