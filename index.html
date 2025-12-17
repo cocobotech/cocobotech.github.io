@@ -28,7 +28,7 @@
       
       width: 90%;
       max-width: 700px;
-      height: 200px;
+      height: 150px;
       
       display: flex;
       align-items: center;
@@ -157,11 +157,24 @@
       box-shadow: 0 20px 40px rgba(131,56,236,0.8);
     }
 
-    /* 背景 Canvas */
-    canvas {
+    /* 背景波浪 Canvas (z-index -1) */
+    #bg_animation_wave1 {
       position: fixed;
       top: 0; left: 0;
       z-index: -1;
+    }
+
+    /* 烟花 Canvas (z-index 99) 
+       pointer-events: none 确保点击能穿透到按钮，但我们会在 JS 里监听 window 点击
+    */
+    #fireworksCanvas {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 99;
+      pointer-events: none; 
     }
   </style>
 </head>
@@ -192,7 +205,10 @@
 
   <button class="enter-btn" onclick="window.location='https://cocobotech.github.io/home.html'">ENTER</button>
 
+  <!-- 背景动画 -->
   <canvas id="bg_animation_wave1"></canvas>
+  <!-- 烟花层 -->
+  <canvas id="fireworksCanvas"></canvas>
 
   <script>
     // ==========================================
@@ -282,15 +298,13 @@
         reflectTrace.style.strokeDasharray = `${totalLength} ${totalLength}`;
         
         let startTime = null;
-        const duration = 5000; // 动画时长 5 秒
+        const duration = 5000; 
 
         function step(timestamp) {
             if (!startTime) startTime = timestamp;
             const rawProgress = (timestamp - startTime) / duration;
             
-            // 确保进度最大为 1
             const progress = Math.min(rawProgress, 1);
-
             const ease = 1 - Math.pow(1 - progress, 3); 
 
             const currentOffset = totalLength * (1 - ease);
@@ -304,17 +318,16 @@
 
             let opacity = 1;
             if (progress < 0.02) opacity = progress * 50;
-            if (progress >= 1) opacity = 0; // 结束后隐藏光球
+            if (progress >= 1) opacity = 0; 
             haloGroup.style.opacity = opacity;
 
             if (rawProgress < 1) {
                 requestAnimationFrame(step);
             } else {
-                // --- 循环逻辑：等待2秒后重启 ---
                 setTimeout(() => {
-                    startTime = null; // 重置时间，让动画从头开始
+                    startTime = null; 
                     requestAnimationFrame(step);
-                }, 2000); // 2000 毫秒 = 2 秒
+                }, 2000); 
             }
         }
         requestAnimationFrame(step);
@@ -514,9 +527,174 @@
       animate();
     }
 
+    // ==========================================
+    // PART 3: 烟花特效 (COCOBO Edition)
+    // ==========================================
+    function initFireworks() {
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const resizeFireworks = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resizeFireworks();
+        window.addEventListener('resize', resizeFireworks);
+
+        const colors = [
+            '#4285F4', '#DB4437', '#F4B400', '#0F9D58', '#AB47BC', '#00ACC1'
+        ];
+        const secretWord = "COCOBO";
+
+        let particles = [];
+        let rockets = [];
+        let textParticles = [];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 4 + 1;
+                this.vx = Math.cos(angle) * velocity;
+                this.vy = Math.sin(angle) * velocity;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.01;
+                this.gravity = 0.05;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.gravity;
+                this.alpha -= this.decay;
+            }
+        }
+
+        class TextParticle {
+            constructor(x, y, text, color) {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.alpha = 1;
+                this.dy = -0.5;
+                this.decay = 0.015;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                // 为了让字在黑色背景上更清晰，加一个白色发光描边
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#FFFFFF'; 
+                ctx.font = "bold 28px 'Orbitron', sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.restore();
+            }
+            update() {
+                this.y += this.dy;
+                this.alpha -= this.decay;
+            }
+        }
+
+        class Rocket {
+            constructor(x, y, targetY) {
+                this.x = x;
+                this.y = y;
+                this.targetY = targetY;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.speed = Math.random() * 3 + 8;
+                this.radius = 3;
+                this.exploded = false;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y <= this.targetY) {
+                    this.exploded = true;
+                    createExplosion(this.x, this.y, this.color);
+                }
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            const particleCount = 40;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+            const randomChar = secretWord.charAt(Math.floor(Math.random() * secretWord.length));
+            textParticles.push(new TextParticle(x, y, randomChar, color));
+        }
+
+        function animateFireworks() {
+            // 使用 destination-out 来实现透明背景的拖尾效果
+            // 这样不会把背景波浪动画遮住
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // 数值越小拖尾越长
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = 'source-over';
+
+            rockets.forEach((rocket, index) => {
+                rocket.draw();
+                rocket.update();
+                if (rocket.exploded) rockets.splice(index, 1);
+            });
+
+            particles.forEach((particle, index) => {
+                particle.draw();
+                particle.update();
+                if (particle.alpha <= 0) particles.splice(index, 1);
+            });
+
+            textParticles.forEach((tp, index) => {
+                tp.draw();
+                tp.update();
+                if (tp.alpha <= 0) textParticles.splice(index, 1);
+            });
+
+            requestAnimationFrame(animateFireworks);
+        }
+
+        function autoLaunch() {
+            const x = Math.random() * canvas.width;
+            const targetY = Math.random() * (canvas.height / 2);
+            rockets.push(new Rocket(x, canvas.height, targetY));
+        }
+
+        // 全局监听点击，发射烟花
+        window.addEventListener('mousedown', (e) => {
+            const targetY = e.clientY;
+            rockets.push(new Rocket(e.clientX, canvas.height, targetY));
+        });
+
+        animateFireworks();
+        setInterval(autoLaunch, 1200); // 每1.2秒自动发射一个
+    }
+
+    // ==========================================
+    // 入口函数
+    // ==========================================
     window.onload = () => {
         startBackgroundAnimation('bg_animation_wave1');
-        initTracerAnimation(); 
+        initTracerAnimation();
+        initFireworks(); // 启动烟花
     };
   </script>
 </body>
