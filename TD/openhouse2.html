@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open House List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F5EDD3;
+    --gold-dark: #8B6914;
+    --ink: #1A1611;
+    --ink-mid: #3D3528;
+    --ink-soft: #7A6E5F;
+    --cream: #FDFAF4;
+    --cream-2: #F5F0E8;
+    --cream-3: #EDE6D8;
+    --white: #FFFFFF;
+    --border: rgba(201,168,76,0.25);
+    --border-strong: rgba(201,168,76,0.5);
+    --shadow: 0 4px 24px rgba(26,22,17,0.08);
+    --radius: 12px;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: var(--ink);
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .header-date {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(253,250,244,0.45);
+  }
+  .header-date strong { color: var(--gold); font-weight: 500; }
+
+  /* ── Controls ── */
+  .controls-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(26,22,17,0.06);
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px 0 38px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--cream-2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .search-input:focus { border-color: var(--gold); background: var(--white); }
+  .search-input::placeholder { color: var(--ink-soft); }
+
+  .filter-group { display: flex; align-items: center; gap: 8px; }
+  .filter-lbl {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  select.filter-sel {
+    height: 38px;
+    padding: 0 28px 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--cream-2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%237A6E5F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.2s;
+  }
+  select.filter-sel:focus { border-color: var(--gold); }
+
+  .ctrl-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+
+  .results-count { margin-left: auto; font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+  .results-count strong { color: var(--gold-dark); font-weight: 500; }
+
+  /* ── Table ── */
+  .table-wrap { padding: 32px 48px 48px; }
+
+  .oh-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .oh-table thead tr { background: var(--ink); }
+  .oh-table thead th {
+    padding: 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(253,250,244,0.55);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .oh-table thead th:hover { color: var(--gold); }
+  .oh-table thead th.sorted { color: var(--gold); }
+  .oh-table thead th .th-inner { display: flex; align-items: center; gap: 5px; }
+  .sort-arrows { display: flex; flex-direction: column; gap: 1px; opacity: 0.4; }
+  .sort-arrows.asc .arr-up,
+  .sort-arrows.desc .arr-dn { opacity: 1; color: var(--gold); }
+  .arr-up, .arr-dn { font-size: 8px; line-height: 1; }
+
+  .oh-table tbody tr { transition: background 0.15s; }
+  .oh-table tbody tr:not(:last-child) { border-bottom: 1px solid var(--cream-3); }
+  .oh-table tbody tr:hover { background: var(--gold-light) !important; }
+  .oh-table tbody tr:nth-child(even) { background: var(--cream-2); }
+
+  .oh-table td { padding: 14px; vertical-align: middle; font-size: 15px; color: var(--ink-mid); }
+
+  /* Address */
+  .addr-link {
+    font-size: 15px; font-weight: 500; color: var(--ink);
+    text-decoration: none; display: block; line-height: 1.4;
+    transition: color 0.2s;
+  }
+  .addr-link:hover { color: var(--gold-dark); text-decoration: underline; }
+  .addr-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+
+  /* Prices */
+  .price-plain { font-size: 16px; font-weight: 700; color: #1a5fb4; white-space: nowrap; }
+  .sold-price  { font-size: 15px; font-weight: 700; color: #A03030; white-space: nowrap; }
+  .sold-empty  { font-size: 13px; color: var(--ink-soft); }
+
+  /* School */
+  .school-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #EEF5E8; color: #3B6010;
+    font-size: 13px; font-weight: 500;
+    padding: 3px 8px; border-radius: 20px; white-space: nowrap;
+  }
+  .school-dot { width: 6px; height: 6px; border-radius: 50%; background: #5A9020; flex-shrink: 0; }
+
+  /* Rooms */
+  .room-info { display: flex; flex-direction: column; gap: 3px; }
+  .room-row  { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+  .room-icon { color: var(--gold-dark); }
+  .room-val  { font-weight: 500; color: var(--ink); }
+  .room-lbl  { color: var(--ink-soft); font-size: 12px; }
+
+  /* Size */
+  .size-val  { font-weight: 500; color: var(--ink); }
+  .size-unit { font-size: 12px; color: var(--ink-soft); }
+
+  /* Photos */
+  .thumbs-wrap { display: flex; gap: 5px; }
+  .thumb {
+    width: 64px; height: 48px; object-fit: cover;
+    border-radius: 6px; border: 1.5px solid var(--border);
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: zoom-in; display: block;
+  }
+  .thumb:hover { border-color: var(--gold); transform: scale(1.05); }
+
+  /* Hover preview */
+  .img-preview {
+    display: none; position: fixed; z-index: 8888;
+    pointer-events: none; border-radius: 10px; overflow: hidden;
+    border: 2px solid var(--gold);
+    box-shadow: 0 12px 48px rgba(26,22,17,0.35);
+  }
+  .img-preview.visible { display: block; }
+  .img-preview img { width: 320px; height: 240px; object-fit: cover; display: block; }
+
+  /* Notes */
+  .notes-cell { max-width: 180px; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .notes-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 4px;
+    margin-bottom: 4px; letter-spacing: 0.06em; text-transform: uppercase;
+    background: #F5EDD3; color: var(--gold-dark);
+  }
+  .notes-tag.hot         { background: #FEEAEA; color: #A03030; }
+  .notes-tag.new         { background: #EAF5EA; color: #2A6E2A; }
+  .notes-tag.price_drop  { background: #FFF0F0; color: #C0392B; }
+  .notes-tag.open_house  { background: #E8F0FE; color: #1a5fb4; }
+  .notes-tag.just_listed { background: #FFF8E6; color: #8B5E00; }
+
+  /* Status */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .status-active     { background: #E8F4FD; color: #1a5fb4; }
+  .status-active     .status-dot { background: #1a5fb4; }
+  .status-pending    { background: #FFF8E6; color: #8B5E00; }
+  .status-pending    .status-dot { background: #E8A000; }
+  .status-sold       { background: #FDEAEA; color: #A03030; }
+  .status-sold       .status-dot { background: #D03030; }
+  .status-contingent { background: #F0EAFD; color: #5B2D9E; }
+  .status-contingent .status-dot { background: #7C3AED; }
+
+  /* Loading / empty */
+  .loading-state, .empty-state {
+    text-align: center; padding: 64px 24px; color: var(--ink-soft);
+  }
+  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+
+  /* Lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,8,5,0.88); z-index: 9999;
+    align-items: center; justify-content: center; cursor: pointer;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw; max-height: 80vh;
+    border-radius: 10px; border: 2px solid var(--gold);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .lb-close {
+    position: absolute; top: 24px; right: 28px;
+    color: rgba(255,255,255,0.7); font-size: 28px; cursor: pointer;
+    transition: color 0.2s;
+  }
+  .lb-close:hover { color: var(--gold); }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream-2); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    .page-header, .controls-bar, .table-wrap { padding-left: 20px; padding-right: 20px; }
+    .table-wrap { overflow-x: auto; }
+    .oh-table { min-width: 1300px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-date" id="header-date"></div>
+</header>
+
+<div class="controls-bar">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search-input" id="search-input" type="text" placeholder="Search address, school, notes…">
+  </div>
+  <div class="ctrl-divider"></div>
+  <div class="filter-group">
+    <span class="filter-lbl">Beds</span>
+    <select class="filter-sel" id="filter-beds">
+      <option value="">All</option>
+      <option value="3">3+</option>
+      <option value="4">4+</option>
+      <option value="5">5+</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-lbl">Price</span>
+    <select class="filter-sel" id="filter-price">
+      <option value="">All</option>
+      <option value="2">≤ $2M</option>
+      <option value="3">≤ $3M</option>
+      <option value="4">≤ $4M</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-lbl">School</span>
+    <select class="filter-sel" id="filter-school"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-lbl">City</span>
+    <select class="filter-sel" id="filter-city"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-lbl">Zip</span>
+    <select class="filter-sel" id="filter-zip"><option value="">All</option></select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-lbl">Status</span>
+    <select class="filter-sel" id="filter-status">
+      <option value="">All</option>
+      <option value="Active">Active</option>
+      <option value="Pending">Pending</option>
+      <option value="Contingent">Contingent</option>
+      <option value="Sold">Sold</option>
+    </select>
+  </div>
+  <div class="ctrl-divider"></div>
+  <span class="results-count" id="results-count"><strong>—</strong> results</span>
+</div>
+
+<div class="table-wrap">
+  <div id="loading-state" class="loading-state">Loading listings…</div>
+
+  <table class="oh-table" id="oh-table" style="display:none">
+    <thead><tr>
+      <th data-col="address"><div class="th-inner">Address <span class="sort-arrows" id="sa-address"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="beds"><div class="th-inner">Rooms <span class="sort-arrows" id="sa-beds"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="size"><div class="th-inner">Size <span class="sort-arrows" id="sa-size"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="lot"><div class="th-inner">Lot <span class="sort-arrows" id="sa-lot"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="price"><div class="th-inner">List Price <span class="sort-arrows" id="sa-price"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="sold_price"><div class="th-inner">Sold Price <span class="sort-arrows" id="sa-sold_price"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="school"><div class="th-inner">School <span class="sort-arrows" id="sa-school"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="city"><div class="th-inner">City <span class="sort-arrows" id="sa-city"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="zip"><div class="th-inner">Zip <span class="sort-arrows" id="sa-zip"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th data-col="status"><div class="th-inner">Status <span class="sort-arrows" id="sa-status"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+      <th style="cursor:default">Photos</th>
+      <th data-col="notes" style="min-width:160px"><div class="th-inner">Notes <span class="sort-arrows" id="sa-notes"><span class="arr-up">▲</span><span class="arr-dn">▼</span></span></div></th>
+    </tr></thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <div id="empty-state" class="empty-state" style="display:none">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="empty-title">No listings found</div>
+    <p>Try adjusting your filters or search term</p>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <span class="lb-close" id="lb-close">✕</span>
+  <img id="lb-img" src="" alt="Property photo">
+</div>
+
+<div class="img-preview" id="img-preview">
+  <img id="preview-img" src="" alt="">
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let DATA = [], filtered = [];
+let sortCol = null, sortDir = 1;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmtPrice(n) {
+  if (n == null) return null;
+  if (n >= 1_000_000) return '$' + (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 2) + 'M';
+  return '$' + n.toLocaleString();
+}
+function fmtNum(n) { return (n ?? 0).toLocaleString(); }
+
+function setDate() {
+  const str = new Date().toLocaleDateString('en-US',
+    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('header-date').innerHTML =
+    `Open House &nbsp;·&nbsp; <strong>${str}</strong>`;
+}
+
+function populateDynamicFilters() {
+  [['filter-school','school'], ['filter-city','city'], ['filter-zip','zip']].forEach(([id, key]) => {
+    const sel = document.getElementById(id);
+    while (sel.options.length > 1) sel.remove(1);
+    [...new Set(DATA.map(d => d[key]).filter(Boolean))].sort().forEach(v => {
+      const o = document.createElement('option');
+      o.value = o.textContent = v;
+      sel.appendChild(o);
+    });
+  });
+}
+
+// ── Filter & Sort ─────────────────────────────────────────────────────────────
+function applyFilters() {
+  const search    = document.getElementById('search-input').value.toLowerCase();
+  const minBeds   = parseInt(document.getElementById('filter-beds').value)    || 0;
+  const maxPriceM = parseFloat(document.getElementById('filter-price').value) || Infinity;
+  const school    = document.getElementById('filter-school').value;
+  const city      = document.getElementById('filter-city').value;
+  const zip       = document.getElementById('filter-zip').value;
+  const status    = document.getElementById('filter-status').value;
+
+  filtered = DATA.filter(d => {
+    if (minBeds   && d.beds   < minBeds)         return false;
+    if (d.price   > maxPriceM * 1_000_000)       return false;
+    if (school    && d.school !== school)         return false;
+    if (city      && d.city   !== city)           return false;
+    if (zip       && d.zip    !== zip)            return false;
+    if (status    && d.status !== status)         return false;
+    if (search) {
+      const hay = [d.address, d.school, d.notes, d.city, d.zip, d.status].join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  if (sortCol) doSort();
+  render();
+}
+
+function doSort() {
+  filtered.sort((a, b) => {
+    // nulls always sink to bottom regardless of sort direction
+    if (a[sortCol] == null && b[sortCol] != null) return 1;
+    if (a[sortCol] != null && b[sortCol] == null) return -1;
+    let va = a[sortCol] ?? '', vb = b[sortCol] ?? '';
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+  });
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+const TAG_MAP = {
+  hot:         { emoji: '🔥', label: 'Hot' },
+  new:         { emoji: '✨', label: 'New' },
+  price_drop:  { emoji: '📉', label: 'Price Drop' },
+  open_house:  { emoji: '🏡', label: 'Open House' },
+  just_listed: { emoji: '⭐', label: 'Just Listed' },
+};
+
+function render() {
+  const tbody      = document.getElementById('table-body');
+  const table      = document.getElementById('oh-table');
+  const emptyState = document.getElementById('empty-state');
+  tbody.innerHTML  = '';
+
+  // sync sort-arrow indicators
+  document.querySelectorAll('.sort-arrows').forEach(el => {
+    el.classList.remove('asc', 'desc');
+    el.closest('th').classList.remove('sorted');
+  });
+  if (sortCol) {
+    const sa = document.getElementById('sa-' + sortCol);
+    if (sa) { sa.classList.add(sortDir === 1 ? 'asc' : 'desc'); sa.closest('th').classList.add('sorted'); }
+  }
+
+  document.getElementById('results-count').innerHTML =
+    `<strong>${filtered.length}</strong> result${filtered.length !== 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    table.style.display = 'none'; emptyState.style.display = 'block'; return;
+  }
+  table.style.display = 'table'; emptyState.style.display = 'none';
+
+  filtered.forEach(d => {
+    const tr = document.createElement('tr');
+
+    const soldHTML = d.sold_price != null
+      ? `<span class="sold-price">${fmtPrice(d.sold_price)}</span>`
+      : `<span class="sold-empty">—</span>`;
+
+    const tags    = Array.isArray(d.tag) ? d.tag : (d.tag ? [d.tag] : []);
+    const tagHTML = tags.map(t => {
+      const i = TAG_MAP[t] || { emoji: '', label: t };
+      return `<span class="notes-tag ${t}">${i.emoji} ${i.label}</span>`;
+    }).join(' ');
+
+    tr.innerHTML = `
+      <td>
+        <a class="addr-link" href="${d.url}" target="_blank">${d.address}</a>
+        <div class="addr-sub">${d.addressShort}</div>
+      </td>
+      <td>
+        <div class="room-info">
+          <div class="room-row"><span class="room-icon">🛏</span><span class="room-val">${d.beds}</span><span class="room-lbl">bed</span></div>
+          <div class="room-row"><span class="room-icon">🚿</span><span class="room-val">${d.baths}</span><span class="room-lbl">bath</span></div>
+        </div>
+      </td>
+      <td><span class="size-val">${fmtNum(d.size)}</span><br><span class="size-unit">sq ft</span></td>
+      <td><span class="size-val">${fmtNum(d.lot)}</span><br><span class="size-unit">sq ft</span></td>
+      <td><span class="price-plain">${fmtPrice(d.price)}</span></td>
+      <td>${soldHTML}</td>
+      <td><span class="school-badge"><span class="school-dot"></span>${d.school}</span></td>
+      <td style="font-size:14px;font-weight:500;color:var(--ink)">${d.city}</td>
+      <td style="font-size:14px;color:var(--ink-soft);font-family:monospace;letter-spacing:0.04em">${d.zip}</td>
+      <td><span class="status-badge status-${d.status.toLowerCase()}"><span class="status-dot"></span>${d.status}</span></td>
+      <td>
+        <div class="thumbs-wrap">
+          <div><img class="thumb" src="${d.img1}" alt="Photo 1"></div>
+          <div><img class="thumb" src="${d.img2}" alt="Photo 2"></div>
+        </div>
+      </td>
+      <td class="notes-cell">${tagHTML ? tagHTML + '<br>' : ''}${d.notes}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Sort on header click ──────────────────────────────────────────────────────
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    sortDir = sortCol === col ? sortDir * -1 : 1;
+    sortCol = col;
+    doSort();
+    render();
+  });
+});
+
+// ── Filter events ─────────────────────────────────────────────────────────────
+['search-input','filter-beds','filter-price','filter-school',
+ 'filter-city','filter-zip','filter-status'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input',  applyFilters);
+  el.addEventListener('change', applyFilters);
+});
+
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+document.getElementById('lb-close').addEventListener('click', () =>
+  document.getElementById('lightbox').classList.remove('open'));
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
+
+// ── Hover preview ─────────────────────────────────────────────────────────────
+const preview    = document.getElementById('img-preview');
+const previewImg = document.getElementById('preview-img');
+let hideTimer;
+
+function positionPreview(e) {
+  const pw = 324, ph = 244, vw = window.innerWidth, vh = window.innerHeight;
+  let x = e.clientX + 16, y = e.clientY + 16;
+  if (x + pw > vw - 8) x = e.clientX - pw - 16;
+  if (y + ph > vh - 8) y = e.clientY - ph - 16;
+  preview.style.left = x + 'px';
+  preview.style.top  = y + 'px';
+}
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('.thumb'); if (!t) return;
+  clearTimeout(hideTimer);
+  previewImg.src = t.src;
+  preview.classList.add('visible');
+  positionPreview(e);
+});
+document.addEventListener('mousemove', e => {
+  if (preview.classList.contains('visible') && e.target.closest('.thumb')) positionPreview(e);
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('.thumb')) hideTimer = setTimeout(() => preview.classList.remove('visible'), 80);
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest('.thumb'); if (!t) return;
+  preview.classList.remove('visible');
+  document.getElementById('lb-img').src = t.src;
+  document.getElementById('lightbox').classList.add('open');
+});
+
+// ── Bootstrap: fetch JSON ─────────────────────────────────────────────────────
+// openhouse.json must live in the same folder as this HTML file.
+fetch('./openhouse.json')
+  .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+  .then(data => {
+    DATA     = data;
+    filtered = [...DATA];
+    document.getElementById('loading-state').style.display = 'none';
+    setDate();
+    populateDynamicFilters();
+    render();
+  })
+  .catch(err => {
+    document.getElementById('loading-state').textContent =
+      '⚠️ Could not load openhouse.json — ' + err.message;
+    console.error(err);
+  });
+</script>
+</body>
+</html>
