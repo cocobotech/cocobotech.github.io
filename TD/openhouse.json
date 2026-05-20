@@ -1,24 +1,24 @@
 [
 
-        {
-    "address":"2415 Crestline Rd, Pleasanton, CA 94566",
-    "addressShort": "Pleasanton · 94566",
-    "url": "https://www.redfin.com/CA/Pleasanton/2415-Crestline-Rd-94566/home/1604409",
-    "beds": 5, "baths": 3,
-    "size": 2850, "lot": 6725,
+
+
+
+      {
+    "address":"177 Elisha Ln, San Ramon, CA 94582",
+    "addressShort": "San Ramon · 94582",
+    "url": "https://www.redfin.com/CA/San-Ramon/177-Elisha-Ln-94583/home/1146300",
+    "beds": 5, "baths": 4,
+    "size": 3362, "lot": 7000,
     "price": 1899000,
     "sold_price": null,
     "school": "Pleasanton",
     "city": "Pleasanton", "zip": "94566", 
-    "img1": "https://ssl.cdn-redfin.com/photo/10/mbpaddedwide/667/genMid.41131667_1_5.jpg?w=200&h=150&fit=crop",
-    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/667/41131667_36_5.jpg?w=200&h=150&fit=crop",
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/903/41130903_4.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/903/41130903_39_4.jpg?w=200&h=150&fit=crop",
     "tag": "",
     "status": "Active",
-    "notes": "price 1.99M->1.899M on5/20"
+    "notes": "lot size is only 7000 sqf, price 2.35M->1.999M on5/12"
   },
-
-
-
 
 
 
