@@ -1,4 +1,120 @@
 [
+
+        {
+    "address":"2415 Crestline Rd, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/2415-Crestline-Rd-94566/home/1604409",
+    "beds": 5, "baths": 3,
+    "size": 2850, "lot": 6725,
+    "price": 1899000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/mbpaddedwide/667/genMid.41131667_1_5.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/667/41131667_36_5.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": "price 1.99M->1.899M on5/20"
+  },
+
+
+
+
+
+
+
+
+
+
+
+    {
+    "address":"2415 Crestline Rd, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/2415-Crestline-Rd-94566/home/1604409",
+    "beds": 5, "baths": 3,
+    "size": 2850, "lot": 6725,
+    "price": 1899000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/mbpaddedwide/667/genMid.41131667_1_5.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/667/41131667_36_5.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": "price 1.99M->1.899M on5/20"
+  },
+
+    {
+    "address":"3026 Ferndale Ct, Pleasanton, CA 94588",
+    "addressShort": "Pleasanton · 94588",
+    "url": "https://www.redfin.com/CA/Pleasanton/3026-Ferndale-Ct-94588/home/1699874",
+    "beds": 4, "baths": 2.5,
+    "size": 2144, "lot": 7561,
+    "price": 1798000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94588", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/835/41134835_1.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/mbpaddedwide/835/genMid.41134835_58_0.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": ""
+  },
+
+
+   {
+    "address": "3208 Touriga Dr, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/3208-Touriga-Dr-94566/home/1561594",
+    "beds": 4, "baths": 3,
+    "size": 2400, "lot": 8072,
+    "price": 1899000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/302/41126302_1.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/302/41126302_3_1.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": ""
+  },
+     {
+    "address": "3624 Canelli Ct, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/3624-Canelli-Ct-94566/home/1017410",
+    "beds": 4, "baths": 3,
+    "size": 2586, "lot": 0.28,
+    "price": 1899000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/745/41128745_G.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/745/41128745_42_F.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": ""
+  },
+
+
+
+      {
+    "address": "3330 Kemper Rd, Fremont, CA 94536",
+    "addressShort": "Fremont · 94536",
+    "url": "https://www.redfin.com/CA/Fremont/3330-Kemper-Rd-94536/home/1404128",
+    "beds": 4, "baths": 2,
+    "size": 1708, "lot": 6930,
+    "price": 1610000,
+    "sold_price": null,
+    "school": "AmericanHigh",
+    "city": "Fremont", "zip": "94536", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/491/41134491_0.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/491/41134491_6_0.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": ""
+  },
+
+
   {
     "address": "4175 Carol Ave, Fremont, CA 94538",
     "addressShort": "Fremont · 94538",
@@ -8,11 +124,12 @@
     "price": 1699000,
     "sold_price": null,
     "school": "irvington/Hirsch",
-    "city": "Fremont", "zip": "94538", "status": "Active",
+    "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/77/bigphoto/227/226054227_0.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/77/mbpaddedwide/227/genMid.226054227_26_0.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
-    "notes": "OPEN TODAY, 5PM TO 7PM"
+    "tag": "",
+    "status": "Pending",
+    "notes": ""
   },
   {
     "address": "41330 Roberts Ave, Fremont, CA 94538",
@@ -23,11 +140,12 @@
     "price": 1680000,
     "sold_price": null,
     "school": "irvington/Hirsch",
-    "city": "Fremont", "zip": "94538", "status": "Active",
+    "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/mbpaddedwide/440/genMid.41132440_28_7.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/440/41132440_6_7.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
-    "notes": "OPEN SAT, 2PM TO 4:30PM"
+    "tag": "",
+    "status": "Pending",
+    "notes": ""
   },
   {
     "address": "4688 Wildwood Park Ct, Fremont, CA 94538",
@@ -38,12 +156,30 @@
     "price": 2190000,
     "sold_price": null,
     "school": "irvington/harveygreen",
-    "city": "Fremont", "zip": "94538", "status": "Active",
+    "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/617/41133617_4.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/617/41133617_30_2.jpg?w=200&h=150&fit=crop",
     "tag": "hot",
-    "notes": "OPEN SAT, 12PM TO 4PM"
+    "status": "Pending",
+    "notes": ""
   },
+    {
+    "address": "42552 Roberts Ave, Fremont, CA 94538",
+    "addressShort": "Fremont · 94538",
+    "url": "https://www.redfin.com/CA/Fremont/42552-Roberts-Ave-94538/home/1850961",
+    "beds": 4, "baths": 4.5,
+    "size": 1803, "lot": 5150,
+    "price": 1680000,
+    "sold_price": null,
+    "school": "irvington/harveygreen",
+    "city": "Fremont", "zip": "94538", 
+    "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/694/41132694_1.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/10/mbphotov3/694/genMid.41132694_11_1.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "active",
+    "notes": "OPEN SAT, 1:30PM TO 4:30PM"
+  },
+
   {
     "address": "3631 Trenton Ct, Fremont, CA 94538",
     "addressShort": "Fremont · 94538",
@@ -53,10 +189,11 @@
     "price": 2050000,
     "sold_price": null,
     "school": "irvington/harveygreen",
-    "city": "Fremont", "zip": "94538", "status": "Active",
+    "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/8/bigphoto/366/ML82041366_0.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/8/bigphoto/366/ML82041366_15_0.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
+    "tag": "",
+    "status": "active",
     "notes": "OPEN SAT, 12PM TO 4PM"
   },
   {
@@ -68,11 +205,12 @@
     "price": 1798000,
     "sold_price": null,
     "school": "AmericanHigh",
-    "city": "Fremont", "zip": "94555", "status": "Active",
+    "city": "Fremont", "zip": "94555", 
     "img1": "https://ssl.cdn-redfin.com/photo/8/bigphoto/514/ML82046514_1.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/8/bigphoto/514/ML82046514_36_1.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
-    "notes": "OPEN SAT, 1:30PM TO 4:30PM"
+    "tag": "",
+    "status": "Pending",
+    "notes": ""
   },
 
     {
@@ -84,10 +222,11 @@
     "price": 1680000,
     "sold_price": null,
     "school": "irvington/grimmer",
-    "city": "Fremont", "zip": "94538", "status": "Active",
+    "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/694/41132694_1.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/694/41132694_9_1.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
+    "tag": "",
+    "status": "active",
     "notes": "OPEN SAT, 1:30PM TO 4:30PM"
   },
   
@@ -100,10 +239,11 @@
     "price": 1880000,
     "sold_price": null,
     "school": "irvington",
-    "city": "Fremont", "zip": "94539", "status": "Active",
+    "city": "Fremont", "zip": "94539", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/695/41132695_0.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/695/41132695_0.jpg?w=200&h=150&fit=crop",
     "tag": "coming soon",
+    "status": "NA",
     "notes": "coming soon"
   },
 
@@ -116,11 +256,12 @@
     "price": 2299000,
     "sold_price": null,
     "school": "irvington",
-    "city": "Fremont", "zip": "94539", "status": "Active",
+    "city": "Fremont", "zip": "94539", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/135/41131135_2.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/135/41131135_33_1.jpg?w=200&h=150&fit=crop",
     "tag": "new",
-    "notes": "咖喱味"
+    "status": "Pending",
+    "notes": "咖喱"
   },
   
   
@@ -133,10 +274,11 @@
     "price": 2298000,
     "sold_price": null,
     "school": "mission",
-    "city": "Fremont", "zip": "94539", "status": "Active",
+    "city": "Fremont", "zip": "94539", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/148/41131148_1.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/148/41131148_24_1.jpg?w=200&h=150&fit=crop",
     "tag": "",
+    "status": "Pending",
     "notes": "check available times online."
   }
 ]
