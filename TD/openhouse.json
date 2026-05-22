@@ -1,6 +1,21 @@
 [
 
-
+ {
+    "address":"726 Sylvaner Dr, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/726-Sylvaner-Dr-94566/home/809822",
+    "beds": 4, "baths": 2.5,
+    "size": 2050, "lot": 0.33,
+    "price": 1799000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/8/bigphoto/203/ML82048203_0.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/8/bigphoto/203/ML82048203_33_0.jpg?w=200&h=150&fit=crop",
+    "tag": "",
+    "status": "Active",
+    "notes": "lot size 0.33acer"
+  },
 
 
       {
