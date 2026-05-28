@@ -12,7 +12,7 @@
     "city": "Pleasanton", "zip": "94566", 
     "img1": "https://ssl.cdn-redfin.com/photo/8/bigphoto/805/ML82048805_1.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/8/bigphoto/805/ML82048805_15_0.jpg?w=200&h=150&fit=crop",
-    "tag": "hothothot",
+    "tag": "hot",
     "status": "Active",
     "notes": ""
   },
@@ -192,7 +192,7 @@
     "city": "Fremont", "zip": "94538", 
     "img1": "https://ssl.cdn-redfin.com/photo/10/bigphoto/617/41133617_4.jpg?w=200&h=150&fit=crop",
     "img2": "https://ssl.cdn-redfin.com/photo/10/bigphoto/617/41133617_30_2.jpg?w=200&h=150&fit=crop",
-    "tag": "hot",
+    "tag": "",
     "status": "Pending",
     "notes": ""
   },
