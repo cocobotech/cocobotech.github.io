@@ -1,5 +1,23 @@
 [
 
+  {
+    "address":"5342 Elmridge Ct, Pleasanton, CA 94566",
+    "addressShort": "Pleasanton · 94566",
+    "url": "https://www.redfin.com/CA/Pleasanton/5342-Elmridge-Ct-94566/home/1195874",
+    "beds": 4, "baths": 2.5,
+    "size": 2104, "lot": 0.28,
+    "price": 1898000,
+    "sold_price": null,
+    "school": "Pleasanton",
+    "city": "Pleasanton", "zip": "94566", 
+    "img1": "https://ssl.cdn-redfin.com/photo/8/bigphoto/805/ML82048805_1.jpg?w=200&h=150&fit=crop",
+    "img2": "https://ssl.cdn-redfin.com/photo/8/bigphoto/805/ML82048805_15_0.jpg?w=200&h=150&fit=crop",
+    "tag": "hothothot",
+    "status": "Active",
+    "notes": ""
+  },
+
+ 
  {
     "address":"726 Sylvaner Dr, Pleasanton, CA 94566",
     "addressShort": "Pleasanton · 94566",
