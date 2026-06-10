@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 种商业 3D 字体效果</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d1117;
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #e6edf3;
+    padding: 60px 24px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+  .page-header h1 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #f0f6fc;
+  }
+  .page-header p {
+    margin-top: 10px;
+    color: #8b949e;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+    gap: 28px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    border-radius: 16px;
+    padding: 70px 24px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+  }
+  .card .label {
+    position: absolute;
+    top: 18px;
+    left: 22px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+  }
+  .demo {
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .demo { font-size: 48px; }
+  }
+
+  /* ── 1. 经典立体挤出（深蓝商务） ───────────── */
+  .bg-1 { background: linear-gradient(135deg, #1b2a4a 0%, #0f1c33 100%); }
+  .fx-extrude {
+    color: #ffffff;
+    text-shadow:
+      1px 1px 0 #3b5998, 2px 2px 0 #38538f, 3px 3px 0 #344d86,
+      4px 4px 0 #31477d, 5px 5px 0 #2d4174, 6px 6px 0 #2a3b6b,
+      7px 7px 0 #263562, 8px 8px 0 #232f59,
+      9px 12px 25px rgba(0,0,0,0.55);
+  }
+
+  /* ── 2. 奢华黄金浮雕 ───────────── */
+  .bg-2 { background: radial-gradient(circle at 50% 30%, #2a2118 0%, #14100a 70%); }
+  .fx-gold {
+    background: linear-gradient(180deg, #fdf3c8 0%, #f5d87a 28%, #d4a93c 50%, #9c7320 72%, #e8c969 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 2px 0 #6b4e12)
+      drop-shadow(0 4px 0 #553d0c)
+      drop-shadow(0 6px 0 #3f2d08)
+      drop-shadow(0 14px 22px rgba(0,0,0,0.7));
+  }
+
+  /* ── 3. 金属镀铬 ───────────── */
+  .bg-3 { background: linear-gradient(180deg, #2c2f36 0%, #16181d 100%); }
+  .fx-chrome {
+    background: linear-gradient(180deg,
+      #ffffff 0%, #c9d4e0 22%, #7d8da0 45%,
+      #3c4756 50%, #aebccb 55%, #e8eef5 78%, #98a7b8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 3px 0 #1d2229)
+      drop-shadow(0 6px 0 #11141a)
+      drop-shadow(0 12px 18px rgba(0,0,0,0.8));
+  }
+
+  /* ── 4. 玻璃通透感 ───────────── */
+  .bg-4 { background: linear-gradient(135deg, #0f3a4d 0%, #071e2b 100%); }
+  .fx-glass {
+    color: rgba(255, 255, 255, 0.16);
+    -webkit-text-stroke: 1.5px rgba(220, 245, 255, 0.85);
+    text-shadow:
+      0 0 18px rgba(120, 220, 255, 0.45),
+      4px 6px 0 rgba(120, 200, 240, 0.12),
+      8px 12px 0 rgba(120, 200, 240, 0.08),
+      0 18px 35px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── 5. 长投影海报风 ───────────── */
+  .bg-5 { background: linear-gradient(135deg, #e8503a 0%, #c23728 100%); }
+  .fx-longshadow {
+    color: #fff7f0;
+    text-shadow:
+      2px 2px 0 #9c2a1d, 4px 4px 0 #9c2a1d, 6px 6px 0 #98291c,
+      8px 8px 0 #94281b, 10px 10px 0 #90271a, 12px 12px 0 #8c2619,
+      14px 14px 0 #882518, 16px 16px 0 #842417, 18px 18px 0 #802316,
+      20px 20px 0 #7c2215, 22px 22px 0 #782114, 24px 24px 0 #742013;
+  }
+
+  /* ── 6. 霓虹发光 ───────────── */
+  .bg-6 { background: radial-gradient(circle at 50% 40%, #1a1033 0%, #0b0618 75%); }
+  .fx-neon {
+    color: #ffffff;
+    text-shadow:
+      0 0 6px #ffffff,
+      0 0 14px #b388ff,
+      0 0 30px #7c4dff,
+      0 0 55px #651fff,
+      0 6px 0 #2a1656,
+      0 12px 0 #1d0f3d,
+      0 18px 30px rgba(0,0,0,0.8);
+  }
+
+  /* ── 7. 翡翠渐变斜面 ───────────── */
+  .bg-7 { background: linear-gradient(135deg, #0e2f25 0%, #081a14 100%); }
+  .fx-emerald {
+    background: linear-gradient(180deg, #d8ffe9 0%, #6fe3a5 35%, #1fae6a 60%, #0c7547 85%, #4ed68f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 2px 0 #064a2c)
+      drop-shadow(0 4px 0 #053b23)
+      drop-shadow(0 6px 0 #042c1a)
+      drop-shadow(0 8px 0 #031f12)
+      drop-shadow(0 16px 24px rgba(0,0,0,0.65));
+  }
+
+  /* ── 8. 内雕浮刻（暗银压印） ───────────── */
+  .bg-8 { background: linear-gradient(180deg, #23262d 0%, #191c22 100%); }
+  .fx-engraved {
+    color: #1c1f26;
+    text-shadow:
+      0 1px 1px rgba(255, 255, 255, 0.18),
+      0 -2px 2px rgba(0, 0, 0, 0.9),
+      0 -4px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ── 9. 立体透视倾斜 ───────────── */
+  .bg-9 {
+    background: linear-gradient(135deg, #1a2138 0%, #0e1322 100%);
+    perspective: 600px;
+  }
+  .fx-perspective {
+    transform: rotateX(22deg) rotateY(-12deg) skewX(-3deg);
+    transform-style: preserve-3d;
+    background: linear-gradient(180deg, #9bd0ff 0%, #4a9eff 55%, #1f6fe0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(-3px 4px 0 #143a73)
+      drop-shadow(-3px 4px 0 #102e5c)
+      drop-shadow(-3px 4px 0 #0c2245)
+      drop-shadow(-10px 20px 28px rgba(0,0,0,0.7));
+  }
+
+  /* ── 10. 玫瑰金双层描边 ───────────── */
+  .bg-10 { background: radial-gradient(circle at 50% 35%, #3a2230 0%, #1c0f18 75%); }
+  .fx-rosegold {
+    position: relative;
+    background: linear-gradient(180deg, #ffe3d8 0%, #f3b8a0 35%, #d98a72 60%, #b06049 85%, #eebca6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 2px 0 #7a3d2c)
+      drop-shadow(0 4px 0 #5e2e21)
+      drop-shadow(0 6px 0 #432016)
+      drop-shadow(0 14px 24px rgba(0,0,0,0.7));
+  }
+  .fx-rosegold::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0; top: 0;
+    z-index: -1;
+    -webkit-text-stroke: 10px rgba(255, 220, 205, 0.12);
+    background: none;
+    color: transparent;
+  }
+
+  /* ── 11. 全息镭射流彩 ───────────── */
+  .bg-11 { background: linear-gradient(135deg, #15151f 0%, #0a0a12 100%); }
+  .fx-holo {
+    background: linear-gradient(115deg,
+      #ff6ec4 0%, #ffc36e 20%, #6effb0 40%,
+      #6ec9ff 60%, #b06eff 80%, #ff6ec4 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: holo-flow 6s linear infinite;
+    filter:
+      drop-shadow(0 3px 0 #2a2a3d)
+      drop-shadow(0 6px 0 #1d1d2c)
+      drop-shadow(0 9px 0 #12121c)
+      drop-shadow(0 16px 26px rgba(0,0,0,0.7));
+  }
+  @keyframes holo-flow {
+    from { background-position: 0% 50%; }
+    to   { background-position: 300% 50%; }
+  }
+
+  /* ── 12. 钛黑磨砂 ───────────── */
+  .bg-12 { background: radial-gradient(circle at 50% 20%, #34373e 0%, #15171b 70%); }
+  .fx-titanium {
+    background: linear-gradient(180deg, #b9bec7 0%, #6d737d 40%, #3a3f48 55%, #585e69 75%, #23262c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 1px 0 rgba(255,255,255,0.25))
+      drop-shadow(0 4px 0 #0c0d10)
+      drop-shadow(0 8px 0 #07080a)
+      drop-shadow(0 16px 22px rgba(0,0,0,0.85));
+  }
+
+  /* ── 13. 极光蓝紫挤出 ───────────── */
+  .bg-13 { background: linear-gradient(160deg, #0b1c33 0%, #150f2e 100%); }
+  .fx-aurora {
+    background: linear-gradient(120deg, #6ef0ff 0%, #5aa0ff 45%, #9d6bff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 2px 0 #1a3a66)
+      drop-shadow(0 4px 0 #182f5c)
+      drop-shadow(0 6px 0 #1b2452)
+      drop-shadow(0 8px 0 #1e1a48)
+      drop-shadow(0 0 26px rgba(110, 170, 255, 0.45));
+  }
+
+  /* ── 14. 奶油软浮雕（浅色系） ───────────── */
+  .bg-14 { background: linear-gradient(160deg, #f3eee6 0%, #e4dcce 100%); }
+  .bg-14 .label { color: rgba(90, 75, 55, 0.5); }
+  .fx-cream {
+    color: #f8f3ea;
+    text-shadow:
+      1px 1px 0 #d9ccb6, 2px 2px 0 #d2c3aa, 3px 3px 0 #cbba9f,
+      4px 4px 0 #c4b194, 5px 5px 0 #bda88a, 6px 6px 0 #b6a080,
+      8px 12px 22px rgba(120, 100, 70, 0.45),
+      -1px -1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* ── 15. 蓝宝石水晶 ───────────── */
+  .bg-15 { background: radial-gradient(circle at 50% 30%, #122448 0%, #060d1e 75%); }
+  .fx-sapphire {
+    background: linear-gradient(180deg, #d6ecff 0%, #6db4ff 30%, #1f63d6 55%, #0c3a8f 80%, #5a9bf0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 2px 0 #082a66)
+      drop-shadow(0 4px 0 #062052)
+      drop-shadow(0 6px 0 #04173d)
+      drop-shadow(0 0 22px rgba(70, 140, 255, 0.5))
+      drop-shadow(0 16px 26px rgba(0,0,0,0.75));
+  }
+
+  /* ── 16. 鎏金镂空描边 ───────────── */
+  .bg-16 { background: linear-gradient(180deg, #1b1610 0%, #0e0b07 100%); }
+  .fx-goldline {
+    color: transparent;
+    -webkit-text-stroke: 2px #e9c768;
+    text-shadow:
+      3px 4px 0 rgba(120, 90, 30, 0.55),
+      6px 8px 0 rgba(90, 65, 20, 0.4),
+      9px 12px 0 rgba(60, 44, 14, 0.3),
+      0 0 28px rgba(233, 199, 104, 0.3);
+  }
+
+  /* ── 17. 日落橙紫长挤出 ───────────── */
+  .bg-17 { background: linear-gradient(160deg, #2b1138 0%, #160a22 100%); }
+  .fx-sunset {
+    background: linear-gradient(180deg, #ffd98a 0%, #ff9d5c 40%, #ff5e7e 75%, #c84bff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter:
+      drop-shadow(0 3px 0 #5e1d4d)
+      drop-shadow(0 6px 0 #4a1741)
+      drop-shadow(0 9px 0 #371136)
+      drop-shadow(0 12px 0 #260b2a)
+      drop-shadow(0 20px 30px rgba(0,0,0,0.7));
+  }
+
+  /* ── 18. 铂金流光（扫光动画） ───────────── */
+  .bg-18 { background: linear-gradient(180deg, #25272c 0%, #121317 100%); }
+  .fx-platinum {
+    background: linear-gradient(110deg,
+      #aeb4bd 0%, #aeb4bd 40%,
+      #ffffff 50%,
+      #aeb4bd 60%, #aeb4bd 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine-sweep 3.2s ease-in-out infinite;
+    filter:
+      drop-shadow(0 3px 0 #515660)
+      drop-shadow(0 6px 0 #34383f)
+      drop-shadow(0 9px 0 #1c1f24)
+      drop-shadow(0 16px 24px rgba(0,0,0,0.8));
+  }
+  @keyframes shine-sweep {
+    0%   { background-position: 120% 0; }
+    60%  { background-position: -60% 0; }
+    100% { background-position: -60% 0; }
+  }
+
+  /* ── 19. 三色错位堆叠 ───────────── */
+  .bg-19 { background: linear-gradient(135deg, #101826 0%, #0a0f18 100%); }
+  .fx-stack {
+    position: relative;
+    color: #ffffff;
+    z-index: 1;
+    text-shadow: 0 14px 26px rgba(0,0,0,0.6);
+  }
+  .fx-stack::before,
+  .fx-stack::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0; top: 0;
+    white-space: nowrap;
+  }
+  .fx-stack::before {
+    color: #e8b545;
+    transform: translate(7px, 7px);
+    z-index: -1;
+  }
+  .fx-stack::after {
+    color: #1f5fd0;
+    transform: translate(14px, 14px);
+    z-index: -2;
+  }
+
+  /* ── 20. 碳黑嵌金 ───────────── */
+  .bg-20 { background: radial-gradient(circle at 50% 25%, #26211a 0%, #0d0b08 75%); }
+  .fx-carbon-gold {
+    color: #181512;
+    -webkit-text-stroke: 1.5px #d9b25f;
+    text-shadow:
+      0 1px 0 rgba(255, 222, 150, 0.35),
+      0 3px 0 #060504,
+      0 6px 0 #040302,
+      0 9px 0 #020201,
+      0 0 22px rgba(217, 178, 95, 0.22),
+      0 16px 26px rgba(0,0,0,0.85);
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 70px;
+    color: #6e7681;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>商业 3D 字体效果集</h1>
+    <p>20 STYLES · PURE CSS · NO IMAGES</p>
+  </header>
+
+  <main class="grid">
+
+    <section class="card bg-1">
+      <span class="label">01 · 经典立体挤出</span>
+      <div class="demo fx-extrude">品牌力量</div>
+    </section>
+
+    <section class="card bg-2">
+      <span class="label">02 · 奢华黄金</span>
+      <div class="demo fx-gold">尊享典范</div>
+    </section>
+
+    <section class="card bg-3">
+      <span class="label">03 · 金属镀铬</span>
+      <div class="demo fx-chrome">科技先锋</div>
+    </section>
+
+    <section class="card bg-4">
+      <span class="label">04 · 玻璃通透</span>
+      <div class="demo fx-glass">未来视界</div>
+    </section>
+
+    <section class="card bg-5">
+      <span class="label">05 · 长投影海报</span>
+      <div class="demo fx-longshadow">限时钜惠</div>
+    </section>
+
+    <section class="card bg-6">
+      <span class="label">06 · 霓虹光感</span>
+      <div class="demo fx-neon">星耀之夜</div>
+    </section>
+
+    <section class="card bg-7">
+      <span class="label">07 · 翡翠斜面</span>
+      <div class="demo fx-emerald">绿色金融</div>
+    </section>
+
+    <section class="card bg-8">
+      <span class="label">08 · 暗银压印</span>
+      <div class="demo fx-engraved">匠心铸造</div>
+    </section>
+
+    <section class="card bg-9">
+      <span class="label">09 · 立体透视</span>
+      <div class="demo fx-perspective">数据驱动</div>
+    </section>
+
+    <section class="card bg-10">
+      <span class="label">10 · 玫瑰金描边</span>
+      <div class="demo fx-rosegold" data-text="致臻之选">致臻之选</div>
+    </section>
+
+    <section class="card bg-11">
+      <span class="label">11 · 全息镭射</span>
+      <div class="demo fx-holo">无限创想</div>
+    </section>
+
+    <section class="card bg-12">
+      <span class="label">12 · 钛黑磨砂</span>
+      <div class="demo fx-titanium">旗舰呈献</div>
+    </section>
+
+    <section class="card bg-13">
+      <span class="label">13 · 极光蓝紫</span>
+      <div class="demo fx-aurora">智领未来</div>
+    </section>
+
+    <section class="card bg-14">
+      <span class="label">14 · 奶油浮雕</span>
+      <div class="demo fx-cream">轻奢生活</div>
+    </section>
+
+    <section class="card bg-15">
+      <span class="label">15 · 蓝宝石水晶</span>
+      <div class="demo fx-sapphire">恒久信赖</div>
+    </section>
+
+    <section class="card bg-16">
+      <span class="label">16 · 鎏金镂空</span>
+      <div class="demo fx-goldline">巅峰盛典</div>
+    </section>
+
+    <section class="card bg-17">
+      <span class="label">17 · 日落渐变</span>
+      <div class="demo fx-sunset">焕新启程</div>
+    </section>
+
+    <section class="card bg-18">
+      <span class="label">18 · 铂金流光</span>
+      <div class="demo fx-platinum">卓越成就</div>
+    </section>
+
+    <section class="card bg-19">
+      <span class="label">19 · 三色错位堆叠</span>
+      <div class="demo fx-stack" data-text="先声夺人">先声夺人</div>
+    </section>
+
+    <section class="card bg-20">
+      <span class="label">20 · 碳黑嵌金</span>
+      <div class="demo fx-carbon-gold">传世经典</div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    全部效果由纯 CSS 实现 · 可直接复制对应 class 使用
+  </footer>
+
+</body>
+</html>
